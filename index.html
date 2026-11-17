@@ -607,6 +607,53 @@ pre.gui-code .ln.cur::after { content: "▶"; color: #e0a800; margin-left: -0.2r
 @media print { .mnav-bar, .mnav-drawer, .mnav-backdrop { display: none !important; } body { padding-bottom: 0 !important; } }
 @media (max-width: 980px) { html { scroll-behavior: auto; } section.chapter, h2[id] { scroll-margin-top: 0.6rem; } }
 
+/* ---- 이어서 읽기 ---- */
+.resume-link { display: inline-flex; align-items: baseline; gap: 0.5rem; margin-top: 1.2rem; padding: 0.55rem 0.9rem; border-radius: 10px; background: var(--accent); color: var(--paper); text-decoration: none; font-family: var(--font-head); font-size: 0.92rem; max-width: 100%; }
+.resume-link span { opacity: 0.85; flex: none; }
+.resume-link b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.resume-link i { font-style: normal; flex: none; }
+.resume-link:hover, .resume-link:focus-visible { filter: brightness(1.08); outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- 댓글 ---- */
+.cmt { margin: 1.8rem 0 0.5rem; }
+.cmt-toggle { appearance: none; display: inline-flex; align-items: center; gap: 0.4rem; font: inherit; font-family: var(--font-head); font-size: 0.84rem; font-weight: 600; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.8rem; cursor: pointer; }
+.cmt-toggle:hover, .cmt-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+.cmt-toggle:focus-visible, .cmt-like:focus-visible, .cmt-send:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cmt-ico { width: 0.95rem; height: 0.75rem; border: 1.5px solid currentColor; border-radius: 4px; position: relative; margin-bottom: 0.2rem; }
+.cmt-ico::after { content: ""; position: absolute; left: 0.2rem; bottom: -0.32rem; width: 0.3rem; height: 0.3rem; border-left: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: skewY(-45deg); background: var(--paper); }
+.cmt-body { margin-top: 0.6rem; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 0.9rem 1rem; display: grid; gap: 0.8rem; }
+.cmt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.cmt-list:empty { display: none; }
+.cmt-item { margin: 0; padding-bottom: 0.7rem; border-bottom: 1px solid var(--line); display: grid; gap: 0.25rem; justify-items: start; }
+.cmt-meta { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; font-size: 0.86rem; }
+.cmt-meta b { font-family: var(--font-head); }
+.cmt-meta time { color: var(--muted); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.cmt-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.93rem; line-height: 1.6; }
+.cmt-like { appearance: none; display: inline-flex; align-items: center; gap: 0.3rem; font: inherit; font-size: 0.78rem; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.6rem; cursor: pointer; font-variant-numeric: tabular-nums; }
+.cmt-like:hover { color: var(--quiz); border-color: var(--quiz); }
+.cmt-like[aria-pressed="true"] { color: var(--quiz); border-color: var(--quiz); background: var(--quiz-soft); cursor: default; font-weight: 700; }
+.cmt-like:disabled { opacity: 0.6; }
+.cmt-empty { margin: 0; color: var(--muted); font-size: 0.88rem; }
+.cmt-form { display: grid; gap: 0.6rem; }
+.cmt-field { display: grid; gap: 0.2rem; }
+.cmt-field label { font-family: var(--font-head); font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.cmt-field input, .cmt-field textarea { font: inherit; font-size: 0.93rem; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 0.45rem 0.6rem; width: 100%; box-sizing: border-box; }
+.cmt-field input { max-width: 16rem; }
+.cmt-field textarea { resize: vertical; min-height: 4.5rem; line-height: 1.55; }
+.cmt-field input:focus, .cmt-field textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.cmt-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.cmt-actions { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.cmt-send { appearance: none; font: inherit; font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; color: var(--paper); background: var(--accent); border: 0; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; }
+.cmt-send:disabled { opacity: 0.6; cursor: default; }
+.cmt-status { margin: 0; font-size: 0.84rem; color: var(--muted); }
+.cmt-note { margin: 0; font-size: 0.76rem; color: var(--muted); }
+@media print { .cmt, .resume-link { display: none !important; } }
+.resume-link.in-toc { display: none; }
+@media (max-width: 980px) {
+  .resume-link.in-toc { display: flex; margin: 0 0 0.8rem; }
+  .cover .resume-link { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -7251,6 +7298,24 @@ document.addEventListener('click', function (e) {
   });
   var marks = [].slice.call(document.querySelectorAll('section.chapter, section.chapter h2[id]'));
   var nowCh = '', nowSec = '';
+  // 마지막으로 읽은 위치: 이 브라우저에만 저장하고, 다음에 열면 표지에 "이어서 읽기"를 보여 준다
+  var LAST = 'abap-last';
+  try {
+    var saved = JSON.parse(localStorage.getItem(LAST) || 'null'), cover = document.querySelector('.cover');
+    if (saved && saved.id && saved.label && cover && document.getElementById(saved.id) && saved.id !== 'ch00') {
+      var r = document.createElement('a'); r.className = 'resume-link'; r.href = '#' + saved.id;
+      var r1 = document.createElement('span'); r1.textContent = '이어서 읽기';
+      var r2 = document.createElement('b'); r2.textContent = saved.label;
+      var r3 = document.createElement('i'); r3.setAttribute('aria-hidden', 'true'); r3.textContent = '→';
+      r.appendChild(r1); r.appendChild(r2); r.appendChild(r3); cover.appendChild(r);
+      var tocNav = document.querySelector('nav.toc');      // 좁은 화면에서는 목차가 먼저 나오므로 목차 맨 위에도 둔다
+      if (tocNav) { var rr = r.cloneNode(true); rr.classList.add('in-toc'); tocNav.insertBefore(rr, tocNav.firstChild); }
+    }
+  } catch (err) {}
+  function remember(id, label) {
+    if (!id) return;
+    try { localStorage.setItem(LAST, JSON.stringify({ id: id, label: label, t: Date.now() })); } catch (err) {}
+  }
   function locate() {
     var ch = null, sec = null;
     for (var i = 0; i < marks.length; i++) {
@@ -7265,6 +7330,7 @@ document.addEventListener('click', function (e) {
     if (sec) label += (label ? ' · ' : '') + sec.textContent;
     else if (ch) { var tt = ch.querySelector('.ch-title'); label += tt ? ' ' + tt.textContent : ''; }
     here.textContent = label;
+    remember(secId || chId, label);
     list.querySelectorAll('[aria-current]').forEach(function (x) { x.removeAttribute('aria-current'); });
     list.querySelectorAll('.mnav-ch').forEach(function (d) { d.classList.toggle('here', d.dataset.target === chId); });
     var hit = list.querySelector('a[href="#' + (secId || chId) + '"]'); if (hit && (secId || chId)) hit.setAttribute('aria-current', 'true');
