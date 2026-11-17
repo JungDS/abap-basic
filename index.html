@@ -750,6 +750,7 @@ html.cm-narrow .cm-anchor .cm-mark { top: 0.25rem; }
 .cm-form { display: grid; gap: 0.5rem; padding: 0.7rem 1rem 0.8rem; border-top: 1px solid var(--line); background: var(--bg); }
 .cm-form textarea, .cm-form .cm-name { font: inherit; font-size: 0.93rem; color: var(--fg); background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 0.5rem 0.65rem; width: 100%; min-width: 0; }
 .cm-form textarea { resize: none; line-height: 1.55; }
+.cm-form .cm-name.locked { background: transparent; border-color: transparent; padding-left: 0.1rem; font-family: var(--font-head); font-weight: 700; color: var(--muted); cursor: default; outline: 0; }
 .cm-form textarea:focus, .cm-form .cm-name:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .cm-row { display: flex; gap: 0.5rem; align-items: center; }
 .cm-send { appearance: none; flex: none; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; color: #ffffff; background: var(--accent); border: 0; border-radius: 10px; cursor: pointer; }
@@ -1214,6 +1215,14 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
       return li;
     }
     var cur = null;
+    // 이름은 첫 페이지에서 적은 것으로 고정한다. 바꾸려면 나가기 → 첫 페이지에서 다시 적는다.
+    function fixedName() { return (lsGet('abap-name') || '').trim(); }
+    function syncName() {
+      var f = fixedName();
+      nameI.readOnly = !!f; nameI.classList.toggle('locked', !!f); nameI.tabIndex = f ? -1 : 0;
+      nameI.title = f ? '첫 페이지에서 적은 이름이에요. 바꾸려면 목차 위의 나가기를 눌러 주세요.' : '';
+      if (f) nameI.value = f;
+    }
     // 창이 열리고 닫히면 본문 너비가 바뀌어 글이 다시 흘러요. 보고 있던 요소가 같은 높이에 있도록 스크롤을 맞춘다.
     function keepPlace(e, change) {
       var y0 = e ? e.getBoundingClientRect().top : 0;
@@ -1236,7 +1245,7 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
       cur = k; e.classList.add('cm-target');
       where.textContent = secLabel[k.split('|')[0]] || '';
       quote.textContent = snip[k] || '';
-      if (!nameI.value) nameI.value = lsGet('abap-name') || '';
+      syncName();
       status.textContent = '';
       keepPlace(e, function () { panel.hidden = false; backdrop.hidden = false; root.classList.add('cm-open'); });
       draw();
@@ -1260,7 +1269,7 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var k = cur; if (!k) return;
-      var n = nameI.value.trim(), t = textI.value.trim(), parts = k.split('|');
+      var n = fixedName() || nameI.value.trim(), t = textI.value.trim(), parts = k.split('|');
       if (!n) { status.textContent = MSG.no_name; nameI.focus(); return; }
       if (!t) { status.textContent = MSG.no_text; textI.focus(); return; }
       sendB.disabled = true; status.textContent = '남기는 중이에요…';
@@ -1268,7 +1277,8 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
       A.add({ sec: parts[0], el: parts[1], title: title.slice(0, 80), name: n, text: t, hp: hp.value }).then(function (res) {
         sendB.disabled = false;
         if (!res || !res.ok) { status.textContent = (res && MSG[res.error]) || '남기지 못했어요. 잠시 뒤에 다시 해 주세요.'; return; }
-        lsSet('abap-name', n);
+        if (!fixedName()) lsSet('abap-name', n);
+        syncName();
         if (res.comment) { (store[k] = store[k] || []).push(res.comment); setMark(k); layout(); }
         textI.value = ''; if (cur === k) draw(true); status.textContent = '남겼어요. 고마워요!';
       }).catch(function () { sendB.disabled = false; status.textContent = '남기지 못했어요. 인터넷 연결을 확인하고 다시 해 주세요.'; });
