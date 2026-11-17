@@ -7358,6 +7358,127 @@ document.addEventListener('click', function (e) {
 })();
 window.addEventListener('beforeprint', function () { document.querySelectorAll('details').forEach(function (d) { d.dataset.wasOpen = d.open ? '1' : ''; d.open = true; }); });
 window.addEventListener('afterprint', function () { document.querySelectorAll('details').forEach(function (d) { d.open = d.dataset.wasOpen === '1'; }); });
+</script><script>window.ABAP_COMMENTS_URL = "https://script.google.com/macros/s/AKfycbxh5TgcAvUun0iDirQ6jIQsL2X3F8yKEd2jNedqzU3G7bXeHhbeiTMDh4cbJ6M45Qo/exec";</script>
+<script>
+/* 절마다 댓글(이름 + 의견)과 좋아요. 저장소는 구글 시트 + Apps Script 웹 앱 (window.ABAP_COMMENTS_URL). */
+(function () {
+  var API = window.ABAP_COMMENTS_URL; if (!API) return;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var voter = lsGet('abap-voter');
+  if (!voter) { voter = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12); lsSet('abap-voter', voter); }
+  var liked = {}; try { (JSON.parse(lsGet('abap-liked') || '[]') || []).forEach(function (id) { liked[id] = true; }); } catch (e) {}
+  function saveLiked() { lsSet('abap-liked', JSON.stringify(Object.keys(liked))); }
+
+  var bySec = {}, state = 'loading', boxes = [];
+  var MSG = {
+    too_fast: '방금 남기셨어요. 조금 뒤에 다시 남겨 주세요.',
+    busy: '지금 의견이 많이 들어오고 있어요. 1분 뒤에 다시 해 주세요.',
+    no_name: '이름을 적어 주세요.', no_text: '의견을 적어 주세요.',
+    not_found: '지워진 의견이에요.'
+  };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function post(data) {
+    return fetch(API, { method: 'POST', body: JSON.stringify(data), redirect: 'follow' }).then(function (r) { return r.json(); });
+  }
+
+  function makeBox(h2) {
+    var sec = h2.id, box = el('div', 'cmt'); box.dataset.sec = sec;
+    var toggle = el('button', 'cmt-toggle'); toggle.type = 'button'; toggle.setAttribute('aria-expanded', 'false');
+    var body = el('div', 'cmt-body'); body.hidden = true; body.id = 'cmt-body-' + sec; toggle.setAttribute('aria-controls', body.id);
+    var list = el('ul', 'cmt-list'), empty = el('p', 'cmt-empty');
+    var form = el('form', 'cmt-form'); form.noValidate = true;
+    var nameL = el('label', null, '이름'); nameL.htmlFor = 'cmt-name-' + sec;
+    var name = el('input'); name.id = nameL.htmlFor; name.type = 'text'; name.maxLength = 20; name.autocomplete = 'nickname'; name.placeholder = '별명도 괜찮아요';
+    var textL = el('label', null, '의견'); textL.htmlFor = 'cmt-text-' + sec;
+    var text = el('textarea'); text.id = textL.htmlFor; text.maxLength = 500; text.rows = 3; text.placeholder = '이 부분에서 헷갈린 점, 고쳤으면 하는 점, 도움이 된 점을 적어 주세요';
+    var hp = el('input', 'cmt-hp'); hp.type = 'text'; hp.tabIndex = -1; hp.autocomplete = 'off'; hp.setAttribute('aria-hidden', 'true');
+    var send = el('button', 'cmt-send', '의견 남기기'); send.type = 'submit';
+    var status = el('p', 'cmt-status'); status.setAttribute('role', 'status');
+    var row1 = el('div', 'cmt-field'); row1.appendChild(nameL); row1.appendChild(name);
+    var row2 = el('div', 'cmt-field'); row2.appendChild(textL); row2.appendChild(text);
+    var row3 = el('div', 'cmt-actions'); row3.appendChild(send); row3.appendChild(status);
+    form.appendChild(row1); form.appendChild(row2); form.appendChild(hp); form.appendChild(row3);
+    var note = el('p', 'cmt-note', '이름과 의견은 이 교재를 보는 모든 사람에게 보여요.');
+    body.appendChild(list); body.appendChild(empty); body.appendChild(form); body.appendChild(note);
+    box.appendChild(toggle); box.appendChild(body);
+
+    var title = h2.textContent, b = { sec: sec, toggle: toggle, body: body, list: list, empty: empty };
+    function draw() {
+      var items = bySec[sec] || [], n = items.length;
+      toggle.textContent = '';
+      toggle.appendChild(el('span', 'cmt-ico')); toggle.appendChild(el('span', null, n ? '의견 ' + n + '개' : '의견 남기기'));
+      list.textContent = '';
+      items.forEach(function (c) { list.appendChild(makeItem(c)); });
+      empty.hidden = n > 0 && state !== 'error';
+      empty.textContent = state === 'error' ? '의견을 불러오지 못했어요. 잠시 뒤에 페이지를 새로 고쳐 주세요.'
+        : state === 'loading' ? '의견을 불러오고 있어요…' : '아직 의견이 없어요. 첫 의견을 남겨 보세요.';
+    }
+    b.draw = draw;
+    toggle.addEventListener('click', function () {
+      var open = body.hidden; body.hidden = !open; toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open && !name.value) name.value = lsGet('abap-name') || '';
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var n = name.value.trim(), t = text.value.trim();
+      if (!n) { status.textContent = MSG.no_name; name.focus(); return; }
+      if (!t) { status.textContent = MSG.no_text; text.focus(); return; }
+      send.disabled = true; status.textContent = '보내는 중이에요…';
+      post({ action: 'add', sec: sec, title: title, name: n, text: t, voter: voter, hp: hp.value }).then(function (res) {
+        send.disabled = false;
+        if (!res || !res.ok) { status.textContent = (res && MSG[res.error]) || '남기지 못했어요. 잠시 뒤에 다시 해 주세요.'; return; }
+        lsSet('abap-name', n);
+        if (res.comment) { (bySec[sec] = bySec[sec] || []).push(res.comment); }
+        text.value = ''; draw(); status.textContent = '의견을 남겼어요. 고마워요!';
+      }).catch(function () { send.disabled = false; status.textContent = '남기지 못했어요. 인터넷 연결을 확인하고 다시 해 주세요.'; });
+    });
+    draw();
+    return { node: box, api: b };
+  }
+
+  function makeItem(c) {
+    var li = el('li', 'cmt-item');
+    var meta = el('div', 'cmt-meta'); meta.appendChild(el('b', null, c.name)); meta.appendChild(el('time', null, c.time));
+    var p = el('p', 'cmt-text', c.text);
+    var like = el('button', 'cmt-like'); like.type = 'button';
+    var num = el('span', null, String(c.likes || 0));
+    like.appendChild(el('span', 'cmt-heart', '♥')); like.appendChild(el('span', 'cmt-like-label', '좋아요')); like.appendChild(num);
+    function paint() { like.setAttribute('aria-pressed', liked[c.id] ? 'true' : 'false'); like.title = liked[c.id] ? '이미 좋아요를 눌렀어요' : '좋아요'; num.textContent = String(c.likes || 0); }
+    like.addEventListener('click', function () {
+      if (liked[c.id] || like.disabled) return;
+      like.disabled = true;
+      post({ action: 'like', id: c.id, voter: voter }).then(function (res) {
+        like.disabled = false;
+        if (res && res.ok) { c.likes = res.likes; liked[c.id] = true; saveLiked(); paint(); }
+        else if (res && res.error === 'not_found') { li.remove(); }
+      }).catch(function () { like.disabled = false; });
+    });
+    paint();
+    li.appendChild(meta); li.appendChild(p); li.appendChild(like);
+    return li;
+  }
+
+  // 절(h2)이 끝나는 자리에 댓글 상자를 놓는다. 장 끝의 확인 문제·정리 앞에서 끊는다.
+  document.querySelectorAll('section.chapter h2[id]').forEach(function (h2) {
+    var last = h2, n = h2.nextElementSibling;
+    while (n && n.tagName !== 'H2' && !(n.classList && (n.classList.contains('quiz') || n.classList.contains('summary')))) { last = n; n = n.nextElementSibling; }
+    var made = makeBox(h2); last.after(made.node); boxes.push(made.api);
+  });
+
+  fetch(API + (API.indexOf('?') < 0 ? '?' : '&') + 'action=list', { redirect: 'follow' })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res || !res.ok) throw new Error('list');
+      bySec = {};
+      res.comments.forEach(function (c) { (bySec[c.sec] = bySec[c.sec] || []).push(c); });
+      state = 'ready';
+    })
+    .catch(function () { state = 'error'; })
+    .then(function () { boxes.forEach(function (b) { b.draw(); }); });
+})();
+
 </script>
 </body>
 </html>
