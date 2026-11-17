@@ -1,0 +1,260 @@
+<section class="chapter" id="ch01"><div class="ch-eyebrow">1장</div><h1 class="ch-title">SAP 시스템과 SAP GUI 첫걸음</h1>
+<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<li>SAP 시스템, 클라이언트, Repository가 무엇인지 그림으로 설명할 수 있어요.</li>
+<li>SAP GUI로 로그인하고 첫 화면(SAP Easy Access)의 각 부분을 알아봐요.</li>
+<li>트랜잭션 코드로 원하는 화면에 바로 이동할 수 있어요.</li>
+<li>내가 만든 프로그램이 어디에 저장되는지(Package, Local Object) 알아요.</li>
+</ul></div>
+<h2 id="s1-1">1-1. SAP 시스템은 하나가 아니에요</h2>
+<p>회사에는 보통 SAP 시스템이 세 개 있어요. 새 프로그램을 바로 실제 업무 시스템에서 만들면 실수 하나로 회사 업무가 멈출 수 있거든요. 그래서 <strong>만드는 곳, 시험하는 곳, 실제로 쓰는 곳</strong>을 나눠 둬요.</p>
+<figure class="fig" id="fig-1-1"><div class="fig-body"><div class="land">
+  <div class="land-box dev"><b>DEV</b><span>개발 시스템</span><small>프로그램을 만들어요<br>우리 수업은 여기!</small></div>
+  <div class="land-arrow"><span>Transport</span>→</div>
+  <div class="land-box qas"><b>QAS</b><span>테스트 시스템</span><small>잘 되는지 시험해요</small></div>
+  <div class="land-arrow"><span>Transport</span>→</div>
+  <div class="land-box prd"><b>PRD</b><span>운영 시스템</span><small>실제 업무에 써요</small></div>
+</div></div><figcaption><b>그림 1-1.</b>개발 → 테스트 → 운영, 세 시스템</figcaption></figure>
+<p>DEV에서 만든 프로그램은 <strong>Transport</strong>라는 택배 상자에 담겨 QAS로, 다시 PRD로 옮겨져요. 우리 수업에서 접속하는 곳은 DEV 같은 <strong>개발용 시스템</strong>이에요. 마음 편히 만들고 지워 봐도 괜찮아요.</p>
+<h2 id="s1-2">1-2. 한 시스템 안의 클라이언트</h2>
+<p>시스템 하나는 <strong>아파트 한 동</strong>이라고 생각하면 쉬워요.</p>
+<ul>
+<li>건물의 뼈대(계단, 엘리베이터, 수도관)는 모든 집이 <strong>함께</strong> 써요. SAP에서는 이것이 <strong>Repository</strong>예요. 프로그램 소스, Table의 설계도 같은 것이 여기에 있어요.</li>
+<li>집집마다 들어 있는 가구와 살림살이는 <strong>그 집만의 것</strong>이에요. SAP에서는 이것이 <strong>클라이언트(Client)별 데이터</strong>예요. 세 자리 번호(예: 100, 200)로 집을 구분해요.</li>
+</ul>
+<figure class="fig" id="fig-1-2"><div class="fig-body"><div class="bldg">
+  <div class="bldg-units">
+    <div class="unit"><b>클라이언트 100</b><small>100번 집의 데이터<br>(도서 3권)</small></div>
+    <div class="unit"><b>클라이언트 200</b><small>200번 집의 데이터<br>(도서 10권)</small></div>
+    <div class="unit"><b>클라이언트 300</b><small>300번 집의 데이터<br>(도서 0권)</small></div>
+  </div>
+  <div class="bldg-base"><b>Repository</b> · 모든 클라이언트가 함께 쓰는 부분<small>프로그램 소스 · Table 설계도 · Data Element · Domain …</small></div>
+</div></div><figcaption><b>그림 1-2.</b>시스템 = 아파트 한 동, 클라이언트 = 각 집</figcaption></figure>
+<p>그래서 <strong>프로그램은 한 번 만들면 모든 클라이언트에서 보이지만</strong>, Table에 넣은 <strong>데이터는 내가 로그인한 클라이언트에서만</strong> 보여요.</p>
+<div class="box note"><div class="box-t">이게 왜 중요해요? MANDT 이야기</div><p>Table의 첫 번째 필드에 <code>MANDT</code>(Type <code>CLNT</code>)를 넣는 이유가 바로 이거예요. <code>MANDT</code>는 "이 줄은 몇 번 집 데이터인가"를 적어 두는 칸이에요. 이 칸이 있어야 SAP가 클라이언트마다 데이터를 알아서 나눠 줘요. 7장에서 Table을 만들 때 다시 볼게요.</p></div>
+<h2 id="s1-3">1-3. SAP GUI로 로그인하기</h2>
+<p>SAP 시스템에 들어가는 프로그램이 <strong>SAP GUI</strong>예요. 컴퓨터에 설치된 <strong>SAP Logon</strong>을 실행하면 접속할 시스템 목록이 보여요.</p>
+<div class="box try"><div class="box-t">직접 해 보기 · 로그인</div><ol>
+<li><strong>SAP Logon</strong>을 실행해요. Windows 시작 메뉴에서 "SAP Logon"을 검색하면 나와요.</li>
+<li>목록에서 수업 시스템을 골라 <span class="badge">1</span> 두 번 클릭하거나 <span class="badge">2</span> <strong>Log On</strong> 버튼을 눌러요.</li>
+<li>로그인 화면에서 <strong>Client, User, Password, Language</strong>를 입력하고 <kbd>Enter</kbd>를 눌러요. 값은 수업에서 안내받은 그대로 넣으면 돼요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-1-3"><div class="fig-body"><div class="gui narrow">
+  <div class="gui-bar">SAP Logon</div>
+  <div class="gui-apptool"><span class="gui-btn">Log On <span class="badge">2</span></span><span class="gui-btn ghost">New Item</span></div>
+  <div class="gui-body">
+    <table class="gui-grid">
+      <tr><th>Name</th><th>System ID</th><th>Description</th></tr>
+      <tr class="sel"><td>수업 시스템 <span class="badge">1</span></td><td>S4D</td><td>Training DEV</td></tr>
+      <tr><td>다른 시스템</td><td>…</td><td>…</td></tr>
+    </table>
+  </div>
+</div></div><figcaption><b>그림 1-3.</b>SAP Logon: 접속할 시스템 고르기</figcaption></figure>
+
+<figure class="fig" id="fig-1-4"><div class="fig-body"><div class="gui narrow">
+  <div class="gui-bar">SAP</div>
+  <div class="gui-body">
+    <div class="gui-row"><span class="gui-label">Client</span><span class="gui-field s">100</span><span class="gui-hint">← 클라이언트 번호(집 번호)</span></div>
+    <div class="gui-row"><span class="gui-label">User</span><span class="gui-field">수업에서 받은 ID</span></div>
+    <div class="gui-row"><span class="gui-label">Password</span><span class="gui-field">********</span><span class="gui-hint">← 대소문자 구분</span></div>
+    <div class="gui-row"><span class="gui-label">Language</span><span class="gui-field s">KO</span><span class="gui-hint">← 화면 언어 (KO 또는 EN)</span></div>
+  </div>
+</div></div><figcaption><b>그림 1-4.</b>로그인 화면</figcaption></figure>
+
+<div class="box note"><div class="box-t">그림 속 S4D, 100은 예시예요</div><p>시스템 이름과 클라이언트 번호는 수업 시스템마다 달라요. 꼭 수업에서 안내받은 값을 쓰세요. 처음 로그인하면 비밀번호를 새로 바꾸라는 창이 뜰 수 있는데, 정상이에요.</p></div>
+<h2 id="s1-4">1-4. 첫 화면 둘러보기: SAP Easy Access</h2>
+<p>로그인하면 <strong>SAP Easy Access</strong> 화면이 나와요. 앞으로 거의 모든 화면이 이 모양을 따르니까, 각 부분의 이름을 한 번 익혀 두면 편해요.</p>
+<figure class="fig" id="fig-1-5"><div class="fig-body"><div class="gui">
+  <div class="gui-bar">SAP Easy Access</div>
+  <div class="gui-menu"><span>Menu</span><span>Edit</span><span>Favorites</span><span>Extras</span><span>System</span><span>Help</span><span class="badge">1</span></div>
+  <div class="gui-tool">
+    <span class="gui-ico">✓</span><span class="gui-cmd">SE38</span><span class="badge">2</span>
+    <span class="gui-sep"></span>
+    <span class="gui-ico" title="Save">▣<i>저장</i></span><span class="gui-ico">◀<i>Back F3</i></span><span class="gui-ico">⇤<i>Exit</i></span><span class="gui-ico">✕<i>Cancel F12</i></span><span class="badge">3</span>
+  </div>
+  <div class="gui-head">SAP Easy Access <span class="badge">4</span></div>
+  <div class="gui-body tree">
+    <div class="gui-tree">
+      <div>▸ Favorites <span class="badge">5</span></div>
+      <div>▸ SAP Menu</div>
+      <div class="indent">▸ Office</div>
+      <div class="indent">▸ Tools</div>
+    </div>
+  </div>
+  <div class="gui-status"><span>메시지가 여기에 나와요</span><span class="badge">6</span><span class="gui-status-r">S4D (1) 100 ▾</span></div>
+</div></div><figcaption><b>그림 1-5.</b>SAP Easy Access 화면의 구성</figcaption></figure>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>이름</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="badge">1</span></td>
+<td>메뉴 바</td>
+<td>화면마다 메뉴가 달라져요. 기능을 못 찾겠으면 여기서 찾아요.</td>
+</tr>
+<tr>
+<td><span class="badge">2</span></td>
+<td><strong>명령 필드(Command Field)</strong></td>
+<td>트랜잭션 코드를 입력하는 칸이에요. 가장 많이 쓸 곳이에요!</td>
+</tr>
+<tr>
+<td><span class="badge">3</span></td>
+<td>표준 도구 모음</td>
+<td>저장, 뒤로(<kbd>F3</kbd>), 나가기, 취소(<kbd>F12</kbd>)처럼 어느 화면에서나 같은 버튼이에요.</td>
+</tr>
+<tr>
+<td><span class="badge">4</span></td>
+<td>화면 제목</td>
+<td>지금 어느 화면에 있는지 알려 줘요.</td>
+</tr>
+<tr>
+<td><span class="badge">5</span></td>
+<td>즐겨찾기</td>
+<td>자주 쓰는 트랜잭션을 등록해 둘 수 있어요.</td>
+</tr>
+<tr>
+<td><span class="badge">6</span></td>
+<td><strong>상태 표시줄</strong></td>
+<td>오류, 경고, 완료 메시지가 나와요. 뭔가 안 되면 여기부터 보세요.</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box note"><div class="box-t">명령 필드가 안 보여요</div><p>화면 테마에 따라 명령 필드가 접혀 있을 수 있어요. 왼쪽 위 도구 모음 근처의 작은 화살표(▸)를 누르면 펼쳐져요.</p></div>
+<h2 id="s1-5">1-5. 트랜잭션 코드로 이동하기</h2>
+<p><strong>트랜잭션 코드(Transaction Code, T-code)</strong>는 화면마다 붙은 <strong>바로 가기 주소</strong>예요. 메뉴를 하나하나 눌러 찾아가는 대신, 명령 필드에 코드를 넣고 <kbd>Enter</kbd>를 누르면 바로 이동해요.</p>
+<div class="box try"><div class="box-t">직접 해 보기 · SE38로 이동하기</div><ol>
+<li>명령 필드에 <code>SE38</code>을 입력하고 <kbd>Enter</kbd>를 눌러요. <strong>ABAP Editor</strong> 첫 화면이 나오면 성공이에요.</li>
+<li>이번엔 명령 필드에 <code>/nSE11</code>을 입력하고 <kbd>Enter</kbd>를 눌러요. 지금 화면을 닫고 <strong>ABAP Dictionary</strong> 화면으로 바뀌어요.</li>
+<li><code>/oSE38</code>을 입력해 보세요. <strong>새 창</strong>에 ABAP Editor가 하나 더 열려요.</li>
+<li>마지막으로 <code>/n</code>만 입력하면 처음 화면(SAP Easy Access)으로 돌아와요.</li>
+</ol></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>입력</th>
+<th>뜻</th>
+<th>언제 쓰나요</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SE38</code></td>
+<td>해당 화면으로 이동</td>
+<td>지금 <strong>첫 화면</strong>(SAP Easy Access)에 있을 때</td>
+</tr>
+<tr>
+<td><code>/nSE38</code></td>
+<td>지금 화면을 닫고 이동</td>
+<td>다른 화면에 들어가 있을 때 (<strong>n</strong>ew)</td>
+</tr>
+<tr>
+<td><code>/oSE38</code></td>
+<td>새 창을 열어서 이동</td>
+<td>지금 화면은 그대로 두고 싶을 때 (<strong>o</strong>pen)</td>
+</tr>
+<tr>
+<td><code>/n</code></td>
+<td>처음 화면으로</td>
+<td>길을 잃었을 때</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<li>다른 화면 안에서 <code>SE38</code>만 입력하면 아무 일도 안 일어날 수 있어요. 이럴 땐 앞에 <code>/n</code>을 붙이세요.</li>
+<li><code>/n</code>으로 화면을 나가면 <strong>저장하지 않은 내용은 사라져요.</strong> 코드를 고치는 중이었다면 먼저 저장하세요.</li>
+<li>창(세션)은 보통 6개까지만 열려요. <code>/o</code>로 계속 열다 보면 더 이상 안 열리니, 안 쓰는 창은 닫아 주세요.</li>
+</ul></div>
+<h3>이 교재에서 만날 트랜잭션 코드</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>T-code</th>
+<th>화면 이름</th>
+<th>하는 일</th>
+<th>나오는 장</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SE38</code></td>
+<td>ABAP Editor</td>
+<td>프로그램을 만들고 실행해요</td>
+<td>2장부터 계속</td>
+</tr>
+<tr>
+<td><code>SE11</code></td>
+<td>ABAP Dictionary</td>
+<td>Domain, Data Element, Table을 만들어요</td>
+<td>7장</td>
+</tr>
+<tr>
+<td><code>SE16N</code></td>
+<td>Data Browser</td>
+<td>Table에 들어 있는 데이터를 조회해요</td>
+<td>7장, 9장</td>
+</tr>
+<tr>
+<td><code>SE80</code></td>
+<td>Object Navigator</td>
+<td>여러 개발 객체를 한 화면에서 봐요</td>
+<td>10장</td>
+</tr>
+<tr>
+<td><code>SE37</code></td>
+<td>Function Builder</td>
+<td>Function Module을 만들고 테스트해요</td>
+<td>10장</td>
+</tr>
+<tr>
+<td><code>SE24</code></td>
+<td>Class Builder</td>
+<td>Class를 만들어요</td>
+<td>10장</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="s1-6">1-6. 내가 만든 프로그램은 어디에 저장될까</h2>
+<p>프로그램을 처음 저장하면 SAP가 <strong>"어느 Package에 넣을까요?"</strong>라고 물어봐요. Package는 개발 객체를 담는 <strong>폴더</strong>예요.</p>
+<figure class="fig" id="fig-1-6"><div class="fig-body"><div class="pkg">
+  <div class="pkg-col">
+    <div class="pkg-head">회사 프로젝트</div>
+    <div class="pkg-box"><b>Package</b> ZSALES<small>ZSD_REPORT01<br>ZSD_TABLE01</small></div>
+    <div class="pkg-note">→ Transport 상자에 담겨<br>QAS, PRD로 옮겨져요</div>
+  </div>
+  <div class="pkg-col">
+    <div class="pkg-head">개인 연습</div>
+    <div class="pkg-box local"><b>Local Object</b> $TMP<small>YG05_02_HELLO<br>YG05_02_INTRO</small></div>
+    <div class="pkg-note">→ 옮겨지지 않아요<br>이 시스템에서만 써요</div>
+  </div>
+</div></div><figcaption><b>그림 1-6.</b>Package와 Local Object</figcaption></figure>
+<ul>
+<li>회사에서는 프로젝트별 Package에 저장하고, 변경 내용을 <strong>Transport Request</strong>(택배 상자)에 담아요. 이런 Package와 그 안의 객체는 보통 <strong>Z로 시작</strong>해요(<code>ZSALES</code>, <code>ZSD_REPORT01</code>).</li>
+<li>혼자 연습하는 프로그램은 <strong>Local Object</strong>로 저장해요. Package 이름이 <code>$TMP</code>로 들어가고, 다른 시스템으로 옮겨지지 않아요. 연습용은 <strong>Y로 시작</strong>하는 이름을 붙여서 한눈에 구분해요(<code>YG05_02_HELLO</code>).</li>
+</ul>
+<p>이 교재의 실습은 특별한 안내가 없으면 <strong>Local Object</strong>로 저장해요. 2장에서 직접 해 볼 거예요.</p>
+<div class="box quiz"><div class="box-t">확인 문제</div><ol>
+<li>개발 시스템에서 만든 프로그램을 운영 시스템으로 옮길 때 쓰는 "택배 상자"의 이름은 무엇일까요?</li>
+<li>클라이언트 100에서 만든 프로그램을 클라이언트 200에서 볼 수 있을까요? 클라이언트 100에서 Table에 넣은 데이터는요?</li>
+<li>ABAP Editor에서 코드를 보다가, 지금 화면은 그대로 두고 새 창으로 <code>SE11</code>을 열고 싶어요. 명령 필드에 무엇을 입력할까요?</li>
+<li>버튼을 눌렀는데 아무 반응이 없는 것 같아요. 가장 먼저 어디를 봐야 할까요?</li>
+</ol></div>
+
+<details class="answer solo"><summary>정답 보기</summary><ol>
+<li><strong>Transport</strong> (정확히는 Transport Request)예요.</li>
+<li>프로그램은 <strong>볼 수 있어요.</strong> 프로그램은 모든 클라이언트가 함께 쓰는 Repository에 있으니까요. 데이터는 <strong>볼 수 없어요.</strong> <code>MANDT</code>가 있는 Table의 데이터는 클라이언트마다 따로예요.</li>
+<li><code>/oSE11</code></li>
+<li>화면 맨 아래 <strong>상태 표시줄</strong>이에요. 오류나 안내 메시지가 거기에 나와요.</li>
+</ol></details>
+
+<div class="box summary"><div class="box-t">정리</div><ul>
+<li>회사에는 보통 DEV → QAS → PRD 세 시스템이 있고, 프로그램은 Transport로 옮겨져요.</li>
+<li>프로그램(Repository)은 모든 클라이언트가 함께 쓰고, 데이터는 클라이언트마다 따로예요. 그래서 Table에 <code>MANDT</code>가 필요해요.</li>
+<li>트랜잭션 코드는 화면 바로 가기예요. <code>/n</code>은 이동, <code>/o</code>는 새 창이에요.</li>
+<li>연습용 프로그램은 Local Object(<code>$TMP</code>)로 저장해요.</li>
+</ul></div>
+</section>

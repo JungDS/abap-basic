@@ -1,0 +1,472 @@
+<section class="chapter" id="ch11"><div class="ch-eyebrow">11장</div><h1 class="ch-title">ALV로 결과 보기</h1>
+<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<li><code>WRITE</code> 목록과 ALV의 차이를 말할 수 있어요.</li>
+<li><code>CL_SALV_TABLE</code>로 Internal Table을 ALV 화면에 띄울 수 있어요.</li>
+<li>컬럼 제목이 Data Element에서 온다는 것을 알고, 칸 숨기기·제목 바꾸기·폭 맞추기를 할 수 있어요.</li>
+<li>정렬, 필터, 합계, 엑셀 내려받기 버튼을 켤 수 있어요.</li>
+</ul></div>
+<h2 id="s11-1">11-1. ALV가 뭐예요?</h2>
+<p>지금까지는 결과를 <code>WRITE</code>로 한 줄씩 찍었어요. 칸을 맞추려고 <code>(20)</code>처럼 길이를 정하고, 정렬하고 싶으면 <code>SORT</code>를 코드에 넣어야 했죠.</p>
+<p><strong>ALV</strong>(ABAP List Viewer)는 Internal Table을 넘겨주기만 하면 <strong>표 화면</strong>을 만들어 주는 SAP의 도구예요. 사용자가 화면에서 직접 정렬하고, 거르고, 합계를 내고, 엑셀로 내려받을 수 있어요. 회사에서 쓰는 조회 프로그램은 대부분 결과를 ALV로 보여 줘요.</p>
+<figure class="fig" id="fig-11-1"><div class="fig-body"><div class="pair">
+<div class="gui">
+  <div class="gui-head">WRITE 목록</div>
+  <div class="gui-body list">
+<pre class="gui-list">B0001 ABAP 첫걸음     25,000   3
+B0002 바다의 노래     15,000   0
+B0003 오늘의 산책     13,000   5
+B0004 SQL 한 그릇     28,000   2
+B0005 별을 세는 밤    17,000   7</pre>
+  </div>
+</div>
+<div class="gui">
+  <div class="gui-head">ALV</div>
+  <div class="gui-apptool alv-tool"><span class="gui-ico">▲</span><span class="gui-ico">▼</span><span class="gui-ico">⏷</span><span class="gui-ico">Σ</span><span class="gui-ico">⇩</span><span class="gui-ico">▦</span></div>
+  <div class="gui-body">
+    <table class="gui-grid alv">
+      <tr><th>도서 번호</th><th>도서 제목</th><th>가격</th><th>재고</th></tr>
+      <tr><td>B0001</td><td>ABAP 첫걸음</td><td class="num">25,000</td><td class="num">3</td></tr>
+      <tr><td>B0002</td><td>바다의 노래</td><td class="num">15,000</td><td class="num">0</td></tr>
+      <tr><td>B0003</td><td>오늘의 산책</td><td class="num">13,000</td><td class="num">5</td></tr>
+      <tr><td>B0004</td><td>SQL 한 그릇</td><td class="num">28,000</td><td class="num">2</td></tr>
+      <tr><td>B0005</td><td>별을 세는 밤</td><td class="num">17,000</td><td class="num">7</td></tr>
+    </table>
+  </div>
+</div>
+</div></div><figcaption><b>그림 11-1.</b>같은 데이터를 WRITE와 ALV로 본 모습</figcaption></figure>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>WRITE</code> 목록</th>
+<th>ALV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>칸 맞추기</td>
+<td>길이를 직접 정해요</td>
+<td>알아서 맞춰요</td>
+</tr>
+<tr>
+<td>컬럼 제목</td>
+<td>직접 찍어야 해요</td>
+<td>Data Element에서 자동으로 와요</td>
+</tr>
+<tr>
+<td>정렬·필터·합계</td>
+<td>코드로 해야 해요</td>
+<td>사용자가 버튼으로 해요</td>
+</tr>
+<tr>
+<td>엑셀 내려받기</td>
+<td>어려워요</td>
+<td>버튼 하나예요</td>
+</tr>
+</tbody>
+</table></div>
+<p>ALV를 만드는 방법은 여러 가지가 있어요. 이 교재에서는 코드가 가장 짧은 <strong><code>CL_SALV_TABLE</code></strong> 클래스를 써요.</p>
+<h2 id="s11-2">11-2. 가장 짧은 ALV</h2>
+<p>9장에서 읽어 온 <code>gt_book</code>을 그대로 ALV로 띄워 볼게요.</p>
+<div class="code"><button type="button" class="copy" data-code="REPORT yg##_11_alv.
+
+DATA: gt_book TYPE TABLE OF yg##_book,
+      go_alv  TYPE REF TO cl_salv_table.     &quot; ALV를 가리키는 변수
+
+START-OF-SELECTION.
+  &quot; 1. 데이터 읽기 (9장)
+  SELECT * FROM yg##_book INTO TABLE gt_book.
+
+  &quot; 2. ALV 만들기
+  TRY.
+      cl_salv_table=&gt;factory(
+        IMPORTING
+          r_salv_table = go_alv
+        CHANGING
+          t_table      = gt_book ).
+    CATCH cx_salv_msg.
+      MESSAGE &#x27;ALV를 만들지 못했어요.&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+      RETURN.
+  ENDTRY.
+
+  &quot; 3. 화면에 띄우기
+  go_alv-&gt;display( ).">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_11_alv.
+
+<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yg<mark>##</mark>_book,
+      go_alv  <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_table.     <span class="tk-cmt">" ALV를 가리키는 변수</span>
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-cmt">" 1. 데이터 읽기 (9장)</span>
+  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book.
+
+  <span class="tk-cmt">" 2. ALV 만들기</span>
+  <span class="tk-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tk-kw">IMPORTING</span>
+          r_salv_table = go_alv
+        <span class="tk-kw">CHANGING</span>
+          t_table      = gt_book ).
+    <span class="tk-kw">CATCH</span> cx_salv_msg.
+      <span class="tk-kw">MESSAGE</span> <span class="tk-str">'ALV를 만들지 못했어요.'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+      <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDTRY</span>.
+
+  <span class="tk-cmt">" 3. 화면에 띄우기</span>
+  go_alv-&gt;<span class="tk-kw">display</span>( ).</code></pre></div>
+<p>실행하면 책 다섯 권이 표로 나와요. <kbd>F3</kbd>(Back)을 누르면 돌아가요. 새로 나온 것을 하나씩 볼게요.</p>
+<figure class="fig" id="fig-11-2"><div class="fig-body"><div class="dbflow">
+  <div class="df-box it"><b>Internal Table</b><code>gt_book</code><small>보여 줄 데이터</small></div>
+  <div class="df-arrow"><code>factory</code>→</div>
+  <div class="df-box db"><b>ALV 객체</b><code>go_alv</code><small>표를 만들 준비 끝</small></div>
+  <div class="df-arrow"><code>display</code>→</div>
+  <div class="df-box out"><b>ALV 화면</b><code>표</code><small>정렬 · 필터 · 엑셀</small></div>
+</div></div><figcaption><b>그림 11-2.</b>ALV를 띄우는 세 단계</figcaption></figure>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>코드</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TYPE REF TO cl_salv_table</code></td>
+<td><code>go_alv</code>는 값을 담는 칸이 아니라 <strong>ALV 객체를 가리키는 손잡이</strong>예요. 객체는 <code>factory</code>가 만들어 줘요.</td>
+</tr>
+<tr>
+<td><code>cl_salv_table=&gt;factory( … )</code></td>
+<td>클래스의 Method를 불러 ALV 객체를 만들어요. <code>=&gt;</code>는 10장에서 본 "이 클래스의"예요.</td>
+</tr>
+<tr>
+<td><code>t_table = gt_book</code></td>
+<td>보여 줄 Internal Table을 넘겨요.</td>
+</tr>
+<tr>
+<td><code>go_alv-&gt;display( )</code></td>
+<td>만든 ALV를 화면에 띄워요. 객체의 Method는 <code>-&gt;</code>로 불러요.</td>
+</tr>
+<tr>
+<td><code>TRY … CATCH … ENDTRY</code></td>
+<td><code>factory</code>가 실패하면 예외 <code>cx_salv_msg</code>를 던져요. <code>CATCH</code>에서 받아 처리해요. 10장 <code>EXCEPTIONS</code>의 클래스 버전이라고 생각하면 돼요.</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box note"><div class="box-t">`=&gt;`와 `-&gt;`</div><ul>
+<li><code>클래스=&gt;메서드( )</code>: <strong>클래스 이름으로</strong> 바로 불러요. 10장의 <code>lcl_calc=&gt;discount( )</code>, 여기의 <code>cl_salv_table=&gt;factory( )</code>가 그래요.</li>
+<li><code>객체-&gt;메서드( )</code>: <strong>만들어진 객체로</strong> 불러요. <code>go_alv-&gt;display( )</code>처럼요.</li>
+</ul>
+<p>화살표 모양만 기억해 두면 충분해요. 객체지향은 다음 과정에서 자세히 배워요.</p></div>
+
+<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<li><code>display( )</code>를 빼먹으면 아무것도 안 나와요. 만들기(<code>factory</code>)와 띄우기(<code>display</code>)는 따로예요.</li>
+<li><code>factory</code>보다 <strong>먼저</strong> 데이터를 읽어 와야 해요. 순서를 바꾸면 빈 표가 나와요.</li>
+<li>괄호 안쪽은 앞뒤를 한 칸씩 띄워요. <code>display()</code>처럼 붙이면 오류가 나요. 빈 괄호도 <code>display( )</code>예요.</li>
+</ul></div>
+<h2 id="s11-3">11-3. 컬럼 제목은 어디서 와요?</h2>
+<p>ALV를 띄워 보면 칸 이름이 <code>TITLE</code>이 아니라 <strong>"도서 제목"</strong>처럼 나와요. 7장에서 Data Element를 만들 때 적은 <strong>Field Label</strong>을 ALV가 가져다 쓰기 때문이에요.</p>
+<figure class="fig" id="fig-11-3"><div class="fig-body"><div class="params">
+  <div class="pm-h">Internal Table의 칸</div><div></div><div class="pm-h">ALV 컬럼 제목</div>
+  <div class="pm-v"><b>TITLE</b> TYPE yg##_e_title</div><div class="pm-a in"><b>Field Label</b>→</div><div class="pm-v out">도서 제목</div>
+  <div class="pm-v"><b>PRICE</b> TYPE yg##_e_price</div><div class="pm-a in"><b>Field Label</b>→</div><div class="pm-v out">가격</div>
+  <div class="pm-v"><b>MEMO</b> TYPE c LENGTH 20</div><div class="pm-a"><b>없음</b>→</div><div class="pm-v dim">(제목이 비어요)</div>
+</div></div><figcaption><b>그림 11-3.</b>컬럼 제목은 Data Element의 Field Label에서 와요</figcaption></figure>
+<ul>
+<li>Data Element를 쓴 칸은 제목이 <strong>자동으로</strong> 붙어요. 칸 폭에 따라 Short·Medium·Long 이름표 중 하나를 골라 써요.</li>
+<li><code>TYPE c LENGTH 20</code>처럼 Data Element 없이 만든 칸은 <strong>제목이 비어</strong> 보여요.</li>
+<li>그래서 Internal Table을 직접 만들 때도 <code>TYPE yg<mark>##</mark>_book-title</code>처럼 <strong>Table의 칸을 참조</strong>하면 좋아요. 그 칸의 Data Element가 따라와요.</li>
+</ul>
+<div class="code"><button type="button" class="copy" data-code="TYPES: BEGIN OF ty_list,
+         book_id TYPE yg##_book-book_id,    &quot; 제목: 도서 번호
+         title   TYPE yg##_book-title,      &quot; 제목: 도서 제목
+         memo    TYPE c LENGTH 20,          &quot; 제목: (비어 있음)
+       END OF ty_list.">복사</button><pre><code class="lang-abap"><span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_list,
+         book_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-book_id,    <span class="tk-cmt">" 제목: 도서 번호</span>
+         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-title,      <span class="tk-cmt">" 제목: 도서 제목</span>
+         memo    <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">20</span>,          <span class="tk-cmt">" 제목: (비어 있음)</span>
+       <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_list.</code></pre></div>
+<h3>칸 다듬기: 폭 맞추기, 숨기기, 제목 바꾸기</h3>
+<p><code>display( )</code> 전에 컬럼 설정을 바꿀 수 있어요.</p>
+<div class="code"><button type="button" class="copy" data-code="DATA: go_columns TYPE REF TO cl_salv_columns_table,
+      go_column  TYPE REF TO cl_salv_column.
+
+...
+  go_columns = go_alv-&gt;get_columns( ).        &quot; 컬럼 전체를 가리키는 손잡이
+
+  &quot; 1. 모든 칸 폭을 내용에 맞추기
+  go_columns-&gt;set_optimize( abap_true ).
+
+  TRY.
+      &quot; 2. MANDT 칸 숨기기
+      go_column = go_columns-&gt;get_column( &#x27;MANDT&#x27; ).
+      go_column-&gt;set_visible( abap_false ).
+
+      &quot; 3. STOCK 칸 제목 바꾸기
+      go_column = go_columns-&gt;get_column( &#x27;STOCK&#x27; ).
+      go_column-&gt;set_short_text( &#x27;남은 재고&#x27; ).
+      go_column-&gt;set_medium_text( &#x27;남은 재고&#x27; ).
+      go_column-&gt;set_long_text( &#x27;남은 재고&#x27; ).
+    CATCH cx_salv_not_found.
+      &quot; 칸 이름을 잘못 적으면 여기로 와요
+  ENDTRY.
+
+  go_alv-&gt;display( ).">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: go_columns <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_columns_table,
+      go_column  <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_column.
+
+...
+  go_columns = go_alv-&gt;get_columns( ).        <span class="tk-cmt">" 컬럼 전체를 가리키는 손잡이</span>
+
+  <span class="tk-cmt">" 1. 모든 칸 폭을 내용에 맞추기</span>
+  go_columns-&gt;set_optimize( abap_true ).
+
+  <span class="tk-kw">TRY</span>.
+      <span class="tk-cmt">" 2. MANDT 칸 숨기기</span>
+      go_column = go_columns-&gt;get_column( <span class="tk-str">'MANDT'</span> ).
+      go_column-&gt;set_visible( abap_false ).
+
+      <span class="tk-cmt">" 3. STOCK 칸 제목 바꾸기</span>
+      go_column = go_columns-&gt;get_column( <span class="tk-str">'STOCK'</span> ).
+      go_column-&gt;set_short_text( <span class="tk-str">'남은 재고'</span> ).
+      go_column-&gt;set_medium_text( <span class="tk-str">'남은 재고'</span> ).
+      go_column-&gt;set_long_text( <span class="tk-str">'남은 재고'</span> ).
+    <span class="tk-kw">CATCH</span> cx_salv_not_found.
+      <span class="tk-cmt">" 칸 이름을 잘못 적으면 여기로 와요</span>
+  <span class="tk-kw">ENDTRY</span>.
+
+  go_alv-&gt;<span class="tk-kw">display</span>( ).</code></pre></div>
+<ul>
+<li><code>abap_true</code>는 <code>'X'</code>, <code>abap_false</code>는 <code>' '</code>(공백)이에요. "켜기/끄기"를 뜻하는 이름 있는 값이에요.</li>
+<li><code>get_column( 'MANDT' )</code>의 칸 이름은 <strong>대문자</strong>로 적어요. 없는 이름이면 <code>cx_salv_not_found</code>가 일어나요.</li>
+<li>제목은 Short(10자)·Medium(20자)·Long(40자) 세 가지가 있어요. ALV가 칸 폭에 따라 골라 쓰니 <strong>세 개 모두</strong> 바꿔 두는 것이 안전해요.</li>
+</ul>
+<div class="box note"><div class="box-t">MANDT는 왜 나와요?</div><p><code>SELECT *</code>로 Table의 모든 칸을 읽었으니 <code>MANDT</code>도 Internal Table에 들어 있어요. 사용자에게는 필요 없는 칸이라 숨기는 경우가 많아요. 처음부터 필요한 칸만 <code>SELECT</code>해서 담는 방법(9장 필드 목록)도 좋아요.</p></div>
+<h2 id="s11-4">11-4. 버튼 켜기: 정렬 · 필터 · 합계 · 엑셀</h2>
+<p><code>CL_SALV_TABLE</code>은 처음에는 툴바 버튼이 거의 없어요. 한 줄로 기본 버튼을 모두 켤 수 있어요.</p>
+<div class="code"><button type="button" class="copy" data-code="  go_alv-&gt;get_functions( )-&gt;set_all( abap_true ).     &quot; 툴바 버튼 모두 켜기">복사</button><pre><code class="lang-abap">  go_alv-&gt;get_functions( )-&gt;set_all( abap_true ).     <span class="tk-cmt">" 툴바 버튼 모두 켜기</span></code></pre></div>
+<p><code>get_functions( )</code>가 돌려준 객체에서 바로 <code>-&gt;set_all( )</code>을 부르는 모양이에요. 이렇게 Method 호출을 이어서 쓸 수 있어요.</p>
+<figure class="fig" id="fig-11-4"><div class="fig-body"><div class="gui">
+  <div class="gui-head">도서 목록</div>
+  <div class="gui-apptool alv-tool">
+    <span class="gui-ico">▲<i>오름차순</i></span><span class="badge">1</span>
+    <span class="gui-ico">▼<i>내림차순</i></span>
+    <span class="gui-ico">⏷<i>필터</i></span><span class="badge">2</span>
+    <span class="gui-ico">Σ<i>합계</i></span><span class="badge">3</span>
+    <span class="gui-ico">⇩<i>Export ▾</i></span><span class="badge">4</span>
+    <span class="gui-ico">▦<i>레이아웃</i></span><span class="badge">5</span>
+  </div>
+  <div class="gui-body">
+    <table class="gui-grid alv">
+      <tr><th>도서 번호</th><th>도서 제목</th><th>저자</th><th>장르</th><th class="on">가격</th><th>남은 재고</th></tr>
+      <tr><td>B0004</td><td>SQL 한 그릇</td><td>김에이</td><td>I</td><td class="num on">28,000</td><td class="num">2</td></tr>
+      <tr><td>B0001</td><td>ABAP 첫걸음</td><td>김에이</td><td>I</td><td class="num on">25,000</td><td class="num">3</td></tr>
+      <tr><td>B0005</td><td>별을 세는 밤</td><td>정하늘</td><td>N</td><td class="num on">17,000</td><td class="num">7</td></tr>
+      <tr><td>B0002</td><td>바다의 노래</td><td>박소설</td><td>N</td><td class="num on">15,000</td><td class="num">0</td></tr>
+      <tr><td>B0003</td><td>오늘의 산책</td><td>이수필</td><td>E</td><td class="num on">13,000</td><td class="num">5</td></tr>
+      <tr class="sum"><td>Σ</td><td></td><td></td><td></td><td class="num">98,000</td><td class="num"></td></tr>
+    </table>
+  </div>
+</div></div><figcaption><b>그림 11-4.</b>ALV 툴바의 주요 버튼</figcaption></figure>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>버튼</th>
+<th>쓰는 법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="badge">1</span></td>
+<td>정렬</td>
+<td>컬럼 제목을 클릭해 고른 뒤 누르면 그 칸 기준으로 정렬돼요. 그림은 가격 내림차순이에요.</td>
+</tr>
+<tr>
+<td><span class="badge">2</span></td>
+<td>필터</td>
+<td>칸을 고르고 조건(예: 장르 = I)을 넣으면 그 줄만 남아요.</td>
+</tr>
+<tr>
+<td><span class="badge">3</span></td>
+<td>합계</td>
+<td>숫자 칸을 고르고 누르면 맨 아래에 합계 줄이 생겨요.</td>
+</tr>
+<tr>
+<td><span class="badge">4</span></td>
+<td>내보내기</td>
+<td><strong>Export → Spreadsheet</strong>로 엑셀 파일을 내려받아요.</td>
+</tr>
+<tr>
+<td><span class="badge">5</span></td>
+<td>레이아웃</td>
+<td>보이는 칸과 칸 순서를 바꿔요.</td>
+</tr>
+</tbody>
+</table></div>
+<p>버튼 모양과 위치는 SAP GUI 버전과 테마에 따라 조금씩 달라요. 아이콘에 마우스를 올리면 이름이 나오니 확인해 보세요.</p>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li><code>YG<mark>##</mark>_11_ALV</code>에 위의 컬럼 설정 코드와 <code>set_all</code> 한 줄을 넣고 실행해요.</li>
+<li><strong>가격</strong> 컬럼 제목을 클릭한 뒤 내림차순 버튼을 눌러요.</li>
+<li>그대로 합계 버튼을 눌러 가격 합계가 <code>98,000</code>인지 확인해요.</li>
+<li><strong>장르</strong> 칸에 필터를 걸어 <code>I</code>인 책만 남겨 봐요.</li>
+<li>Export 버튼으로 엑셀 파일을 내려받아 열어 봐요.</li>
+</ol></div>
+<h3>화면 꾸미기: 제목과 줄무늬</h3>
+<div class="code"><button type="button" class="copy" data-code="  DATA go_display TYPE REF TO cl_salv_display_settings.
+
+  go_display = go_alv-&gt;get_display_settings( ).
+  go_display-&gt;set_list_header( &#x27;도서 목록&#x27; ).         &quot; 화면 제목
+  go_display-&gt;set_striped_pattern( abap_true ).      &quot; 한 줄씩 줄무늬">복사</button><pre><code class="lang-abap">  <span class="tk-kw">DATA</span> go_display <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_display_settings.
+
+  go_display = go_alv-&gt;get_display_settings( ).
+  go_display-&gt;set_list_header( <span class="tk-str">'도서 목록'</span> ).         <span class="tk-cmt">" 화면 제목</span>
+  go_display-&gt;set_striped_pattern( abap_true ).      <span class="tk-cmt">" 한 줄씩 줄무늬</span></code></pre></div>
+<h2 id="s11-5">11-5. 정리: ALV 프로그램의 순서</h2>
+<p>ALV 프로그램은 거의 항상 이 순서예요. 12장 종합 실습도 이 뼈대로 만들어요.</p>
+<figure class="fig" id="fig-11-5"><div class="fig-body"><div class="alvsteps">
+  <div><b>1</b><span>데이터 읽기</span><code>SELECT … INTO TABLE</code></div>
+  <div><b>2</b><span>ALV 만들기</span><code>cl_salv_table=>factory</code></div>
+  <div><b>3</b><span>설정하기</span><code>get_columns · get_functions · get_display_settings</code></div>
+  <div><b>4</b><span>띄우기</span><code>go_alv->display( )</code></div>
+</div></div><figcaption><b>그림 11-5.</b>ALV 프로그램의 기본 뼈대</figcaption></figure>
+
+<div class="box note"><div class="box-t">회사 프로그램에서 만날 다른 ALV</div><p>오래된 프로그램에서는 Function Module <code>REUSE_ALV_GRID_DISPLAY</code>로 만든 ALV를 자주 봐요. 화면 일부에 ALV를 넣을 때는 <code>CL_GUI_ALV_GRID</code> 클래스를 써요. 이름은 달라도 "Internal Table을 넘기면 표가 나온다"는 생각은 같아요. 처음에는 <code>CL_SALV_TABLE</code>로 익히고, 필요할 때 넓혀 가면 돼요.</p></div>
+<h2 id="s11-6">11-6. 미니 실습: 재고 부족 도서 ALV</h2>
+<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_11_STOCK</code>을 만들어요.</p>
+<ol>
+<li>Selection Screen에서 <strong>기준 재고</strong>(<code>pa_stock</code>, 기본값 3)를 받아요.</li>
+<li>재고가 기준보다 <strong>적은</strong> 책만 읽어요. 재고가 적은 순서로 가져와요(<code>ORDER BY stock</code>).</li>
+<li>한 권도 없으면 메시지("재고가 부족한 책이 없어요.")를 띄우고 끝내요.</li>
+<li>ALV로 띄워요. 폭 맞추기, <code>MANDT</code> 숨기기, 툴바 버튼 모두 켜기, 화면 제목 "재고 부족 도서"를 넣어요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-11-6"><div class="fig-body"><div class="gui">
+  <div class="gui-head">재고 부족 도서</div>
+  <div class="gui-apptool alv-tool"><span class="gui-ico">▲</span><span class="gui-ico">▼</span><span class="gui-ico">⏷</span><span class="gui-ico">Σ</span><span class="gui-ico">⇩</span><span class="gui-ico">▦</span></div>
+  <div class="gui-body">
+    <table class="gui-grid alv">
+      <tr><th>도서 번호</th><th>도서 제목</th><th>저자</th><th>장르</th><th>가격</th><th>재고</th></tr>
+      <tr><td>B0002</td><td>바다의 노래</td><td>박소설</td><td>N</td><td class="num">15,000</td><td class="num">0</td></tr>
+      <tr><td>B0004</td><td>SQL 한 그릇</td><td>김에이</td><td>I</td><td class="num">28,000</td><td class="num">2</td></tr>
+    </table>
+  </div>
+</div></div><figcaption><b>그림 11-6.</b>기준 재고 3으로 실행한 결과</figcaption></figure>
+
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="REPORT yg##_11_stock.
+
+DATA: gt_book    TYPE TABLE OF yg##_book,
+      go_alv     TYPE REF TO cl_salv_table,
+      go_columns TYPE REF TO cl_salv_columns_table,
+      go_column  TYPE REF TO cl_salv_column.
+
+PARAMETERS pa_stock TYPE yg##_e_stock DEFAULT 3.
+
+START-OF-SELECTION.
+  &quot; 1. 데이터 읽기
+  SELECT * FROM yg##_book
+    INTO TABLE gt_book
+    WHERE stock &lt; pa_stock
+    ORDER BY stock.
+
+  IF sy-subrc &lt;&gt; 0.
+    MESSAGE &#x27;재고가 부족한 책이 없어요.&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+    RETURN.
+  ENDIF.
+
+  &quot; 2. ALV 만들기
+  TRY.
+      cl_salv_table=&gt;factory(
+        IMPORTING
+          r_salv_table = go_alv
+        CHANGING
+          t_table      = gt_book ).
+    CATCH cx_salv_msg.
+      MESSAGE &#x27;ALV를 만들지 못했어요.&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+      RETURN.
+  ENDTRY.
+
+  &quot; 3. 설정하기
+  go_columns = go_alv-&gt;get_columns( ).
+  go_columns-&gt;set_optimize( abap_true ).
+  TRY.
+      go_column = go_columns-&gt;get_column( &#x27;MANDT&#x27; ).
+      go_column-&gt;set_visible( abap_false ).
+    CATCH cx_salv_not_found.
+  ENDTRY.
+
+  go_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+  go_alv-&gt;get_display_settings( )-&gt;set_list_header( &#x27;재고 부족 도서&#x27; ).
+
+  &quot; 4. 띄우기
+  go_alv-&gt;display( ).">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_11_stock.
+
+<span class="tk-kw">DATA</span>: gt_book    <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yg<mark>##</mark>_book,
+      go_alv     <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_table,
+      go_columns <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_columns_table,
+      go_column  <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_column.
+
+<span class="tk-kw">PARAMETERS</span> pa_stock <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_stock <span class="tk-kw">DEFAULT</span> <span class="tk-num">3</span>.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-cmt">" 1. 데이터 읽기</span>
+  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+    <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book
+    <span class="tk-kw">WHERE</span> stock &lt; pa_stock
+    <span class="tk-kw">ORDER</span> <span class="tk-kw">BY</span> stock.
+
+  <span class="tk-kw">IF</span> sy-subrc &lt;&gt; <span class="tk-num">0</span>.
+    <span class="tk-kw">MESSAGE</span> <span class="tk-str">'재고가 부족한 책이 없어요.'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+    <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDIF</span>.
+
+  <span class="tk-cmt">" 2. ALV 만들기</span>
+  <span class="tk-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tk-kw">IMPORTING</span>
+          r_salv_table = go_alv
+        <span class="tk-kw">CHANGING</span>
+          t_table      = gt_book ).
+    <span class="tk-kw">CATCH</span> cx_salv_msg.
+      <span class="tk-kw">MESSAGE</span> <span class="tk-str">'ALV를 만들지 못했어요.'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+      <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDTRY</span>.
+
+  <span class="tk-cmt">" 3. 설정하기</span>
+  go_columns = go_alv-&gt;get_columns( ).
+  go_columns-&gt;set_optimize( abap_true ).
+  <span class="tk-kw">TRY</span>.
+      go_column = go_columns-&gt;get_column( <span class="tk-str">'MANDT'</span> ).
+      go_column-&gt;set_visible( abap_false ).
+    <span class="tk-kw">CATCH</span> cx_salv_not_found.
+  <span class="tk-kw">ENDTRY</span>.
+
+  go_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+  go_alv-&gt;get_display_settings( )-&gt;set_list_header( <span class="tk-str">'재고 부족 도서'</span> ).
+
+  <span class="tk-cmt">" 4. 띄우기</span>
+  go_alv-&gt;<span class="tk-kw">display</span>( ).</code></pre></div></details>
+
+<div class="box quiz"><div class="box-t">확인 문제</div><ol>
+<li><code>cl_salv_table=&gt;factory( … )</code>까지만 쓰고 실행했더니 아무 화면도 나오지 않았어요. 무엇을 빠뜨렸을까요?</li>
+<li>Internal Table의 칸을 <code>TYPE c LENGTH 40</code>으로 만들었더니 ALV 컬럼 제목이 비어 있어요. 어떻게 하면 제목이 자동으로 나올까요?</li>
+<li><code>=&gt;</code>와 <code>-&gt;</code>는 각각 언제 써요?</li>
+<li><code>get_column( 'mandt' )</code>처럼 소문자로 적으면 어떻게 될까요?</li>
+<li>사용자가 엑셀로 내려받고 싶어 하는데 툴바에 버튼이 없어요. 어떤 한 줄을 넣으면 될까요?</li>
+</ol></div>
+
+<details class="answer solo"><summary>정답 보기</summary><ol>
+<li><code>go_alv-&gt;display( ).</code>예요. <code>factory</code>는 ALV를 만들기만 하고, 띄우는 건 <code>display</code>예요.</li>
+<li><code>TYPE yg<mark>##</mark>_book-title</code>처럼 <strong>Table의 칸이나 Data Element를 참조</strong>해요. 그 Data Element의 Field Label이 제목이 돼요.</li>
+<li><code>=&gt;</code>는 <strong>클래스 이름으로</strong> 부를 때(<code>cl_salv_table=&gt;factory</code>), <code>-&gt;</code>는 <strong>만들어진 객체로</strong> 부를 때(<code>go_alv-&gt;display</code>) 써요.</li>
+<li>칸을 찾지 못해서 <code>cx_salv_not_found</code> 예외가 일어나요. 칸 이름은 대문자로 적어요.</li>
+<li><code>go_alv-&gt;get_functions( )-&gt;set_all( abap_true ).</code>예요.</li>
+</ol></details>
+
+<div class="box summary"><div class="box-t">정리</div><ul>
+<li>ALV는 Internal Table을 넘기면 정렬·필터·합계·엑셀이 되는 <strong>표 화면</strong>을 만들어 줘요.</li>
+<li>순서는 <strong>읽기 → <code>factory</code> → 설정 → <code>display</code></strong>예요. <code>factory</code>는 <code>TRY … CATCH cx_salv_msg</code>로 감싸요.</li>
+<li>컬럼 제목은 <strong>Data Element의 Field Label</strong>에서 와요. Data Element 없는 칸은 제목이 비어요.</li>
+<li><code>get_columns( )</code>로 폭 맞추기(<code>set_optimize</code>), 숨기기(<code>set_visible</code>), 제목 바꾸기(<code>set_short_text</code> 등)를 해요.</li>
+<li><code>get_functions( )-&gt;set_all( abap_true )</code>로 툴바 버튼을 켜요.</li>
+</ul></div>
+
+<div class="box next"><div class="box-t">다음 장 예고</div><p>이제 필요한 재료가 모두 모였어요. 12장에서는 Selection Screen, Open SQL, Internal Table, 모듈화, ALV를 한데 묶어 <strong>도서 조회 프로그램</strong>을 처음부터 끝까지 만들어 봐요.</p></div>
+</section>

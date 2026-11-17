@@ -1,0 +1,387 @@
+<section class="chapter" id="ch08"><div class="ch-eyebrow">8장</div><h1 class="ch-title">Structure와 Internal Table</h1>
+<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<li>여러 칸을 한 묶음으로 다루는 <strong>Structure</strong>를 만들고 쓸 수 있어요.</li>
+<li>여러 줄을 메모리에 담는 <strong>Internal Table</strong>과, 한 줄을 다루는 <strong>Work Area</strong>의 관계를 그림으로 설명할 수 있어요.</li>
+<li><code>APPEND</code>, <code>LOOP AT</code>, <code>READ TABLE</code>, <code>MODIFY</code>, <code>DELETE</code>, <code>SORT</code>로 Internal Table을 다룰 수 있어요.</li>
+<li><code>sy-subrc</code>와 <code>sy-tabix</code>로 결과를 확인할 수 있어요.</li>
+</ul></div>
+<h2 id="s8-1">8-1. 여러 칸을 한 묶음으로: Structure</h2>
+<p>도서 한 권에는 번호, 제목, 저자, 장르, 가격, 재고가 있어요. 3장 방식대로라면 변수를 여섯 개 따로 만들어야 하죠. <strong>Structure</strong>를 쓰면 이 칸들을 <strong>한 묶음</strong>으로 다룰 수 있어요.</p>
+<div class="code"><button type="button" class="copy" data-code="TYPES: BEGIN OF ty_book,             &quot; 설계도 시작
+         book_id TYPE c LENGTH 5,
+         title   TYPE c LENGTH 40,
+         genre   TYPE c LENGTH 1,
+         price   TYPE p LENGTH 8 DECIMALS 0,
+         stock   TYPE i,
+       END OF ty_book.               &quot; 설계도 끝
+
+DATA gs_book TYPE ty_book.           &quot; 설계도로 만든 Structure 변수">복사</button><pre><code class="lang-abap"><span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_book,             <span class="tk-cmt">" 설계도 시작</span>
+         book_id <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">5</span>,
+         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">40</span>,
+         genre   <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">1</span>,
+         price   <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">0</span>,
+         stock   <span class="tk-kw">TYPE</span> i,
+       <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_book.               <span class="tk-cmt">" 설계도 끝</span>
+
+<span class="tk-kw">DATA</span> gs_book <span class="tk-kw">TYPE</span> ty_book.           <span class="tk-cmt">" 설계도로 만든 Structure 변수</span></code></pre></div>
+<ul>
+<li><code>TYPES: BEGIN OF 이름, … END OF 이름.</code> 사이에 칸(Component)을 나열해요. 3장의 <code>TYPES</code>처럼 <strong>설계도</strong>예요.</li>
+<li>실제 변수는 <code>DATA gs_book TYPE ty_book.</code>처럼 만들어요. 이름 앞 <code>gs_</code>는 <strong>G</strong>lobal <strong>S</strong>tructure예요.</li>
+<li>칸 하나에 접근할 땐 <strong>하이픈(<code>-</code>)</strong>을 써요.</li>
+</ul>
+<div class="code"><button type="button" class="copy" data-code="gs_book-book_id = &#x27;B0001&#x27;.
+gs_book-title   = &#x27;ABAP 첫걸음&#x27;.
+gs_book-price   = 25000.
+
+WRITE: / gs_book-book_id, gs_book-title, gs_book-price.">복사</button><pre><code class="lang-abap">gs_book-book_id = <span class="tk-str">'B0001'</span>.
+gs_book-title   = <span class="tk-str">'ABAP 첫걸음'</span>.
+gs_book-price   = <span class="tk-num">25000</span>.
+
+<span class="tk-kw">WRITE</span>: / gs_book-book_id, gs_book-title, gs_book-price.</code></pre></div>
+<figure class="fig" id="fig-8-1"><div class="fig-body"><div class="struct">
+  <div class="st-name">gs_book</div>
+  <div class="st-cells">
+    <div><span>book_id</span><b>B0001</b></div>
+    <div><span>title</span><b>ABAP 첫걸음</b></div>
+    <div><span>genre</span><b>I</b></div>
+    <div><span>price</span><b>25000</b></div>
+    <div><span>stock</span><b>3</b></div>
+  </div>
+  <div class="st-note"><code>gs_book-title</code> 처럼 <b>-</b> 로 칸 하나를 꺼내요</div>
+</div></div><figcaption><b>그림 8-1.</b>Structure 변수 gs_book = 칸이 여러 개인 상자 하나</figcaption></figure>
+
+<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<li><code>gs_book-title</code>의 하이픈 <strong>앞뒤를 띄우면 안 돼요.</strong> <code>gs_book - title</code>은 "빼기"로 읽혀서 오류가 나요. 3장의 "연산자는 띄어 쓰기"와 반대라서 헷갈리기 쉬워요.</li>
+<li>하이픈은 <strong>Structure의 칸</strong>, 밑줄 <code>_</code>은 <strong>이름의 일부</strong>예요. <code>gs_book</code>의 <code>_</code>와 <code>-title</code>의 <code>-</code>를 구분해요.</li>
+</ul></div>
+
+<div class="box note"><div class="box-t">Dictionary Table을 설계도로 쓰기</div><p>7장에서 만든 Table <code>YG<mark>##</mark>_BOOK</code>도 Structure 설계도로 쓸 수 있어요. <code>TYPES</code>를 따로 쓰지 않아도 Table과 똑같은 칸을 가진 변수가 만들어져요.</p>
+<div class="code"><button type="button" class="copy" data-code="DATA gs_book TYPE yg##_book.     &quot; MANDT, BOOK_ID, TITLE, … 칸이 모두 생겨요">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gs_book <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book.     <span class="tk-cmt">" MANDT, BOOK_ID, TITLE, … 칸이 모두 생겨요</span></code></pre></div>
+<p>9장에서 DB 데이터를 읽어 올 때 이 방법을 많이 써요.</p></div>
+<h2 id="s8-2">8-2. 여러 줄을 담는 그릇: Internal Table</h2>
+<p>Structure가 <strong>한 줄</strong>이라면, Internal Table은 같은 모양의 줄을 <strong>여러 개</strong> 담는 표예요. 엑셀 시트 하나를 메모리에 올려 둔 것이라고 생각하면 쉬워요.</p>
+<div class="code"><button type="button" class="copy" data-code="DATA: gt_book TYPE TABLE OF ty_book,     &quot; 여러 줄 (Internal Table)
+      gs_book TYPE ty_book.              &quot; 한 줄 (Work Area)">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_book,     <span class="tk-cmt">" 여러 줄 (Internal Table)</span>
+      gs_book <span class="tk-kw">TYPE</span> ty_book.              <span class="tk-cmt">" 한 줄 (Work Area)</span></code></pre></div>
+<p>이름 앞 <code>gt_</code>는 <strong>G</strong>lobal <strong>T</strong>able이에요. Internal Table은 한 번에 한 줄씩만 넣고 꺼낼 수 있어서, 거의 항상 <strong>같은 모양의 Structure 변수</strong>(Work Area)와 짝으로 써요.</p>
+<figure class="fig" id="fig-8-2"><div class="fig-body"><div class="itab">
+  <div class="it-wa">
+    <div class="it-cap">Work Area <code>gs_book</code><small>한 줄을 담는 손잡이</small></div>
+    <div class="it-row wa"><i>B0004</i><i>SQL 한 그릇</i><i>I</i><i>28000</i><i>2</i></div>
+  </div>
+  <div class="it-arrows"><span>APPEND ↓</span><span>↑ LOOP · READ</span></div>
+  <div class="it-tab">
+    <div class="it-cap">Internal Table <code>gt_book</code><small>여러 줄을 담는 표 (메모리)</small></div>
+    <div class="it-row head"><i>book_id</i><i>title</i><i>genre</i><i>price</i><i>stock</i></div>
+    <div class="it-row"><b>1</b><i>B0001</i><i>ABAP 첫걸음</i><i>I</i><i>25000</i><i>3</i></div>
+    <div class="it-row"><b>2</b><i>B0002</i><i>바다의 노래</i><i>N</i><i>15000</i><i>0</i></div>
+    <div class="it-row"><b>3</b><i>B0003</i><i>오늘의 산책</i><i>E</i><i>13000</i><i>5</i></div>
+    <div class="it-row hl"><b>4</b><i>B0004</i><i>SQL 한 그릇</i><i>I</i><i>28000</i><i>2</i></div>
+  </div>
+</div></div><figcaption><b>그림 8-2.</b>Internal Table과 Work Area</figcaption></figure>
+
+<div class="box note"><div class="box-t">Internal Table ≠ DB Table</div><p>이름이 비슷해서 가장 많이 헷갈리는 부분이에요. <strong>DB Table</strong>(7장)은 데이터베이스에 저장되어 프로그램이 끝나도 남아요. <strong>Internal Table</strong>은 프로그램이 실행되는 동안만 <strong>메모리</strong>에 있다가 끝나면 사라져요. 9장에서는 DB Table의 데이터를 Internal Table로 <strong>복사해 와서</strong> 다뤄요.</p></div>
+<h2 id="s8-3">8-3. 줄 넣기: APPEND</h2>
+<p>Work Area에 값을 채운 다음 <code>APPEND</code>로 Internal Table <strong>맨 뒤에</strong> 한 줄을 붙여요.</p>
+<div class="code"><button type="button" class="copy" data-code="START-OF-SELECTION.
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0001&#x27;.
+  gs_book-title   = &#x27;ABAP 첫걸음&#x27;.
+  gs_book-genre   = &#x27;I&#x27;.
+  gs_book-price   = 25000.
+  gs_book-stock   = 3.
+  APPEND gs_book TO gt_book.          &quot; 1번 줄이 생겨요
+
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0002&#x27;.
+  gs_book-title   = &#x27;바다의 노래&#x27;.
+  gs_book-genre   = &#x27;N&#x27;.
+  gs_book-price   = 15000.
+  APPEND gs_book TO gt_book.          &quot; 2번 줄이 생겨요 (stock은 0)">복사</button><pre><code class="lang-abap"><span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0001'</span>.
+  gs_book-title   = <span class="tk-str">'ABAP 첫걸음'</span>.
+  gs_book-genre   = <span class="tk-str">'I'</span>.
+  gs_book-price   = <span class="tk-num">25000</span>.
+  gs_book-stock   = <span class="tk-num">3</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.          <span class="tk-cmt">" 1번 줄이 생겨요</span>
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0002'</span>.
+  gs_book-title   = <span class="tk-str">'바다의 노래'</span>.
+  gs_book-genre   = <span class="tk-str">'N'</span>.
+  gs_book-price   = <span class="tk-num">15000</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.          <span class="tk-cmt">" 2번 줄이 생겨요 (stock은 0)</span></code></pre></div>
+<div class="box warn"><div class="box-t">자주 하는 실수</div><p><strong>줄을 새로 채우기 전에 <code>CLEAR gs_book.</code>을 해요.</strong> 위 코드에서 두 번째 책은 <code>stock</code>을 넣지 않았어요. <code>CLEAR</code>를 빼먹으면 첫 번째 책의 재고 <code>3</code>이 Work Area에 그대로 남아서 두 번째 줄에도 3이 들어가 버려요.</p></div>
+<h2 id="s8-4">8-4. 한 줄씩 꺼내 보기: LOOP AT</h2>
+<p><code>LOOP AT … INTO …</code>는 Internal Table의 줄을 <strong>처음부터 끝까지 한 줄씩</strong> Work Area에 꺼내 주는 반복문이에요.</p>
+<div class="code"><button type="button" class="copy" data-code="LOOP AT gt_book INTO gs_book.
+  WRITE: / sy-tabix, gs_book-book_id, gs_book-title, gs_book-price.
+ENDLOOP.">복사</button><pre><code class="lang-abap"><span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book.
+  <span class="tk-kw">WRITE</span>: / sy-tabix, gs_book-book_id, gs_book-title, gs_book-price.
+<span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<ul>
+<li>한 바퀴 돌 때마다 다음 줄이 <code>gs_book</code>에 들어와요.</li>
+<li><strong><code>sy-tabix</code></strong>에는 지금 꺼낸 줄이 <strong>몇 번째 줄인지</strong> 들어 있어요. 4장 <code>DO</code>의 <code>sy-index</code>와 비슷한 역할이에요.</li>
+</ul>
+<h3>조건에 맞는 줄만: WHERE</h3>
+<div class="code"><button type="button" class="copy" data-code="LOOP AT gt_book INTO gs_book WHERE genre = &#x27;I&#x27;.   &quot; IT 책만
+  WRITE: / gs_book-title.
+ENDLOOP.">복사</button><pre><code class="lang-abap"><span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'I'</span>.   <span class="tk-cmt">" IT 책만</span>
+  <span class="tk-kw">WRITE</span>: / gs_book-title.
+<span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<div class="box warn"><div class="box-t">자주 하는 실수</div><p><code>LOOP</code> 안에서 <code>gs_book-stock = 10.</code>처럼 Work Area를 바꿔도 <strong>Internal Table은 그대로</strong>예요. Work Area는 꺼내 온 <strong>복사본</strong>이기 때문이에요. 표 안의 값을 바꾸려면 8-6의 <code>MODIFY</code>를 써야 해요.</p></div>
+<h2 id="s8-5">8-5. 한 줄만 콕 집기: READ TABLE</h2>
+<p>반복하지 않고 <strong>딱 한 줄</strong>만 필요할 땐 <code>READ TABLE</code>을 써요.</p>
+<div class="code"><button type="button" class="copy" data-code="READ TABLE gt_book INTO gs_book WITH KEY book_id = &#x27;B0003&#x27;.
+
+IF sy-subrc = 0.
+  WRITE: / &#x27;찾았어요:&#x27;, gs_book-title, &#x27;(&#x27;, sy-tabix, &#x27;번째 줄)&#x27;.
+ELSE.
+  WRITE: / &#x27;그런 책은 없어요&#x27;.
+ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">READ</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">INTO</span> gs_book <span class="tk-kw">WITH</span> <span class="tk-kw">KEY</span> book_id = <span class="tk-str">'B0003'</span>.
+
+<span class="tk-kw">IF</span> sy-subrc = <span class="tk-num">0</span>.
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'찾았어요:'</span>, gs_book-title, <span class="tk-str">'('</span>, sy-tabix, <span class="tk-str">'번째 줄)'</span>.
+<span class="tk-kw">ELSE</span>.
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'그런 책은 없어요'</span>.
+<span class="tk-kw">ENDIF</span>.</code></pre></div>
+<ul>
+<li><code>WITH KEY 칸 = 값</code>으로 찾을 줄을 정해요. <code>INDEX 2</code>처럼 <strong>몇 번째 줄</strong>로 찾을 수도 있어요.</li>
+<li>찾았는지는 <strong><code>sy-subrc</code></strong>로 확인해요.</li>
+</ul>
+<figure class="fig" id="fig-8-3"><div class="fig-body"><div class="subrc">
+  <div class="sr ok"><b>sy-subrc = 0</b><span>성공했어요</span><small>찾았다 · 읽었다 · 바꿨다</small></div>
+  <div class="sr no"><b>sy-subrc ≠ 0</b><span>못 했어요 (보통 4)</span><small>못 찾았다 · 해당 줄 없음</small></div>
+</div></div><figcaption><b>그림 8-3.</b>sy-subrc 읽는 법</figcaption></figure>
+
+<div class="box note"><div class="box-t">sy-subrc는 "방금 한 일"의 성적표예요</div><p><code>READ TABLE</code>, <code>MODIFY</code>, <code>DELETE</code>, 9장의 <code>SELECT</code>처럼 성공·실패가 있는 문장은 실행된 직후에 <code>sy-subrc</code>를 바꿔요. 그래서 <strong>확인은 바로 다음 줄에서</strong> 해요. 다른 문장을 하나 더 실행한 뒤에 보면 그 문장의 결과로 바뀌어 있을 수 있어요.</p></div>
+<h2 id="s8-6">8-6. 고치기 · 지우기 · 정렬하기</h2>
+<h3>고치기: MODIFY</h3>
+<p><code>LOOP</code> 안에서 Work Area를 고친 뒤 <code>MODIFY</code>를 쓰면 <strong>지금 줄</strong>이 바뀌어요.</p>
+<div class="code"><button type="button" class="copy" data-code="LOOP AT gt_book INTO gs_book WHERE genre = &#x27;N&#x27;.
+  gs_book-price = gs_book-price - 1000.   &quot; 소설은 1000원 할인
+  MODIFY gt_book FROM gs_book.            &quot; 지금 줄에 반영
+ENDLOOP.">복사</button><pre><code class="lang-abap"><span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'N'</span>.
+  gs_book-price = gs_book-price - <span class="tk-num">1000</span>.   <span class="tk-cmt">" 소설은 1000원 할인</span>
+  <span class="tk-kw">MODIFY</span> gt_book <span class="tk-kw">FROM</span> gs_book.            <span class="tk-cmt">" 지금 줄에 반영</span>
+<span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<p><code>LOOP</code> 밖에서는 몇 번째 줄을 바꿀지 알려 줘야 해요. 보통 <code>READ TABLE</code>로 찾고, 그때 생긴 <code>sy-tabix</code>를 써요.</p>
+<div class="code"><button type="button" class="copy" data-code="READ TABLE gt_book INTO gs_book WITH KEY book_id = &#x27;B0004&#x27;.
+IF sy-subrc = 0.
+  gs_book-stock = gs_book-stock + 10.
+  MODIFY gt_book FROM gs_book INDEX sy-tabix.
+ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">READ</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">INTO</span> gs_book <span class="tk-kw">WITH</span> <span class="tk-kw">KEY</span> book_id = <span class="tk-str">'B0004'</span>.
+<span class="tk-kw">IF</span> sy-subrc = <span class="tk-num">0</span>.
+  gs_book-stock = gs_book-stock + <span class="tk-num">10</span>.
+  <span class="tk-kw">MODIFY</span> gt_book <span class="tk-kw">FROM</span> gs_book <span class="tk-kw">INDEX</span> sy-tabix.
+<span class="tk-kw">ENDIF</span>.</code></pre></div>
+<h3>지우기: DELETE</h3>
+<div class="code"><button type="button" class="copy" data-code="DELETE gt_book WHERE stock = 0.     &quot; 재고 없는 책 모두 지우기
+DELETE gt_book INDEX 1.             &quot; 첫 번째 줄 지우기">복사</button><pre><code class="lang-abap"><span class="tk-kw">DELETE</span> gt_book <span class="tk-kw">WHERE</span> stock = <span class="tk-num">0</span>.     <span class="tk-cmt">" 재고 없는 책 모두 지우기</span>
+<span class="tk-kw">DELETE</span> gt_book <span class="tk-kw">INDEX</span> <span class="tk-num">1</span>.             <span class="tk-cmt">" 첫 번째 줄 지우기</span></code></pre></div>
+<h3>정렬하기: SORT</h3>
+<div class="code"><button type="button" class="copy" data-code="SORT gt_book BY price DESCENDING.   &quot; 비싼 순서
+SORT gt_book BY genre price.        &quot; 장르별로, 같은 장르 안에서는 싼 순서">복사</button><pre><code class="lang-abap"><span class="tk-kw">SORT</span> gt_book <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>.   <span class="tk-cmt">" 비싼 순서</span>
+<span class="tk-kw">SORT</span> gt_book <span class="tk-kw">BY</span> genre price.        <span class="tk-cmt">" 장르별로, 같은 장르 안에서는 싼 순서</span></code></pre></div>
+<p><code>DESCENDING</code>(내림차순)을 쓰지 않으면 <code>ASCENDING</code>(오름차순)이에요.</p>
+<h3>몇 줄인지 세기 · 비우기</h3>
+<div class="code"><button type="button" class="copy" data-code="DATA gv_lines TYPE i.
+
+DESCRIBE TABLE gt_book LINES gv_lines.   &quot; 줄 수
+WRITE: / &#x27;책 수:&#x27;, gv_lines.
+
+CLEAR gt_book.                           &quot; 모든 줄 지우기 (빈 표)">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_lines <span class="tk-kw">TYPE</span> i.
+
+<span class="tk-kw">DESCRIBE</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">LINES</span> gv_lines.   <span class="tk-cmt">" 줄 수</span>
+<span class="tk-kw">WRITE</span>: / <span class="tk-str">'책 수:'</span>, gv_lines.
+
+<span class="tk-kw">CLEAR</span> gt_book.                           <span class="tk-cmt">" 모든 줄 지우기 (빈 표)</span></code></pre></div>
+<div class="box modern"><div class="box-t">이렇게도 써요</div><p>요즘 코드에서는 아래처럼 쓰는 경우가 많아요. 읽을 줄만 알아 두면 돼요.</p>
+<div class="code"><button type="button" class="copy" data-code="gv_lines = lines( gt_book ).                       &quot; 줄 수
+
+gt_book = VALUE #( ( book_id = &#x27;B0001&#x27; title = &#x27;ABAP 첫걸음&#x27; price = 25000 )
+                   ( book_id = &#x27;B0002&#x27; title = &#x27;바다의 노래&#x27; price = 15000 ) ).
+
+LOOP AT gt_book INTO DATA(gs_line).                &quot; Work Area 인라인 선언
+  WRITE: / gs_line-title.
+ENDLOOP.">복사</button><pre><code class="lang-abap">gv_lines = <span class="tk-kw">lines</span>( gt_book ).                       <span class="tk-cmt">" 줄 수</span>
+
+gt_book = <span class="tk-kw">VALUE</span> #( ( book_id = <span class="tk-str">'B0001'</span> <span class="tk-kw">title</span> = <span class="tk-str">'ABAP 첫걸음'</span> price = <span class="tk-num">25000</span> )
+                   ( book_id = <span class="tk-str">'B0002'</span> <span class="tk-kw">title</span> = <span class="tk-str">'바다의 노래'</span> price = <span class="tk-num">15000</span> ) ).
+
+<span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> <span class="tk-kw">DATA</span>(gs_line).                <span class="tk-cmt">" Work Area 인라인 선언</span>
+  <span class="tk-kw">WRITE</span>: / gs_line-title.
+<span class="tk-kw">ENDLOOP</span>.</code></pre></div></div>
+
+<div class="box note"><div class="box-t">옛 코드의 Header Line</div><p>오래된 프로그램에서 <code>DATA gt_book TYPE … OCCURS 0 WITH HEADER LINE.</code> 같은 코드를 보면, Internal Table 안에 Work Area가 <strong>같은 이름으로 숨어 있는</strong> 옛 방식이에요. 이름 하나가 표와 한 줄을 둘 다 뜻해서 헷갈리기 쉬워 지금은 쓰지 않아요. 9장에서 배울 <code>SELECT-OPTIONS</code>가 이 모양이라서 한 번 더 만나게 될 거예요.</p></div>
+<h2 id="s8-7">8-7. 미니 실습: 도서 목록 정리</h2>
+<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_08_ITAB</code>을 만들어 보세요. DB 없이 코드에서 직접 데이터를 넣어요.</p>
+<ol>
+<li>8-1의 <code>ty_book</code>으로 Internal Table과 Work Area를 만들어요.</li>
+<li>7장 7-7 표의 다섯 권을 <code>APPEND</code>로 넣어요.</li>
+<li><code>B0004</code>를 <code>READ TABLE</code>로 찾아 재고를 10 늘리고 <code>MODIFY</code>해요.</li>
+<li>재고가 0인 책을 <code>DELETE</code>해요.</li>
+<li>가격이 비싼 순서로 <code>SORT</code>하고, 순번(<code>sy-tabix</code>)과 함께 출력해요.</li>
+<li>마지막에 남은 책 수를 출력해요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-8-4"><div class="fig-body"><div class="gui">
+  <div class="gui-head">도서 목록 정리</div>
+  <div class="gui-body list">
+<pre class="gui-list"> 1 B0004 SQL 한 그릇        28,000  12
+ 2 B0001 ABAP 첫걸음        25,000   3
+ 3 B0005 별을 세는 밤       17,000   7
+ 4 B0003 오늘의 산책        13,000   5
+남은 책:           4</pre>
+  </div>
+</div></div><figcaption><b>그림 8-4.</b>미니 실습의 예상 결과</figcaption></figure>
+
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="REPORT yg##_08_itab.
+
+TYPES: BEGIN OF ty_book,
+         book_id TYPE c LENGTH 5,
+         title   TYPE c LENGTH 20,
+         genre   TYPE c LENGTH 1,
+         price   TYPE p LENGTH 8 DECIMALS 0,
+         stock   TYPE i,
+       END OF ty_book.
+
+DATA: gt_book  TYPE TABLE OF ty_book,
+      gs_book  TYPE ty_book,
+      gv_lines TYPE i.
+
+START-OF-SELECTION.
+  &quot; 1. 데이터 넣기
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0001&#x27;. gs_book-title = &#x27;ABAP 첫걸음&#x27;.
+  gs_book-genre = &#x27;I&#x27;. gs_book-price = 25000. gs_book-stock = 3.
+  APPEND gs_book TO gt_book.
+
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0002&#x27;. gs_book-title = &#x27;바다의 노래&#x27;.
+  gs_book-genre = &#x27;N&#x27;. gs_book-price = 15000. gs_book-stock = 0.
+  APPEND gs_book TO gt_book.
+
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0003&#x27;. gs_book-title = &#x27;오늘의 산책&#x27;.
+  gs_book-genre = &#x27;E&#x27;. gs_book-price = 13000. gs_book-stock = 5.
+  APPEND gs_book TO gt_book.
+
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0004&#x27;. gs_book-title = &#x27;SQL 한 그릇&#x27;.
+  gs_book-genre = &#x27;I&#x27;. gs_book-price = 28000. gs_book-stock = 2.
+  APPEND gs_book TO gt_book.
+
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0005&#x27;. gs_book-title = &#x27;별을 세는 밤&#x27;.
+  gs_book-genre = &#x27;N&#x27;. gs_book-price = 17000. gs_book-stock = 7.
+  APPEND gs_book TO gt_book.
+
+  &quot; 2. B0004 재고 10 늘리기
+  READ TABLE gt_book INTO gs_book WITH KEY book_id = &#x27;B0004&#x27;.
+  IF sy-subrc = 0.
+    gs_book-stock = gs_book-stock + 10.
+    MODIFY gt_book FROM gs_book INDEX sy-tabix.
+  ENDIF.
+
+  &quot; 3. 재고 0인 책 지우기
+  DELETE gt_book WHERE stock = 0.
+
+  &quot; 4. 비싼 순서로 정렬하고 출력
+  SORT gt_book BY price DESCENDING.
+  LOOP AT gt_book INTO gs_book.
+    WRITE: /(2) sy-tabix, gs_book-book_id, gs_book-title,
+            gs_book-price, (3) gs_book-stock.
+  ENDLOOP.
+
+  &quot; 5. 남은 책 수
+  DESCRIBE TABLE gt_book LINES gv_lines.
+  WRITE: / &#x27;남은 책:&#x27;, gv_lines.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_08_itab.
+
+<span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_book,
+         book_id <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">5</span>,
+         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">20</span>,
+         genre   <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">1</span>,
+         price   <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">0</span>,
+         stock   <span class="tk-kw">TYPE</span> i,
+       <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_book.
+
+<span class="tk-kw">DATA</span>: gt_book  <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_book,
+      gs_book  <span class="tk-kw">TYPE</span> ty_book,
+      gv_lines <span class="tk-kw">TYPE</span> i.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-cmt">" 1. 데이터 넣기</span>
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0001'</span>. gs_book-title = <span class="tk-str">'ABAP 첫걸음'</span>.
+  gs_book-genre = <span class="tk-str">'I'</span>. gs_book-price = <span class="tk-num">25000</span>. gs_book-stock = <span class="tk-num">3</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0002'</span>. gs_book-title = <span class="tk-str">'바다의 노래'</span>.
+  gs_book-genre = <span class="tk-str">'N'</span>. gs_book-price = <span class="tk-num">15000</span>. gs_book-stock = <span class="tk-num">0</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0003'</span>. gs_book-title = <span class="tk-str">'오늘의 산책'</span>.
+  gs_book-genre = <span class="tk-str">'E'</span>. gs_book-price = <span class="tk-num">13000</span>. gs_book-stock = <span class="tk-num">5</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0004'</span>. gs_book-title = <span class="tk-str">'SQL 한 그릇'</span>.
+  gs_book-genre = <span class="tk-str">'I'</span>. gs_book-price = <span class="tk-num">28000</span>. gs_book-stock = <span class="tk-num">2</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0005'</span>. gs_book-title = <span class="tk-str">'별을 세는 밤'</span>.
+  gs_book-genre = <span class="tk-str">'N'</span>. gs_book-price = <span class="tk-num">17000</span>. gs_book-stock = <span class="tk-num">7</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-cmt">" 2. B0004 재고 10 늘리기</span>
+  <span class="tk-kw">READ</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">INTO</span> gs_book <span class="tk-kw">WITH</span> <span class="tk-kw">KEY</span> book_id = <span class="tk-str">'B0004'</span>.
+  <span class="tk-kw">IF</span> sy-subrc = <span class="tk-num">0</span>.
+    gs_book-stock = gs_book-stock + <span class="tk-num">10</span>.
+    <span class="tk-kw">MODIFY</span> gt_book <span class="tk-kw">FROM</span> gs_book <span class="tk-kw">INDEX</span> sy-tabix.
+  <span class="tk-kw">ENDIF</span>.
+
+  <span class="tk-cmt">" 3. 재고 0인 책 지우기</span>
+  <span class="tk-kw">DELETE</span> gt_book <span class="tk-kw">WHERE</span> stock = <span class="tk-num">0</span>.
+
+  <span class="tk-cmt">" 4. 비싼 순서로 정렬하고 출력</span>
+  <span class="tk-kw">SORT</span> gt_book <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>.
+  <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book.
+    <span class="tk-kw">WRITE</span>: /(<span class="tk-num">2</span>) sy-tabix, gs_book-book_id, gs_book-title,
+            gs_book-price, (<span class="tk-num">3</span>) gs_book-stock.
+  <span class="tk-kw">ENDLOOP</span>.
+
+  <span class="tk-cmt">" 5. 남은 책 수</span>
+  <span class="tk-kw">DESCRIBE</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">LINES</span> gv_lines.
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'남은 책:'</span>, gv_lines.</code></pre></div></details>
+
+<div class="box quiz"><div class="box-t">확인 문제</div><ol>
+<li>Structure와 Internal Table의 차이를 "줄"이라는 말로 설명해 보세요.</li>
+<li><code>LOOP</code> 안에서 <code>gs_book-price = 0.</code>만 하고 끝냈어요. Internal Table의 가격도 0이 될까요?</li>
+<li><code>READ TABLE</code> 바로 다음에 확인해야 하는 시스템 필드는 무엇이고, 값이 0이면 무슨 뜻일까요?</li>
+<li><code>APPEND</code> 전에 <code>CLEAR gs_book.</code>을 하지 않으면 어떤 일이 생길 수 있을까요?</li>
+<li>Internal Table과 DB Table은 무엇이 다를까요?</li>
+</ol></div>
+
+<details class="answer solo"><summary>정답 보기</summary><ol>
+<li>Structure는 칸이 여러 개인 <strong>한 줄</strong>, Internal Table은 같은 모양의 줄을 <strong>여러 줄</strong> 담는 표예요.</li>
+<li><strong>안 돼요.</strong> Work Area는 복사본이라서 <code>MODIFY gt_book FROM gs_book.</code>을 해야 표에 반영돼요.</li>
+<li><strong><code>sy-subrc</code></strong>예요. 0이면 <strong>찾았다(성공)</strong>는 뜻이에요.</li>
+<li>이전 줄의 값이 Work Area에 남아서, 이번에 채우지 않은 칸에 <strong>이전 값이 그대로 들어갈</strong> 수 있어요.</li>
+<li>DB Table은 데이터베이스에 저장되어 <strong>계속 남고</strong>, Internal Table은 프로그램이 도는 동안 <strong>메모리에만</strong> 있다가 사라져요.</li>
+</ol></details>
+
+<div class="box summary"><div class="box-t">정리</div><ul>
+<li>Structure는 칸이 여러 개인 한 줄이에요. 칸은 <code>gs_book-title</code>처럼 하이픈으로 꺼내요.</li>
+<li>Internal Table은 여러 줄을 담는 메모리 속 표이고, 한 줄을 다루는 Work Area와 짝으로 써요.</li>
+<li>넣기 <code>APPEND</code>, 전체 돌기 <code>LOOP AT … INTO</code>, 한 줄 찾기 <code>READ TABLE</code>, 고치기 <code>MODIFY</code>, 지우기 <code>DELETE</code>, 정렬 <code>SORT</code>.</li>
+<li><code>sy-tabix</code>는 몇 번째 줄인지, <code>sy-subrc</code>는 방금 한 일이 성공(0)했는지 알려 줘요.</li>
+<li>새 줄을 채우기 전에는 <code>CLEAR</code>로 Work Area를 비워요.</li>
+</ul></div>
+
+<div class="box next"><div class="box-t">다음 장 예고</div><p>이번 장에서는 데이터를 코드에 직접 적어 넣었어요. 9장에서는 7장에서 만든 DB Table <code>YG<mark>##</mark>_BOOK</code>의 데이터를 <strong>Open SQL</strong>로 읽어 와서 Internal Table에 담고, 조건으로 걸러 보고, 직접 고치고 지워 볼 거예요.</p></div>
+</section>

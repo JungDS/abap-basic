@@ -1,0 +1,852 @@
+<section class="chapter" id="ch12"><div class="ch-eyebrow">12장</div><h1 class="ch-title">종합 실습: 도서 조회 프로그램</h1>
+<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<li>0장에서 본 다섯 칸 흐름(입력 → 읽기 → 담기 → 계산 → 보여 주기)을 프로그램 하나로 이어요.</li>
+<li>요구 사항을 읽고 <strong>순서를 나눠서</strong> 프로그램을 만드는 연습을 해요.</li>
+<li>지금까지 배운 Selection Screen, Open SQL, Internal Table, <code>CASE</code>, <code>FORM</code>, ALV를 한꺼번에 써요.</li>
+</ul></div>
+<h2 id="s12-1">12-1. 무엇을 만들까요?</h2>
+<p>도서관 직원이 쓰는 <strong>도서 조회 프로그램</strong> <code>YG<mark>##</mark>_12_BOOK_REPORT</code>를 만들어요. 7장에서 만든 <code>YG<mark>##</mark>_BOOK</code> Table을 그대로 써요.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>요구 사항</th>
+<th>쓰는 것 (배운 장)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td>도서 번호, 장르, 가격을 <strong>범위</strong>로 넣어 조회해요. 비우면 전체예요.</td>
+<td><code>SELECT-OPTIONS</code> (9장)</td>
+</tr>
+<tr>
+<td>②</td>
+<td>"재고 있는 책만" 체크박스를 켜면 재고 0인 책은 빼요.</td>
+<td><code>AS CHECKBOX</code> (5장), <code>DELETE … WHERE</code> (8장)</td>
+</tr>
+<tr>
+<td>③</td>
+<td>정렬 방법을 "가격 높은 순"과 "제목순" 중에서 골라요.</td>
+<td><code>RADIOBUTTON</code> (5장), <code>SORT</code> (8장)</td>
+</tr>
+<tr>
+<td>④</td>
+<td>장르 코드(N, I, E) 옆에 <strong>장르 이름</strong>을 보여 줘요.</td>
+<td><code>CASE</code> (4장)</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td>재고에 따라 <strong>상태</strong>를 보여 줘요. 0은 품절, 3 미만은 부족, 나머지는 충분이에요.</td>
+<td><code>IF … ELSEIF</code> (4장)</td>
+</tr>
+<tr>
+<td>⑥</td>
+<td>조건에 맞는 책이 없으면 메시지를 띄워요.</td>
+<td><code>MESSAGE</code> (5장)</td>
+</tr>
+<tr>
+<td>⑦</td>
+<td>결과는 ALV로 보여 주고, 정렬·필터·엑셀 버튼을 켜요.</td>
+<td><code>CL_SALV_TABLE</code> (11장)</td>
+</tr>
+<tr>
+<td>⑧</td>
+<td>일은 <code>FORM</code>으로 나눠요.</td>
+<td><code>FORM</code>·<code>PERFORM</code> (10장)</td>
+</tr>
+</tbody>
+</table></div>
+<p>완성하면 이런 모습이에요.</p>
+<figure class="fig" id="fig-12-1"><div class="fig-body"><div class="pair stack">
+<div class="gui">
+  <div class="gui-head">도서 조회</div>
+  <div class="gui-apptool"><span class="gui-ico">⊕<i>Execute F8</i></span></div>
+  <div class="gui-body">
+    <div class="gui-group"><div class="gui-group-t">조회 조건</div>
+      <div class="gui-row"><span class="gui-label" style="width:5.5rem">도서 번호</span><span class="gui-field s"></span><span>to</span><span class="gui-field s"></span></div>
+      <div class="gui-row"><span class="gui-label" style="width:5.5rem">장르</span><span class="gui-field s"></span><span>to</span><span class="gui-field s"></span></div>
+      <div class="gui-row"><span class="gui-label" style="width:5.5rem">가격</span><span class="gui-field s"></span><span>to</span><span class="gui-field s"></span></div>
+      <div class="gui-check">재고 있는 책만</div>
+    </div>
+    <div class="gui-group"><div class="gui-group-t">정렬</div>
+      <div class="gui-radio on">가격 높은 순</div>
+      <div class="gui-radio">제목순</div>
+    </div>
+  </div>
+</div>
+<div class="gui">
+  <div class="gui-head">도서 조회</div>
+  <div class="gui-apptool alv-tool"><span class="gui-ico">▲</span><span class="gui-ico">▼</span><span class="gui-ico">⏷</span><span class="gui-ico">Σ</span><span class="gui-ico">⇩</span></div>
+  <div class="gui-body">
+    <table class="gui-grid alv">
+      <tr><th>도서 번호</th><th>도서 제목</th><th>장르 이름</th><th>가격</th><th>재고</th><th>상태</th></tr>
+      <tr><td>B0004</td><td>SQL 한 그릇</td><td>IT</td><td class="num">28,000</td><td class="num">2</td><td>부족</td></tr>
+      <tr><td>B0001</td><td>ABAP 첫걸음</td><td>IT</td><td class="num">25,000</td><td class="num">3</td><td>충분</td></tr>
+      <tr><td>B0005</td><td>별을 세는 밤</td><td>소설</td><td class="num">17,000</td><td class="num">7</td><td>충분</td></tr>
+      <tr><td>B0002</td><td>바다의 노래</td><td>소설</td><td class="num">15,000</td><td class="num">0</td><td>품절</td></tr>
+      <tr><td>B0003</td><td>오늘의 산책</td><td>에세이</td><td class="num">13,000</td><td class="num">5</td><td>충분</td></tr>
+    </table>
+  </div>
+</div>
+</div></div><figcaption><b>그림 12-1.</b>완성된 프로그램의 Selection Screen과 결과</figcaption></figure>
+<p>그림의 결과 표는 칸을 몇 개 줄여서 그렸어요. 실제로는 저자와 장르 코드 칸도 함께 나와요.</p>
+<h2 id="s12-2">12-2. 먼저 설계하기</h2>
+<p>코드를 바로 쓰기 전에 <strong>어떤 순서로, 어떤 덩어리로</strong> 만들지 정해요. 큰 프로그램일수록 이 단계가 시간을 아껴 줘요.</p>
+<figure class="fig" id="fig-12-2"><div class="fig-body"><div class="alvsteps five">
+  <div><b>1</b><span>입력 받기</span><code>Selection Screen</code></div>
+  <div><b>2</b><span>읽어 담기</span><code>PERFORM get_data</code></div>
+  <div><b>3</b><span>글자 채우기</span><code>PERFORM fill_text</code></div>
+  <div><b>4</b><span>정렬하기</span><code>PERFORM sort_list</code></div>
+  <div><b>5</b><span>보여 주기</span><code>PERFORM display_alv</code></div>
+</div></div><figcaption><b>그림 12-2.</b>프로그램의 흐름과 FORM 나누기</figcaption></figure>
+<p>프로그램 코드는 위에서부터 이런 구역으로 나눠 써요. 회사 프로그램도 대부분 이 순서예요.</p>
+<figure class="fig" id="fig-12-3"><div class="fig-body"><div class="srcmap">
+  <div class="sm-row"><b>① 타입과 변수</b><code>TYPES · DATA</code><small>Internal Table 모양 정하기</small></div>
+  <div class="sm-row"><b>② Selection Screen</b><code>SELECTION-SCREEN · SELECT-OPTIONS · PARAMETERS</code><small>입력 칸</small></div>
+  <div class="sm-row sm-ev"><b>③ 이벤트</b><code>START-OF-SELECTION</code><small>PERFORM으로 순서만 적기</small></div>
+  <div class="sm-row sm-sub"><b>④ FORM들</b><code>FORM get_data · fill_text · sort_list · display_alv</code><small>실제 일은 여기서</small></div>
+</div></div><figcaption><b>그림 12-3.</b>프로그램 코드의 구역</figcaption></figure>
+<p><code>START-OF-SELECTION</code>에는 <code>PERFORM</code>만 차례로 적어요. 그러면 이 부분만 읽어도 프로그램이 <strong>무슨 일을 어떤 순서로 하는지</strong> 한눈에 보여요.</p>
+<h2 id="s12-3">12-3. 1단계: 뼈대와 Selection Screen</h2>
+<p>SE38에서 <code>YG<mark>##</mark>_12_BOOK_REPORT</code>를 Local Object로 만들고 아래까지 써요.</p>
+<div class="code"><button type="button" class="copy" data-code="REPORT yg##_12_book_report.
+
+*----------------------------------------------------------------------*
+* ① 타입과 변수
+*----------------------------------------------------------------------*
+TYPES: BEGIN OF ty_list,
+         book_id TYPE yg##_book-book_id,
+         title   TYPE yg##_book-title,
+         author  TYPE yg##_book-author,
+         genre   TYPE yg##_book-genre,
+         genre_t TYPE c LENGTH 10,          &quot; 장르 이름 (DB에 없는 칸)
+         price   TYPE yg##_book-price,
+         stock   TYPE yg##_book-stock,
+         status  TYPE c LENGTH 10,          &quot; 상태 (DB에 없는 칸)
+       END OF ty_list,
+       ty_t_list TYPE STANDARD TABLE OF ty_list WITH DEFAULT KEY.
+
+DATA: gt_list TYPE ty_t_list,
+      gs_book TYPE yg##_book.              &quot; SELECT-OPTIONS의 FOR에만 써요
+
+*----------------------------------------------------------------------*
+* ② Selection Screen
+*----------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-b01.
+  SELECT-OPTIONS: so_id    FOR gs_book-book_id,
+                  so_genre FOR gs_book-genre,
+                  so_price FOR gs_book-price.
+  PARAMETERS pa_stock AS CHECKBOX.
+SELECTION-SCREEN END OF BLOCK b1.
+
+SELECTION-SCREEN BEGIN OF BLOCK b2 WITH FRAME TITLE TEXT-b02.
+  PARAMETERS: pa_price RADIOBUTTON GROUP srt DEFAULT &#x27;X&#x27;,
+              pa_title RADIOBUTTON GROUP srt.
+SELECTION-SCREEN END OF BLOCK b2.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_12_book_report.
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ① 타입과 변수</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_list,
+         book_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-book_id,
+         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-title,
+         author  <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-author,
+         genre   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-genre,
+         genre_t <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>,          <span class="tk-cmt">" 장르 이름 (DB에 없는 칸)</span>
+         price   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-price,
+         stock   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-stock,
+         status  <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>,          <span class="tk-cmt">" 상태 (DB에 없는 칸)</span>
+       <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_list,
+       ty_t_list <span class="tk-kw">TYPE</span> <span class="tk-kw">STANDARD</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_list <span class="tk-kw">WITH</span> <span class="tk-kw">DEFAULT</span> <span class="tk-kw">KEY</span>.
+
+<span class="tk-kw">DATA</span>: gt_list <span class="tk-kw">TYPE</span> ty_t_list,
+      gs_book <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book.              <span class="tk-cmt">" SELECT-OPTIONS의 FOR에만 써요</span>
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ② Selection Screen</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b1 <span class="tk-kw">WITH</span> <span class="tk-kw">FRAME</span> <span class="tk-kw">TITLE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">b01</span>.
+  <span class="tk-kw">SELECT-OPTIONS</span>: so_id    <span class="tk-kw">FOR</span> gs_book-book_id,
+                  so_genre <span class="tk-kw">FOR</span> gs_book-genre,
+                  so_price <span class="tk-kw">FOR</span> gs_book-price.
+  <span class="tk-kw">PARAMETERS</span> pa_stock <span class="tk-kw">AS</span> <span class="tk-kw">CHECKBOX</span>.
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">END</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b1.
+
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b2 <span class="tk-kw">WITH</span> <span class="tk-kw">FRAME</span> <span class="tk-kw">TITLE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">b02</span>.
+  <span class="tk-kw">PARAMETERS</span>: pa_price <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> srt <span class="tk-kw">DEFAULT</span> <span class="tk-str">'X'</span>,
+              pa_title <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> srt.
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">END</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b2.</code></pre></div>
+<p>이번 장에서 처음 나오는 것이 두 가지 있어요.</p>
+<div class="box note"><div class="box-t">새로 나오는 것 ① Selection Screen 묶음 상자</div><p><code>SELECTION-SCREEN BEGIN OF BLOCK 이름 WITH FRAME TITLE TEXT-…</code> 와 <code>… END OF BLOCK 이름</code>으로 감싸면 입력 칸들이 <strong>제목 있는 상자</strong>로 묶여요(그림 12-1). 상자 제목은 Text Symbol에 적어요. 여기서는 <code>b01</code>에 "조회 조건", <code>b02</code>에 "정렬"을 넣어요.</p></div>
+
+<div class="box note"><div class="box-t">새로 나오는 것 ② Internal Table의 Type 이름 붙이기</div><p><code>ty_t_list TYPE STANDARD TABLE OF ty_list WITH DEFAULT KEY</code>는 "<code>ty_list</code> 모양의 줄을 여러 개 담는 표"라는 <strong>표의 Type</strong>에 이름을 붙인 거예요. <code>FORM</code>의 파라미터는 Type을 적어야 해서, 표를 넘기려면 이렇게 표의 Type 이름이 필요해요. 이름 앞의 <code>ty_t_</code>는 "표 Type"이라는 표시예요.</p></div>
+
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li>위 코드를 쓰고 저장·검사·활성화해요.</li>
+<li><strong>Goto → Text Elements</strong>에서 Text Symbol을 넣어요.</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sym</th>
+<th>Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>b01</code></td>
+<td>조회 조건</td>
+</tr>
+<tr>
+<td><code>b02</code></td>
+<td>정렬</td>
+</tr>
+<tr>
+<td><code>e01</code></td>
+<td>조건에 맞는 책이 없어요.</td>
+</tr>
+<tr>
+<td><code>t01</code></td>
+<td>도서 조회</td>
+</tr>
+</tbody>
+</table></div>
+<ol start="3">
+<li><strong>Selection Texts</strong> 탭에서 이름표를 넣어요. <code>so_id</code>, <code>so_genre</code>, <code>so_price</code>는 <strong>Dictionary Ref.</strong>에 체크하면 Data Element 이름표가 자동으로 들어가요. <code>pa_stock</code>은 "재고 있는 책만", <code>pa_price</code>는 "가격 높은 순", <code>pa_title</code>은 "제목순"이에요.</li>
+<li>Text Elements도 <strong>활성화</strong>한 뒤 <kbd>F8</kbd>로 실행해서 그림 12-1의 왼쪽과 같은지 확인해요. 아직 <code>START-OF-SELECTION</code>이 없으니 실행해도 아무 일도 일어나지 않아요.</li>
+</ol></div>
+<h2 id="s12-4">12-4. 2단계: 읽어 담기 (get_data)</h2>
+<p>이제 이벤트와 첫 번째 <code>FORM</code>을 써요. <code>START-OF-SELECTION</code>은 Selection Screen 코드 <strong>아래</strong>에, <code>FORM</code>은 프로그램 <strong>맨 아래</strong>에 둬요.</p>
+<div class="code"><button type="button" class="copy" data-code="*----------------------------------------------------------------------*
+* ③ 이벤트
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+  PERFORM get_data CHANGING gt_list.
+
+  IF gt_list IS INITIAL.                   &quot; 한 줄도 없으면
+    MESSAGE TEXT-e01 TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+    RETURN.
+  ENDIF.
+
+*----------------------------------------------------------------------*
+* ④ FORM들
+*----------------------------------------------------------------------*
+*&amp;---------------------------------------------------------------------*
+*&amp; Form get_data : 조건에 맞는 책 읽기
+*&amp;---------------------------------------------------------------------*
+FORM get_data CHANGING ct_list TYPE ty_t_list.
+
+  SELECT book_id title author genre price stock
+    FROM yg##_book
+    INTO CORRESPONDING FIELDS OF TABLE ct_list
+    WHERE book_id IN so_id
+      AND genre   IN so_genre
+      AND price   IN so_price.
+
+  IF pa_stock = abap_true.                 &quot; &quot;재고 있는 책만&quot;에 체크했으면
+    DELETE ct_list WHERE stock = 0.
+  ENDIF.
+
+ENDFORM.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ③ 이벤트</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">PERFORM</span> get_data <span class="tk-kw">CHANGING</span> gt_list.
+
+  <span class="tk-kw">IF</span> gt_list <span class="tk-kw">IS</span> <span class="tk-kw">INITIAL</span>.                   <span class="tk-cmt">" 한 줄도 없으면</span>
+    <span class="tk-kw">MESSAGE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">e01</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+    <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDIF</span>.
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ④ FORM들</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form get_data : 조건에 맞는 책 읽기</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> get_data <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+
+  <span class="tk-kw">SELECT</span> book_id <span class="tk-kw">title</span> author genre price stock
+    <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+    <span class="tk-kw">INTO</span> <span class="tk-kw">CORRESPONDING</span> <span class="tk-kw">FIELDS</span> <span class="tk-kw">OF</span> <span class="tk-kw">TABLE</span> ct_list
+    <span class="tk-kw">WHERE</span> book_id <span class="tk-kw">IN</span> so_id
+      <span class="tk-kw">AND</span> genre   <span class="tk-kw">IN</span> so_genre
+      <span class="tk-kw">AND</span> price   <span class="tk-kw">IN</span> so_price.
+
+  <span class="tk-kw">IF</span> pa_stock = abap_true.                 <span class="tk-cmt">" "재고 있는 책만"에 체크했으면</span>
+    <span class="tk-kw">DELETE</span> ct_list <span class="tk-kw">WHERE</span> stock = <span class="tk-num">0</span>.
+  <span class="tk-kw">ENDIF</span>.
+
+<span class="tk-kw">ENDFORM</span>.</code></pre></div>
+<ul>
+<li><code>ty_list</code>에는 DB에 없는 칸(<code>genre_t</code>, <code>status</code>)이 있어서, 이름이 같은 칸만 골라 담는 <code>INTO CORRESPONDING FIELDS OF TABLE</code>을 써요(9장).</li>
+<li>Selection Screen의 <code>so_id</code>, <code>pa_stock</code> 같은 값은 프로그램 <strong>어디서나</strong> 읽을 수 있어서 <code>FORM</code> 안에서 바로 써요.</li>
+<li><code>gt_list IS INITIAL</code>은 "표가 비어 있으면"이라는 뜻이에요. <code>DELETE</code>로 다 지워진 경우까지 함께 잡을 수 있어서 <code>sy-subrc</code>보다 여기서는 이쪽이 정확해요.</li>
+</ul>
+<div class="box try"><div class="box-t">확인해 보기</div><p><code>PERFORM get_data</code> 줄에 Breakpoint를 걸고 실행해요(6장). <kbd>F6</kbd>으로 한 줄 넘긴 뒤, 변수 칸에 <code>gt_list</code>를 넣고 <strong>더블클릭</strong>하면 표 모양으로 내용을 볼 수 있어요. 조건을 바꿔 가며 줄 수가 맞는지 확인해 보세요.</p></div>
+<h2 id="s12-5">12-5. 3단계: 글자 채우고 정렬하기 (fill_text, sort_list)</h2>
+<p>읽어 온 줄을 하나씩 돌면서 장르 이름과 상태를 채워요. 8장의 "Work Area로 꺼내서 고치고 <code>MODIFY</code>로 되돌려 놓기" 그대로예요.</p>
+<div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
+*&amp; Form fill_text : 장르 이름과 재고 상태 채우기
+*&amp;---------------------------------------------------------------------*
+FORM fill_text CHANGING ct_list TYPE ty_t_list.
+  DATA ls_list TYPE ty_list.              &quot; 이 FORM 안에서만 쓰는 Work Area
+
+  LOOP AT ct_list INTO ls_list.
+    &quot; 장르 이름
+    CASE ls_list-genre.
+      WHEN &#x27;N&#x27;.
+        ls_list-genre_t = &#x27;소설&#x27;.
+      WHEN &#x27;I&#x27;.
+        ls_list-genre_t = &#x27;IT&#x27;.
+      WHEN &#x27;E&#x27;.
+        ls_list-genre_t = &#x27;에세이&#x27;.
+      WHEN OTHERS.
+        ls_list-genre_t = &#x27;기타&#x27;.
+    ENDCASE.
+
+    &quot; 재고 상태
+    IF ls_list-stock = 0.
+      ls_list-status = &#x27;품절&#x27;.
+    ELSEIF ls_list-stock &lt; 3.
+      ls_list-status = &#x27;부족&#x27;.
+    ELSE.
+      ls_list-status = &#x27;충분&#x27;.
+    ENDIF.
+
+    MODIFY ct_list FROM ls_list INDEX sy-tabix.
+  ENDLOOP.
+ENDFORM.
+
+*&amp;---------------------------------------------------------------------*
+*&amp; Form sort_list : 고른 방법으로 정렬
+*&amp;---------------------------------------------------------------------*
+FORM sort_list CHANGING ct_list TYPE ty_t_list.
+  IF pa_price = abap_true.
+    SORT ct_list BY price DESCENDING.
+  ELSE.
+    SORT ct_list BY title.
+  ENDIF.
+ENDFORM.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form fill_text : 장르 이름과 재고 상태 채우기</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> fill_text <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+  <span class="tk-kw">DATA</span> ls_list <span class="tk-kw">TYPE</span> ty_list.              <span class="tk-cmt">" 이 FORM 안에서만 쓰는 Work Area</span>
+
+  <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> ct_list <span class="tk-kw">INTO</span> ls_list.
+    <span class="tk-cmt">" 장르 이름</span>
+    <span class="tk-kw">CASE</span> ls_list-genre.
+      <span class="tk-kw">WHEN</span> <span class="tk-str">'N'</span>.
+        ls_list-genre_t = <span class="tk-str">'소설'</span>.
+      <span class="tk-kw">WHEN</span> <span class="tk-str">'I'</span>.
+        ls_list-genre_t = <span class="tk-str">'IT'</span>.
+      <span class="tk-kw">WHEN</span> <span class="tk-str">'E'</span>.
+        ls_list-genre_t = <span class="tk-str">'에세이'</span>.
+      <span class="tk-kw">WHEN</span> <span class="tk-kw">OTHERS</span>.
+        ls_list-genre_t = <span class="tk-str">'기타'</span>.
+    <span class="tk-kw">ENDCASE</span>.
+
+    <span class="tk-cmt">" 재고 상태</span>
+    <span class="tk-kw">IF</span> ls_list-stock = <span class="tk-num">0</span>.
+      ls_list-status = <span class="tk-str">'품절'</span>.
+    <span class="tk-kw">ELSEIF</span> ls_list-stock &lt; <span class="tk-num">3</span>.
+      ls_list-status = <span class="tk-str">'부족'</span>.
+    <span class="tk-kw">ELSE</span>.
+      ls_list-status = <span class="tk-str">'충분'</span>.
+    <span class="tk-kw">ENDIF</span>.
+
+    <span class="tk-kw">MODIFY</span> ct_list <span class="tk-kw">FROM</span> ls_list <span class="tk-kw">INDEX</span> sy-tabix.
+  <span class="tk-kw">ENDLOOP</span>.
+<span class="tk-kw">ENDFORM</span>.
+
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form sort_list : 고른 방법으로 정렬</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> sort_list <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+  <span class="tk-kw">IF</span> pa_price = abap_true.
+    <span class="tk-kw">SORT</span> ct_list <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>.
+  <span class="tk-kw">ELSE</span>.
+    <span class="tk-kw">SORT</span> ct_list <span class="tk-kw">BY</span> <span class="tk-kw">title</span>.
+  <span class="tk-kw">ENDIF</span>.
+<span class="tk-kw">ENDFORM</span>.</code></pre></div>
+<p><code>START-OF-SELECTION</code>의 <code>ENDIF.</code> 아래에 두 줄을 더해요.</p>
+<div class="code"><button type="button" class="copy" data-code="  PERFORM fill_text CHANGING gt_list.
+  PERFORM sort_list CHANGING gt_list.">복사</button><pre><code class="lang-abap">  <span class="tk-kw">PERFORM</span> fill_text <span class="tk-kw">CHANGING</span> gt_list.
+  <span class="tk-kw">PERFORM</span> sort_list <span class="tk-kw">CHANGING</span> gt_list.</code></pre></div>
+<div class="box note"><div class="box-t">지역 변수: `ls_list`</div><p><code>FORM</code> 안에서 <code>DATA</code>로 만든 변수는 <strong>그 <code>FORM</code> 안에서만</strong> 쓸 수 있어요. 이런 변수를 지역 변수라고 하고, 이름 앞에 <code>L</code>을 붙여 전역 변수(<code>G</code>)와 구분해요. <code>FORM</code>이 끝나면 사라지니, 다른 곳의 변수와 이름이 겹칠 걱정이 없어요.</p></div>
+
+<div class="box note"><div class="box-t">장르 이름은 Domain에도 있어요</div><p>7장에서 Domain <code>YG<mark>##</mark>_D_GENRE</code>의 고정값에 "소설, IT, 에세이"를 이미 적었어요. 그 값을 프로그램에서 읽어 오는 방법도 있지만, 여기서는 <code>CASE</code> 연습을 위해 직접 적었어요. 장르가 새로 생기면 Domain과 이 <code>CASE</code>를 <strong>둘 다</strong> 고쳐야 한다는 점은 기억해 두세요.</p></div>
+<h2 id="s12-6">12-6. 4단계: ALV로 보여 주기 (display_alv)</h2>
+<p>11장에서 배운 순서(만들기 → 설정 → 띄우기)를 <code>FORM</code> 하나에 담아요. <code>genre_t</code>와 <code>status</code>는 Data Element가 없어서 제목이 비니, 제목을 직접 붙여요.</p>
+<div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
+*&amp; Form display_alv : ALV로 결과 보여 주기
+*&amp;---------------------------------------------------------------------*
+FORM display_alv CHANGING ct_list TYPE ty_t_list.
+  DATA: lo_alv     TYPE REF TO cl_salv_table,
+        lo_columns TYPE REF TO cl_salv_columns_table,
+        lo_column  TYPE REF TO cl_salv_column.
+
+  &quot; 1. 만들기
+  TRY.
+      cl_salv_table=&gt;factory(
+        IMPORTING
+          r_salv_table = lo_alv
+        CHANGING
+          t_table      = ct_list ).
+    CATCH cx_salv_msg.
+      MESSAGE &#x27;ALV를 만들지 못했어요.&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+      RETURN.
+  ENDTRY.
+
+  &quot; 2. 설정: 폭 맞추기, 제목 없는 칸에 제목 붙이기
+  lo_columns = lo_alv-&gt;get_columns( ).
+  lo_columns-&gt;set_optimize( abap_true ).
+
+  TRY.
+      lo_column = lo_columns-&gt;get_column( &#x27;GENRE_T&#x27; ).
+      lo_column-&gt;set_short_text( &#x27;장르 이름&#x27; ).
+      lo_column-&gt;set_medium_text( &#x27;장르 이름&#x27; ).
+      lo_column-&gt;set_long_text( &#x27;장르 이름&#x27; ).
+
+      lo_column = lo_columns-&gt;get_column( &#x27;STATUS&#x27; ).
+      lo_column-&gt;set_short_text( &#x27;상태&#x27; ).
+      lo_column-&gt;set_medium_text( &#x27;상태&#x27; ).
+      lo_column-&gt;set_long_text( &#x27;상태&#x27; ).
+    CATCH cx_salv_not_found.
+  ENDTRY.
+
+  &quot; 3. 설정: 툴바 버튼, 화면 제목, 줄무늬
+  lo_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_list_header( TEXT-t01 ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_striped_pattern( abap_true ).
+
+  &quot; 4. 띄우기
+  lo_alv-&gt;display( ).
+ENDFORM.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form display_alv : ALV로 결과 보여 주기</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> display_alv <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+  <span class="tk-kw">DATA</span>: lo_alv     <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_table,
+        lo_columns <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_columns_table,
+        lo_column  <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_column.
+
+  <span class="tk-cmt">" 1. 만들기</span>
+  <span class="tk-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tk-kw">IMPORTING</span>
+          r_salv_table = lo_alv
+        <span class="tk-kw">CHANGING</span>
+          t_table      = ct_list ).
+    <span class="tk-kw">CATCH</span> cx_salv_msg.
+      <span class="tk-kw">MESSAGE</span> <span class="tk-str">'ALV를 만들지 못했어요.'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+      <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDTRY</span>.
+
+  <span class="tk-cmt">" 2. 설정: 폭 맞추기, 제목 없는 칸에 제목 붙이기</span>
+  lo_columns = lo_alv-&gt;get_columns( ).
+  lo_columns-&gt;set_optimize( abap_true ).
+
+  <span class="tk-kw">TRY</span>.
+      lo_column = lo_columns-&gt;get_column( <span class="tk-str">'GENRE_T'</span> ).
+      lo_column-&gt;set_short_text( <span class="tk-str">'장르 이름'</span> ).
+      lo_column-&gt;set_medium_text( <span class="tk-str">'장르 이름'</span> ).
+      lo_column-&gt;set_long_text( <span class="tk-str">'장르 이름'</span> ).
+
+      lo_column = lo_columns-&gt;get_column( <span class="tk-str">'STATUS'</span> ).
+      lo_column-&gt;set_short_text( <span class="tk-str">'상태'</span> ).
+      lo_column-&gt;set_medium_text( <span class="tk-str">'상태'</span> ).
+      lo_column-&gt;set_long_text( <span class="tk-str">'상태'</span> ).
+    <span class="tk-kw">CATCH</span> cx_salv_not_found.
+  <span class="tk-kw">ENDTRY</span>.
+
+  <span class="tk-cmt">" 3. 설정: 툴바 버튼, 화면 제목, 줄무늬</span>
+  lo_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_list_header( <span class="tk-kw">TEXT</span>-<span class="tk-num">t01</span> ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_striped_pattern( abap_true ).
+
+  <span class="tk-cmt">" 4. 띄우기</span>
+  lo_alv-&gt;<span class="tk-kw">display</span>( ).
+<span class="tk-kw">ENDFORM</span>.</code></pre></div>
+<p><code>START-OF-SELECTION</code> 마지막에 한 줄을 더하면 완성이에요.</p>
+<div class="code"><button type="button" class="copy" data-code="  PERFORM display_alv CHANGING gt_list.">복사</button><pre><code class="lang-abap">  <span class="tk-kw">PERFORM</span> display_alv <span class="tk-kw">CHANGING</span> gt_list.</code></pre></div>
+<p><code>FORM</code> 안에서 만든 ALV 변수는 지역 변수라서 <code>go_</code>가 아니라 <code>lo_</code>로 시작해요.</p>
+<h2 id="s12-7">12-7. 완성 코드와 테스트</h2>
+<details class="answer solo"><summary>완성 코드 전체 보기</summary><div class="code"><button type="button" class="copy" data-code="REPORT yg##_12_book_report.
+
+*----------------------------------------------------------------------*
+* ① 타입과 변수
+*----------------------------------------------------------------------*
+TYPES: BEGIN OF ty_list,
+         book_id TYPE yg##_book-book_id,
+         title   TYPE yg##_book-title,
+         author  TYPE yg##_book-author,
+         genre   TYPE yg##_book-genre,
+         genre_t TYPE c LENGTH 10,          &quot; 장르 이름 (DB에 없는 칸)
+         price   TYPE yg##_book-price,
+         stock   TYPE yg##_book-stock,
+         status  TYPE c LENGTH 10,          &quot; 상태 (DB에 없는 칸)
+       END OF ty_list,
+       ty_t_list TYPE STANDARD TABLE OF ty_list WITH DEFAULT KEY.
+
+DATA: gt_list TYPE ty_t_list,
+      gs_book TYPE yg##_book.              &quot; SELECT-OPTIONS의 FOR에만 써요
+
+*----------------------------------------------------------------------*
+* ② Selection Screen
+*----------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-b01.
+  SELECT-OPTIONS: so_id    FOR gs_book-book_id,
+                  so_genre FOR gs_book-genre,
+                  so_price FOR gs_book-price.
+  PARAMETERS pa_stock AS CHECKBOX.
+SELECTION-SCREEN END OF BLOCK b1.
+
+SELECTION-SCREEN BEGIN OF BLOCK b2 WITH FRAME TITLE TEXT-b02.
+  PARAMETERS: pa_price RADIOBUTTON GROUP srt DEFAULT &#x27;X&#x27;,
+              pa_title RADIOBUTTON GROUP srt.
+SELECTION-SCREEN END OF BLOCK b2.
+
+*----------------------------------------------------------------------*
+* ③ 이벤트
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+  PERFORM get_data CHANGING gt_list.
+
+  IF gt_list IS INITIAL.                   &quot; 한 줄도 없으면
+    MESSAGE TEXT-e01 TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+    RETURN.
+  ENDIF.
+
+  PERFORM fill_text   CHANGING gt_list.
+  PERFORM sort_list   CHANGING gt_list.
+  PERFORM display_alv CHANGING gt_list.
+
+*----------------------------------------------------------------------*
+* ④ FORM들
+*----------------------------------------------------------------------*
+*&amp;---------------------------------------------------------------------*
+*&amp; Form get_data : 조건에 맞는 책 읽기
+*&amp;---------------------------------------------------------------------*
+FORM get_data CHANGING ct_list TYPE ty_t_list.
+
+  SELECT book_id title author genre price stock
+    FROM yg##_book
+    INTO CORRESPONDING FIELDS OF TABLE ct_list
+    WHERE book_id IN so_id
+      AND genre   IN so_genre
+      AND price   IN so_price.
+
+  IF pa_stock = abap_true.                 &quot; &quot;재고 있는 책만&quot;에 체크했으면
+    DELETE ct_list WHERE stock = 0.
+  ENDIF.
+
+ENDFORM.
+
+*&amp;---------------------------------------------------------------------*
+*&amp; Form fill_text : 장르 이름과 재고 상태 채우기
+*&amp;---------------------------------------------------------------------*
+FORM fill_text CHANGING ct_list TYPE ty_t_list.
+  DATA ls_list TYPE ty_list.
+
+  LOOP AT ct_list INTO ls_list.
+    CASE ls_list-genre.
+      WHEN &#x27;N&#x27;.
+        ls_list-genre_t = &#x27;소설&#x27;.
+      WHEN &#x27;I&#x27;.
+        ls_list-genre_t = &#x27;IT&#x27;.
+      WHEN &#x27;E&#x27;.
+        ls_list-genre_t = &#x27;에세이&#x27;.
+      WHEN OTHERS.
+        ls_list-genre_t = &#x27;기타&#x27;.
+    ENDCASE.
+
+    IF ls_list-stock = 0.
+      ls_list-status = &#x27;품절&#x27;.
+    ELSEIF ls_list-stock &lt; 3.
+      ls_list-status = &#x27;부족&#x27;.
+    ELSE.
+      ls_list-status = &#x27;충분&#x27;.
+    ENDIF.
+
+    MODIFY ct_list FROM ls_list INDEX sy-tabix.
+  ENDLOOP.
+ENDFORM.
+
+*&amp;---------------------------------------------------------------------*
+*&amp; Form sort_list : 고른 방법으로 정렬
+*&amp;---------------------------------------------------------------------*
+FORM sort_list CHANGING ct_list TYPE ty_t_list.
+  IF pa_price = abap_true.
+    SORT ct_list BY price DESCENDING.
+  ELSE.
+    SORT ct_list BY title.
+  ENDIF.
+ENDFORM.
+
+*&amp;---------------------------------------------------------------------*
+*&amp; Form display_alv : ALV로 결과 보여 주기
+*&amp;---------------------------------------------------------------------*
+FORM display_alv CHANGING ct_list TYPE ty_t_list.
+  DATA: lo_alv     TYPE REF TO cl_salv_table,
+        lo_columns TYPE REF TO cl_salv_columns_table,
+        lo_column  TYPE REF TO cl_salv_column.
+
+  TRY.
+      cl_salv_table=&gt;factory(
+        IMPORTING
+          r_salv_table = lo_alv
+        CHANGING
+          t_table      = ct_list ).
+    CATCH cx_salv_msg.
+      MESSAGE &#x27;ALV를 만들지 못했어요.&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+      RETURN.
+  ENDTRY.
+
+  lo_columns = lo_alv-&gt;get_columns( ).
+  lo_columns-&gt;set_optimize( abap_true ).
+
+  TRY.
+      lo_column = lo_columns-&gt;get_column( &#x27;GENRE_T&#x27; ).
+      lo_column-&gt;set_short_text( &#x27;장르 이름&#x27; ).
+      lo_column-&gt;set_medium_text( &#x27;장르 이름&#x27; ).
+      lo_column-&gt;set_long_text( &#x27;장르 이름&#x27; ).
+
+      lo_column = lo_columns-&gt;get_column( &#x27;STATUS&#x27; ).
+      lo_column-&gt;set_short_text( &#x27;상태&#x27; ).
+      lo_column-&gt;set_medium_text( &#x27;상태&#x27; ).
+      lo_column-&gt;set_long_text( &#x27;상태&#x27; ).
+    CATCH cx_salv_not_found.
+  ENDTRY.
+
+  lo_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_list_header( TEXT-t01 ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_striped_pattern( abap_true ).
+
+  lo_alv-&gt;display( ).
+ENDFORM.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_12_book_report.
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ① 타입과 변수</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_list,
+         book_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-book_id,
+         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-title,
+         author  <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-author,
+         genre   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-genre,
+         genre_t <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>,          <span class="tk-cmt">" 장르 이름 (DB에 없는 칸)</span>
+         price   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-price,
+         stock   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book-stock,
+         status  <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>,          <span class="tk-cmt">" 상태 (DB에 없는 칸)</span>
+       <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_list,
+       ty_t_list <span class="tk-kw">TYPE</span> <span class="tk-kw">STANDARD</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_list <span class="tk-kw">WITH</span> <span class="tk-kw">DEFAULT</span> <span class="tk-kw">KEY</span>.
+
+<span class="tk-kw">DATA</span>: gt_list <span class="tk-kw">TYPE</span> ty_t_list,
+      gs_book <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book.              <span class="tk-cmt">" SELECT-OPTIONS의 FOR에만 써요</span>
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ② Selection Screen</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b1 <span class="tk-kw">WITH</span> <span class="tk-kw">FRAME</span> <span class="tk-kw">TITLE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">b01</span>.
+  <span class="tk-kw">SELECT-OPTIONS</span>: so_id    <span class="tk-kw">FOR</span> gs_book-book_id,
+                  so_genre <span class="tk-kw">FOR</span> gs_book-genre,
+                  so_price <span class="tk-kw">FOR</span> gs_book-price.
+  <span class="tk-kw">PARAMETERS</span> pa_stock <span class="tk-kw">AS</span> <span class="tk-kw">CHECKBOX</span>.
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">END</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b1.
+
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b2 <span class="tk-kw">WITH</span> <span class="tk-kw">FRAME</span> <span class="tk-kw">TITLE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">b02</span>.
+  <span class="tk-kw">PARAMETERS</span>: pa_price <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> srt <span class="tk-kw">DEFAULT</span> <span class="tk-str">'X'</span>,
+              pa_title <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> srt.
+<span class="tk-kw">SELECTION-SCREEN</span> <span class="tk-kw">END</span> <span class="tk-kw">OF</span> <span class="tk-kw">BLOCK</span> b2.
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ③ 이벤트</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">PERFORM</span> get_data <span class="tk-kw">CHANGING</span> gt_list.
+
+  <span class="tk-kw">IF</span> gt_list <span class="tk-kw">IS</span> <span class="tk-kw">INITIAL</span>.                   <span class="tk-cmt">" 한 줄도 없으면</span>
+    <span class="tk-kw">MESSAGE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">e01</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+    <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDIF</span>.
+
+  <span class="tk-kw">PERFORM</span> fill_text   <span class="tk-kw">CHANGING</span> gt_list.
+  <span class="tk-kw">PERFORM</span> sort_list   <span class="tk-kw">CHANGING</span> gt_list.
+  <span class="tk-kw">PERFORM</span> display_alv <span class="tk-kw">CHANGING</span> gt_list.
+
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">* ④ FORM들</span>
+<span class="tk-cmt">*----------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form get_data : 조건에 맞는 책 읽기</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> get_data <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+
+  <span class="tk-kw">SELECT</span> book_id <span class="tk-kw">title</span> author genre price stock
+    <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+    <span class="tk-kw">INTO</span> <span class="tk-kw">CORRESPONDING</span> <span class="tk-kw">FIELDS</span> <span class="tk-kw">OF</span> <span class="tk-kw">TABLE</span> ct_list
+    <span class="tk-kw">WHERE</span> book_id <span class="tk-kw">IN</span> so_id
+      <span class="tk-kw">AND</span> genre   <span class="tk-kw">IN</span> so_genre
+      <span class="tk-kw">AND</span> price   <span class="tk-kw">IN</span> so_price.
+
+  <span class="tk-kw">IF</span> pa_stock = abap_true.                 <span class="tk-cmt">" "재고 있는 책만"에 체크했으면</span>
+    <span class="tk-kw">DELETE</span> ct_list <span class="tk-kw">WHERE</span> stock = <span class="tk-num">0</span>.
+  <span class="tk-kw">ENDIF</span>.
+
+<span class="tk-kw">ENDFORM</span>.
+
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form fill_text : 장르 이름과 재고 상태 채우기</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> fill_text <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+  <span class="tk-kw">DATA</span> ls_list <span class="tk-kw">TYPE</span> ty_list.
+
+  <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> ct_list <span class="tk-kw">INTO</span> ls_list.
+    <span class="tk-kw">CASE</span> ls_list-genre.
+      <span class="tk-kw">WHEN</span> <span class="tk-str">'N'</span>.
+        ls_list-genre_t = <span class="tk-str">'소설'</span>.
+      <span class="tk-kw">WHEN</span> <span class="tk-str">'I'</span>.
+        ls_list-genre_t = <span class="tk-str">'IT'</span>.
+      <span class="tk-kw">WHEN</span> <span class="tk-str">'E'</span>.
+        ls_list-genre_t = <span class="tk-str">'에세이'</span>.
+      <span class="tk-kw">WHEN</span> <span class="tk-kw">OTHERS</span>.
+        ls_list-genre_t = <span class="tk-str">'기타'</span>.
+    <span class="tk-kw">ENDCASE</span>.
+
+    <span class="tk-kw">IF</span> ls_list-stock = <span class="tk-num">0</span>.
+      ls_list-status = <span class="tk-str">'품절'</span>.
+    <span class="tk-kw">ELSEIF</span> ls_list-stock &lt; <span class="tk-num">3</span>.
+      ls_list-status = <span class="tk-str">'부족'</span>.
+    <span class="tk-kw">ELSE</span>.
+      ls_list-status = <span class="tk-str">'충분'</span>.
+    <span class="tk-kw">ENDIF</span>.
+
+    <span class="tk-kw">MODIFY</span> ct_list <span class="tk-kw">FROM</span> ls_list <span class="tk-kw">INDEX</span> sy-tabix.
+  <span class="tk-kw">ENDLOOP</span>.
+<span class="tk-kw">ENDFORM</span>.
+
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form sort_list : 고른 방법으로 정렬</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> sort_list <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+  <span class="tk-kw">IF</span> pa_price = abap_true.
+    <span class="tk-kw">SORT</span> ct_list <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>.
+  <span class="tk-kw">ELSE</span>.
+    <span class="tk-kw">SORT</span> ct_list <span class="tk-kw">BY</span> <span class="tk-kw">title</span>.
+  <span class="tk-kw">ENDIF</span>.
+<span class="tk-kw">ENDFORM</span>.
+
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">*&amp; Form display_alv : ALV로 결과 보여 주기</span>
+<span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-kw">FORM</span> display_alv <span class="tk-kw">CHANGING</span> ct_list <span class="tk-kw">TYPE</span> ty_t_list.
+  <span class="tk-kw">DATA</span>: lo_alv     <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_table,
+        lo_columns <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_columns_table,
+        lo_column  <span class="tk-kw">TYPE</span> <span class="tk-kw">REF</span> <span class="tk-kw">TO</span> cl_salv_column.
+
+  <span class="tk-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tk-kw">IMPORTING</span>
+          r_salv_table = lo_alv
+        <span class="tk-kw">CHANGING</span>
+          t_table      = ct_list ).
+    <span class="tk-kw">CATCH</span> cx_salv_msg.
+      <span class="tk-kw">MESSAGE</span> <span class="tk-str">'ALV를 만들지 못했어요.'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+      <span class="tk-kw">RETURN</span>.
+  <span class="tk-kw">ENDTRY</span>.
+
+  lo_columns = lo_alv-&gt;get_columns( ).
+  lo_columns-&gt;set_optimize( abap_true ).
+
+  <span class="tk-kw">TRY</span>.
+      lo_column = lo_columns-&gt;get_column( <span class="tk-str">'GENRE_T'</span> ).
+      lo_column-&gt;set_short_text( <span class="tk-str">'장르 이름'</span> ).
+      lo_column-&gt;set_medium_text( <span class="tk-str">'장르 이름'</span> ).
+      lo_column-&gt;set_long_text( <span class="tk-str">'장르 이름'</span> ).
+
+      lo_column = lo_columns-&gt;get_column( <span class="tk-str">'STATUS'</span> ).
+      lo_column-&gt;set_short_text( <span class="tk-str">'상태'</span> ).
+      lo_column-&gt;set_medium_text( <span class="tk-str">'상태'</span> ).
+      lo_column-&gt;set_long_text( <span class="tk-str">'상태'</span> ).
+    <span class="tk-kw">CATCH</span> cx_salv_not_found.
+  <span class="tk-kw">ENDTRY</span>.
+
+  lo_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_list_header( <span class="tk-kw">TEXT</span>-<span class="tk-num">t01</span> ).
+  lo_alv-&gt;get_display_settings( )-&gt;set_striped_pattern( abap_true ).
+
+  lo_alv-&gt;<span class="tk-kw">display</span>( ).
+<span class="tk-kw">ENDFORM</span>.</code></pre></div></details>
+<p>다 만들었으면 아래 표대로 실행해 보고, 결과가 같은지 확인해요. 7장에서 넣은 책 다섯 권 기준이에요.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>입력</th>
+<th>기대 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>아무것도 안 넣고 실행 (가격 높은 순)</td>
+<td>5권. B0004 → B0001 → B0005 → B0002 → B0003</td>
+</tr>
+<tr>
+<td>2</td>
+<td>정렬만 "제목순"</td>
+<td>5권. ABAP 첫걸음 → SQL 한 그릇 → 바다의 노래 → 별을 세는 밤 → 오늘의 산책</td>
+</tr>
+<tr>
+<td>3</td>
+<td>"재고 있는 책만" 체크</td>
+<td>4권. B0002(품절)가 빠져요</td>
+</tr>
+<tr>
+<td>4</td>
+<td>장르 <code>I</code></td>
+<td>2권. B0004, B0001 (상태: 부족, 충분)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>가격 <code>15000</code> ~ <code>20000</code></td>
+<td>2권. B0005, B0002</td>
+</tr>
+<tr>
+<td>6</td>
+<td>도서 번호 <code>B0009</code></td>
+<td>메시지 "조건에 맞는 책이 없어요."</td>
+</tr>
+<tr>
+<td>7</td>
+<td>장르 <code>N</code> + "재고 있는 책만"</td>
+<td>1권. B0005</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box warn"><div class="box-t">막혔을 때 점검하기</div><ul>
+<li>결과가 하나도 안 나와요 → 디버거로 <code>get_data</code> 다음에서 <code>gt_list</code>를 봐요. 비어 있으면 <code>WHERE</code> 조건이나 Table 데이터를 확인해요(SE16N).</li>
+<li>장르 이름·상태 칸이 비어 있어요 → <code>fill_text</code>에서 <code>MODIFY</code> 줄을 빠뜨리지 않았는지 봐요.</li>
+<li>상자 제목이나 메시지가 안 나와요 → Text Elements를 <strong>활성화</strong>했는지 확인해요.</li>
+<li>정렬이 안 바뀌어요 → <code>sort_list</code>를 <code>PERFORM</code>했는지, <code>display_alv</code>보다 <strong>먼저</strong> 불렀는지 확인해요.</li>
+<li>"제목순"에서 영어 제목이 한글 제목보다 먼저 나오는 것은 정상이에요. 글자 코드 순서로 정렬해서 그래요.</li>
+</ul></div>
+<h2 id="s12-8">12-8. 더 해 보기</h2>
+<p>여기까지 해냈다면 기초는 다 갖췄어요. 시간이 남으면 하나씩 도전해 보세요.</p>
+<ol>
+<li><strong>저자로도 찾기</strong>: <code>SELECT-OPTIONS so_auth FOR gs_book-author</code>를 더하고 <code>WHERE</code>에 조건을 이어요.</li>
+<li><strong>품절 책 세기</strong>: ALV를 띄우기 전에 품절 책이 몇 권인지 세어서, 1권 이상이면 <code>MESSAGE '품절 도서가 있어요.' TYPE 'S'</code>로 알려 줘요. (<code>LOOP … WHERE</code>와 변수 하나면 돼요.)</li>
+<li><strong>잘못된 입력 막기</strong>: <code>AT SELECTION-SCREEN</code>에서 가격 범위의 시작값 <code>so_price-low</code>가 0보다 작으면 오류 메시지를 띄워요. <code>SELECT-OPTIONS</code>는 Header Line이 있어서 <code>so_price-low</code>로 첫 줄의 값을 바로 읽을 수 있어요(8장 노트).</li>
+<li><strong>Function Module로 바꾸기</strong>: <code>fill_text</code>의 장르 이름 부분을 10장처럼 Function Module <code>Y_G<mark>##</mark>_GENRE_TEXT</code>(Import <code>IV_GENRE</code>, Export <code>EV_TEXT</code>)로 만들고 <code>CALL FUNCTION</code>으로 바꿔 불러요.</li>
+<li><strong>합계 줄</strong>: ALV에서 가격 칸을 고르고 합계 버튼을 눌러 보세요. 코드로 처음부터 합계를 보이게 하는 방법(<code>get_aggregations( )</code>)도 SE24에서 <code>CL_SALV_TABLE</code>의 Method 목록을 보며 찾아보세요.</li>
+</ol>
+<div class="box summary"><div class="box-t">정리</div><ul>
+<li>프로그램은 <strong>요구 사항 → 설계(흐름과 덩어리) → 단계별로 만들고 확인</strong> 순서로 만들어요.</li>
+<li>코드는 <strong>타입·변수 → Selection Screen → 이벤트 → FORM</strong> 순서로 구역을 나눠요.</li>
+<li><code>START-OF-SELECTION</code>에는 <code>PERFORM</code>만 적어서 흐름이 한눈에 보이게 해요.</li>
+<li>표를 <code>FORM</code>에 넘길 때는 <code>TYPES … TYPE STANDARD TABLE OF …</code>로 표의 Type 이름을 만들어요.</li>
+<li>단계마다 실행하고 디버거로 확인하면 큰 프로그램도 무섭지 않아요.</li>
+</ul></div>
+
+<div class="box next"><div class="box-t">다 왔어요!</div><p>0장의 다섯 칸 흐름을 모두 채웠어요. 수고 많았어요. 뒤의 <strong>부록</strong>에는 단축키, <code>sy-</code> 필드, 자주 보는 오류, 새 문법 대응표, 용어 사전, 그리고 다음에 배울 것을 모아 두었어요. 실습하다가 막히면 부록부터 펼쳐 보세요.</p></div>
+</section>

@@ -1,0 +1,478 @@
+<section class="chapter" id="ch07"><div class="ch-eyebrow">7장</div><h1 class="ch-title">ABAP Dictionary</h1>
+<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<li>데이터를 프로그램 밖에 <strong>오래 보관하려면</strong> 왜 Table이 필요한지 알아요.</li>
+<li>Domain, Data Element, Table이 어떤 관계인지 그림으로 설명할 수 있어요.</li>
+<li>SE11에서 Domain → Data Element → Table을 순서대로 만들고 활성화할 수 있어요.</li>
+<li><code>MANDT</code>와 Key가 왜 필요한지 알고, Table에 데이터를 넣고 조회할 수 있어요.</li>
+</ul></div>
+<h2 id="s7-1">7-1. 프로그램이 끝나도 남는 데이터</h2>
+<p>3~6장의 변수는 프로그램이 끝나면 <strong>모두 사라져요.</strong> 도서 목록처럼 내일도, 다음 달에도 써야 하는 데이터는 데이터베이스(DB)의 <strong>Table</strong>에 저장해요. SAP에서 Table의 설계도를 만들고 관리하는 곳이 <strong>ABAP Dictionary</strong>, 트랜잭션 코드는 <code>SE11</code>이에요.</p>
+<p>1주차에 이미 한 번 만들어 봤죠? 이번 장에서는 그때 한 일을 <strong>"왜 이렇게 하는지"</strong> 중심으로 차근차근 다시 정리해요. 그리고 8~9장에서 계속 쓸 <strong>도서 Table</strong>을 만들어요.</p>
+<h2 id="s7-2">7-2. Domain · Data Element · Field의 관계</h2>
+<p>Table의 칸(Field) 하나를 만들려면 두 가지 정보가 필요해요.</p>
+<ul>
+<li><strong>기술 정보</strong>: 글자인가 숫자인가, 몇 칸인가, 어떤 값만 들어갈 수 있나 → <strong>Domain</strong></li>
+<li><strong>의미 정보</strong>: 이 칸은 무엇인가, 화면에 어떤 이름표를 보여 줄까 → <strong>Data Element</strong></li>
+</ul>
+<figure class="fig" id="fig-7-1"><div class="fig-body"><div class="ddic">
+  <div class="dd-col">
+    <div class="dd-h">Domain <small>기술 규칙</small></div>
+    <div class="dd-box dom"><b>YG##_D_NAME</b><small>CHAR 40 · 소문자 허용</small></div>
+    <div class="dd-box dom"><b>YG##_D_GENRE</b><small>CHAR 1 · 고정값 N/I/E</small></div>
+  </div>
+  <div class="dd-arrow">→</div>
+  <div class="dd-col">
+    <div class="dd-h">Data Element <small>의미 · 이름표</small></div>
+    <div class="dd-box de"><b>YG##_E_TITLE</b><small>"도서 제목"</small></div>
+    <div class="dd-box de"><b>YG##_E_AUTHOR</b><small>"저자"</small></div>
+    <div class="dd-box de"><b>YG##_E_GENRE</b><small>"장르"</small></div>
+  </div>
+  <div class="dd-arrow">→</div>
+  <div class="dd-col">
+    <div class="dd-h">Table Field <small>실제 칸</small></div>
+    <div class="dd-box fld"><b>TITLE</b><small>YG##_BOOK</small></div>
+    <div class="dd-box fld"><b>AUTHOR</b><small>YG##_BOOK</small></div>
+    <div class="dd-box fld"><b>GENRE</b><small>YG##_BOOK</small></div>
+  </div>
+</div></div><figcaption><b>그림 7-1.</b>Domain → Data Element → Table Field</figcaption></figure>
+<p>그림에서 <code>YG<mark>##</mark>_D_NAME</code> Domain 하나를 <strong>제목과 저자 두 Data Element가 함께</strong> 쓰고 있어요. 둘 다 "글자 40칸"이라는 기술 규칙은 같지만, 의미(이름표)는 "도서 제목"과 "저자"로 달라요. 이렇게 규칙은 한 곳에 두고 여러 곳에서 다시 쓰는 것이 Dictionary의 핵심이에요.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>객체</th>
+<th>한 줄 설명</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Domain</strong></td>
+<td>Type, 길이, 허용 값</td>
+<td>그릇의 <strong>크기와 재질</strong></td>
+</tr>
+<tr>
+<td><strong>Data Element</strong></td>
+<td>의미, Field Label(이름표)</td>
+<td>그릇에 붙인 <strong>라벨</strong></td>
+</tr>
+<tr>
+<td><strong>Table</strong></td>
+<td>Field들을 모아 실제로 데이터를 저장</td>
+<td>그릇을 줄지어 놓은 <strong>찬장</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="box note"><div class="box-t">Data Element는 Domain 없이도 만들 수 있어요</div><p>Data Element의 Type에는 Domain 대신 <strong>Predefined Type</strong>(예: <code>INT4</code>, <code>DEC</code>)을 바로 적을 수도 있어요. 고정값이나 소문자 설정이 필요 없고, 다른 곳에서 다시 쓸 일이 없는 단순한 숫자라면 이 방법이 간단해요. 이번 장에서도 가격과 재고는 이렇게 만들어요.</p></div>
+<h2 id="s7-3">7-3. 이번 장에서 만들 것</h2>
+<p>8~9장에서 계속 쓸 도서 Table <code>YG<mark>##</mark>_BOOK</code>이에요. 만드는 순서는 <strong>Domain → Data Element → Table</strong>이에요. 아래에 있는 것부터 만들어야 위에서 가져다 쓸 수 있거든요.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Key</th>
+<th>Data Element</th>
+<th>Type (Domain 또는 Predefined)</th>
+<th>이름표</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MANDT</code></td>
+<td>✔</td>
+<td><code>MANDT</code></td>
+<td>CLNT 3 (SAP가 만들어 둔 것)</td>
+<td>클라이언트</td>
+</tr>
+<tr>
+<td><code>BOOK_ID</code></td>
+<td>✔</td>
+<td><code>YG<mark>##</mark>_E_BOOK_ID</code></td>
+<td>Domain <code>YG<mark>##</mark>_D_BOOK_ID</code> (CHAR 5)</td>
+<td>도서 번호</td>
+</tr>
+<tr>
+<td><code>TITLE</code></td>
+<td></td>
+<td><code>YG<mark>##</mark>_E_TITLE</code></td>
+<td>Domain <code>YG<mark>##</mark>_D_NAME</code> (CHAR 40, 소문자)</td>
+<td>도서 제목</td>
+</tr>
+<tr>
+<td><code>AUTHOR</code></td>
+<td></td>
+<td><code>YG<mark>##</mark>_E_AUTHOR</code></td>
+<td>Domain <code>YG<mark>##</mark>_D_NAME</code></td>
+<td>저자</td>
+</tr>
+<tr>
+<td><code>GENRE</code></td>
+<td></td>
+<td><code>YG<mark>##</mark>_E_GENRE</code></td>
+<td>Domain <code>YG<mark>##</mark>_D_GENRE</code> (CHAR 1, 고정값)</td>
+<td>장르</td>
+</tr>
+<tr>
+<td><code>PRICE</code></td>
+<td></td>
+<td><code>YG<mark>##</mark>_E_PRICE</code></td>
+<td>Predefined <code>DEC</code> 9, 소수 0</td>
+<td>가격</td>
+</tr>
+<tr>
+<td><code>STOCK</code></td>
+<td></td>
+<td><code>YG<mark>##</mark>_E_STOCK</code></td>
+<td>Predefined <code>INT4</code></td>
+<td>재고</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box note"><div class="box-t">이름 규칙</div><p>교재에서는 Domain은 <code>_D_</code>, Data Element는 <code>_E_</code>를 넣어 구분해요. Table과 Dictionary 객체도 Local Object로 저장하니 <code>Y</code>로 시작해요. 수업에서 따로 정한 이름이 있으면 그 규칙을 따르세요.</p></div>
+<h2 id="s7-4">7-4. Domain 만들기</h2>
+<h3>SE11 첫 화면</h3>
+<figure class="fig" id="fig-7-2"><div class="fig-body"><div class="gui">
+  <div class="gui-bar">ABAP Dictionary: Initial Screen</div>
+  <div class="gui-tool"><span class="gui-ico">✓</span><span class="gui-cmd">/nSE11</span></div>
+  <div class="gui-head">ABAP Dictionary: Initial Screen</div>
+  <div class="gui-body">
+    <div class="gui-radio">Database table <span class="gui-field">YG##_BOOK</span></div>
+    <div class="gui-radio">View</div>
+    <div class="gui-radio">Data type <span class="gui-field">YG##_E_TITLE</span><span class="gui-hint">← Data Element</span></div>
+    <div class="gui-radio">Type Group</div>
+    <div class="gui-radio on">Domain <span class="gui-field">YG##_D_NAME</span><span class="badge">1</span></div>
+    <div class="gui-radio">Search help</div>
+    <div class="gui-radio">Lock object</div>
+    <div class="gui-btnrow"><span class="gui-btn ghost">Display</span><span class="gui-btn ghost">Change</span><span class="gui-btn">Create</span><span class="badge">2</span></div>
+  </div>
+</div></div><figcaption><b>그림 7-2.</b>ABAP Dictionary 첫 화면 (SE11)</figcaption></figure>
+<p>라디오 버튼으로 <strong>무엇을 만들지</strong> 고르고, 옆 칸에 이름을 넣어요. Data Element는 <strong>Data type</strong> 줄에서 만들어요.</p>
+<h3>따라 하기 ① 글자 Domain <code>YG<mark>##</mark>_D_NAME</code></h3>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li><code>SE11</code>에서 <strong>Domain</strong>을 고르고 <code>YG<mark>##</mark>_D_NAME</code>을 입력한 뒤 <strong>Create</strong>를 눌러요. <span class="badge">1</span> <span class="badge">2</span></li>
+<li><strong>Short Description</strong>에 <code>도서 이름용 글자 40칸</code>을 적어요.</li>
+<li><strong>Definition</strong> 탭에서 <strong>Data Type</strong> <code>CHAR</code>, <strong>No. Characters</strong> <code>40</code>을 넣어요.</li>
+<li><strong>Lowercase</strong>에 체크해요. 영어 제목이 대문자로 바뀌지 않게 하려는 거예요.</li>
+<li>저장(Local Object) → 검사(<kbd>Ctrl</kbd>+<kbd>F2</kbd>) → 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>). 2장의 순서와 똑같아요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-7-3"><div class="fig-body"><div class="gui">
+  <div class="gui-head">Dictionary: Maintain Domain</div>
+  <div class="gui-body">
+    <div class="gui-row"><span class="gui-label">Domain</span><span class="gui-field">YG##_D_NAME</span><span class="inact-tag">New</span></div>
+    <div class="gui-row"><span class="gui-label">Short Description</span><span class="gui-field wide">도서 이름용 글자 40칸</span></div>
+  </div>
+  <div class="gui-tabs"><span>Properties</span><span class="on">Definition</span><span>Value Range</span></div>
+  <div class="gui-body">
+    <div class="gui-group"><div class="gui-group-t">Format</div>
+      <div class="gui-row"><span class="gui-label">Data Type</span><span class="gui-field s">CHAR</span><span class="gui-hint">Character String</span></div>
+      <div class="gui-row"><span class="gui-label">No. Characters</span><span class="gui-field s">40</span></div>
+      <div class="gui-row"><span class="gui-label">Decimal Places</span><span class="gui-field s dim">0</span></div>
+    </div>
+    <div class="gui-group"><div class="gui-group-t">Output Characteristics</div>
+      <div class="gui-row"><span class="gui-label">Output Length</span><span class="gui-field s">40</span></div>
+      <div class="gui-check on">Lowercase</div>
+    </div>
+  </div>
+</div></div><figcaption><b>그림 7-3.</b>Domain의 Definition 탭</figcaption></figure>
+<h3>따라 하기 ② 도서 번호 Domain <code>YG<mark>##</mark>_D_BOOK_ID</code></h3>
+<p>같은 방법으로 <strong>CHAR 5</strong>짜리 Domain을 만들어요. 도서 번호는 <code>B0001</code>처럼 대문자로 쓸 거라 Lowercase는 체크하지 않아요.</p>
+<h3>따라 하기 ③ 고정값이 있는 Domain <code>YG<mark>##</mark>_D_GENRE</code></h3>
+<p>장르는 아무 글자나 들어가면 안 되고 <strong>정해진 값만</strong> 들어가야 해요. 이럴 때 Domain의 <strong>Fixed Value(고정값)</strong>를 써요.</p>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li><code>YG<mark>##</mark>_D_GENRE</code>를 <strong>CHAR 1</strong>로 만들어요.</li>
+<li><strong>Value Range</strong> 탭으로 가서 아래처럼 고정값과 설명을 넣어요.</li>
+<li>저장 → 검사 → 활성화해요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-7-4"><div class="fig-body"><div class="gui">
+  <div class="gui-head">Dictionary: Maintain Domain</div>
+  <div class="gui-tabs"><span>Properties</span><span>Definition</span><span class="on">Value Range</span></div>
+  <div class="gui-body">
+    <div class="gui-group"><div class="gui-group-t">Single Vals</div>
+      <table class="gui-grid">
+        <tr><th>Fix. Val.</th><th>Short Descript.</th></tr>
+        <tr><td>N</td><td>소설</td></tr>
+        <tr><td>I</td><td>IT</td></tr>
+        <tr><td>E</td><td>에세이</td></tr>
+      </table>
+    </div>
+  </div>
+</div></div><figcaption><b>그림 7-4.</b>Value Range 탭에 고정값 넣기</figcaption></figure>
+
+<div class="box note"><div class="box-t">고정값 설명은 꼭 넣어요</div><p>코드는 <code>N</code>, <code>I</code>, <code>E</code>처럼 짧게 두고, 사람이 읽을 뜻은 <strong>Short Descript.</strong>에 적어요. 데이터를 넣는 화면에서 <kbd>F4</kbd>(값 목록)를 누르면 이 설명이 함께 보여서 고르기 쉬워요. 고정값에 없는 값을 넣으면 화면에서 오류로 막아 줘요.</p></div>
+<h2 id="s7-5">7-5. Data Element 만들기</h2>
+<h3>따라 하기 ① Domain을 쓰는 Data Element <code>YG<mark>##</mark>_E_TITLE</code></h3>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li><code>SE11</code>에서 <strong>Data type</strong>을 고르고 <code>YG<mark>##</mark>_E_TITLE</code>을 입력한 뒤 <strong>Create</strong>를 눌러요.</li>
+<li>작은 창이 뜨면 <strong>Data element</strong>를 고르고 <kbd>Enter</kbd>를 눌러요.</li>
+<li><strong>Short Description</strong>에 <code>도서 제목</code>을 적어요.</li>
+<li><strong>Data Type</strong> 탭에서 <strong>Elementary Type → Domain</strong>을 고르고 <code>YG<mark>##</mark>_D_NAME</code>을 넣어요. <span class="badge">1</span></li>
+<li><strong>Field Label</strong> 탭에서 길이별 이름표를 모두 적어요. <span class="badge">2</span></li>
+<li>저장 → 검사 → 활성화해요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-7-5"><div class="fig-body"><div class="pair">
+<div class="gui">
+  <div class="gui-head">Dictionary: Change Data Element</div>
+  <div class="gui-tabs"><span>Attributes</span><span class="on">Data Type</span><span>Field Label</span></div>
+  <div class="gui-body">
+    <div class="gui-group"><div class="gui-group-t">Elementary Type</div>
+      <div class="gui-radio on">Domain <span class="gui-field">YG##_D_NAME</span><span class="badge">1</span></div>
+      <div class="gui-row"><span class="gui-label dim">Data Type</span><span class="gui-field s dim">CHAR</span></div>
+      <div class="gui-row"><span class="gui-label dim">Length</span><span class="gui-field s dim">40</span></div>
+      <div class="gui-radio">Predefined Type</div>
+    </div>
+    <div class="gui-radio">Reference type</div>
+  </div>
+</div>
+<div class="gui">
+  <div class="gui-head">Dictionary: Change Data Element</div>
+  <div class="gui-tabs"><span>Attributes</span><span>Data Type</span><span class="on">Field Label</span></div>
+  <div class="gui-body">
+    <table class="gui-grid">
+      <tr><th></th><th>Length</th><th>Field Label</th></tr>
+      <tr><td>Short</td><td>10</td><td>제목</td></tr>
+      <tr><td>Medium</td><td>20</td><td>도서 제목</td></tr>
+      <tr><td>Long</td><td>40</td><td>도서 제목</td></tr>
+      <tr><td>Heading</td><td>40</td><td>도서 제목</td></tr>
+    </table>
+    <div class="gui-hint">← 이름표 <span class="badge">2</span></div>
+  </div>
+</div>
+</div></div><figcaption><b>그림 7-5.</b>Data Element의 Data Type 탭과 Field Label 탭</figcaption></figure>
+<p>Domain을 넣고 <kbd>Enter</kbd>를 누르면 Data Type과 Length가 Domain에서 <strong>자동으로</strong> 채워져요(회색). 직접 고칠 필요가 없어요.</p>
+<p>같은 방법으로 아래 Data Element를 만들어요.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Data Element</th>
+<th>Domain</th>
+<th>Short Description · Field Label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>YG<mark>##</mark>_E_BOOK_ID</code></td>
+<td><code>YG<mark>##</mark>_D_BOOK_ID</code></td>
+<td>도서 번호</td>
+</tr>
+<tr>
+<td><code>YG<mark>##</mark>_E_AUTHOR</code></td>
+<td><code>YG<mark>##</mark>_D_NAME</code></td>
+<td>저자</td>
+</tr>
+<tr>
+<td><code>YG<mark>##</mark>_E_GENRE</code></td>
+<td><code>YG<mark>##</mark>_D_GENRE</code></td>
+<td>장르</td>
+</tr>
+</tbody>
+</table></div>
+<h3>따라 하기 ② Predefined Type을 쓰는 Data Element</h3>
+<p>가격과 재고는 Domain 없이 만들어 볼게요. <strong>Data Type</strong> 탭에서 <strong>Predefined Type</strong>을 고르고 Type을 직접 적으면 돼요.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Data Element</th>
+<th>Predefined Type</th>
+<th>Length</th>
+<th>Decimal Places</th>
+<th>Field Label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>YG<mark>##</mark>_E_PRICE</code></td>
+<td><code>DEC</code></td>
+<td>9</td>
+<td>0</td>
+<td>가격</td>
+</tr>
+<tr>
+<td><code>YG<mark>##</mark>_E_STOCK</code></td>
+<td><code>INT4</code></td>
+<td>(자동 10)</td>
+<td></td>
+<td>재고</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box note"><div class="box-t">Field Label은 어디에 쓰여요?</div><p>Field Label은 Selection Screen의 이름표(5장 Selection Text의 <strong>Dictionary Ref.</strong>), 데이터 입력 화면, 11장의 ALV 표 머리글에 <strong>자동으로</strong> 쓰여요. 한 번 잘 적어 두면 여러 곳에서 이름표를 따로 붙이지 않아도 돼요.</p></div>
+<h2 id="s7-6">7-6. Table 만들기</h2>
+<h3>따라 하기 ① Table 속성 정하기</h3>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li><code>SE11</code>에서 <strong>Database table</strong>을 고르고 <code>YG<mark>##</mark>_BOOK</code>을 입력한 뒤 <strong>Create</strong>를 눌러요.</li>
+<li><strong>Short Description</strong>에 <code>도서 목록</code>을 적어요.</li>
+<li><strong>Delivery and Maintenance</strong> 탭에서
+   - <strong>Delivery Class</strong>: <code>A</code> (업무 데이터를 담는 Table)
+   - <strong>Data Browser/Table View Editing</strong>: <code>Display/Maintenance Allowed</code> (나중에 화면에서 데이터를 넣을 수 있게)</li>
+</ol></div>
+<h3>따라 하기 ② Field 넣기</h3>
+<p><strong>Fields</strong> 탭에서 7-3의 표대로 한 줄씩 넣어요.</p>
+<figure class="fig" id="fig-7-6"><div class="fig-body"><div class="gui">
+  <div class="gui-head">Dictionary: Maintain Table</div>
+  <div class="gui-row" style="padding:0.5rem 0.9rem 0"><span class="gui-label">Transparent Table</span><span class="gui-field">YG##_BOOK</span><span class="inact-tag">New</span></div>
+  <div class="gui-tabs"><span>Attributes</span><span>Delivery and Maintenance</span><span class="on">Fields</span><span>Input Help/Check</span></div>
+  <div class="gui-body">
+    <table class="gui-grid">
+      <tr><th>Field</th><th>Key</th><th>Initial Val.</th><th>Data element</th><th>Data Type</th><th>Length</th><th>Short Description</th></tr>
+      <tr class="sel"><td>MANDT</td><td>☑</td><td>☑</td><td>MANDT</td><td>CLNT</td><td>3</td><td>Client</td></tr>
+      <tr class="sel"><td>BOOK_ID</td><td>☑</td><td>☑</td><td>YG##_E_BOOK_ID</td><td>CHAR</td><td>5</td><td>도서 번호</td></tr>
+      <tr><td>TITLE</td><td>☐</td><td>☐</td><td>YG##_E_TITLE</td><td>CHAR</td><td>40</td><td>도서 제목</td></tr>
+      <tr><td>AUTHOR</td><td>☐</td><td>☐</td><td>YG##_E_AUTHOR</td><td>CHAR</td><td>40</td><td>저자</td></tr>
+      <tr><td>GENRE</td><td>☐</td><td>☐</td><td>YG##_E_GENRE</td><td>CHAR</td><td>1</td><td>장르</td></tr>
+      <tr><td>PRICE</td><td>☐</td><td>☐</td><td>YG##_E_PRICE</td><td>DEC</td><td>9</td><td>가격</td></tr>
+      <tr><td>STOCK</td><td>☐</td><td>☐</td><td>YG##_E_STOCK</td><td>INT4</td><td>10</td><td>재고</td></tr>
+    </table>
+  </div>
+</div></div><figcaption><b>그림 7-6.</b>Fields 탭</figcaption></figure>
+<ul>
+<li><strong>Field</strong>에 칸 이름, <strong>Data element</strong>에 7-5에서 만든 이름을 넣고 <kbd>Enter</kbd>를 누르면 Type, 길이, 설명이 자동으로 채워져요.</li>
+<li><strong>Key</strong>는 "이 값으로 한 줄을 콕 집어낼 수 있는 칸"이에요. 도서 번호가 같은 책이 두 권 있으면 안 되니까 <code>BOOK_ID</code>가 Key예요.</li>
+<li>Key는 <strong>Table 맨 앞에 붙여서</strong> 놓아요. <code>MANDT</code>, <code>BOOK_ID</code> 순서예요.</li>
+</ul>
+<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<li><strong><code>MANDT</code>를 빼먹지 마세요.</strong> 1장 1-2에서 본 것처럼, <code>MANDT</code>가 있어야 데이터가 클라이언트(집)마다 나뉘어요. 업무 데이터를 담는 Table이라면 <strong>항상 첫 번째 Field, Key</strong>로 넣어요. 1주차 과제에서 가장 많이 빠졌던 부분이에요.</li>
+<li><strong>Key를 전부 체크하면</strong> "모든 칸이 같아야 같은 줄"이 되어 버려요. 그러면 같은 도서 번호로 제목만 다른 줄이 여러 개 들어갈 수 있어요. Key는 꼭 필요한 칸만 체크해요.</li>
+</ul></div>
+<h3>따라 하기 ③ Technical Settings와 Enhancement Category</h3>
+<p>Table은 활성화하기 전에 두 가지를 더 정해야 해요.</p>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li>도구 모음의 <strong>Technical Settings</strong> 버튼을 눌러요.
+   - <strong>Data Class</strong>: <code>APPL0</code> (자주 바뀌지 않는 기본 데이터)
+   - <strong>Size Category</strong>: <code>0</code> (데이터가 적은 Table)
+   - 저장하고 <kbd>F3</kbd>으로 돌아와요.</li>
+<li>메뉴 <strong>Extras → Enhancement Category</strong>에서 <code>Can Be Enhanced (Deep)</code>을 고르고 Copy를 눌러요. (안 하면 활성화할 때 경고가 나와요.)</li>
+<li>저장 → 검사 → 활성화해요. 상태가 <strong>Active</strong>가 되면 완성이에요!</li>
+</ol></div>
+
+<div class="box note"><div class="box-t">Structure는 Table과 무엇이 달라요?</div><p>SE11의 Data type 아래에는 <strong>Structure</strong>도 있어요. Field를 모아 둔 모양은 Table과 똑같지만 <strong>DB에 데이터를 저장하지 않는</strong> 설계도예요. 8장에서 프로그램 안의 Structure를 배우면 자연스럽게 이해될 거예요.</p></div>
+<h2 id="s7-7">7-7. 데이터 넣고 조회하기</h2>
+<h3>데이터 넣기</h3>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li>Table <code>YG<mark>##</mark>_BOOK</code> 화면에서 메뉴 <strong>Utilities → Table Contents → Create Entries</strong>를 눌러요.</li>
+<li>입력 화면이 나오면 아래 첫 줄을 넣고 저장(<kbd>Ctrl</kbd>+<kbd>S</kbd>)해요. <code>MANDT</code>는 자동으로 들어가서 칸이 없어요.</li>
+<li><strong>Reset</strong>을 누르면 빈 화면이 되니, 나머지 네 줄도 같은 방법으로 넣어요.</li>
+<li>장르 칸에서 <kbd>F4</kbd>를 눌러 보세요. 고정값 목록이 나와요.</li>
+</ol></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>BOOK_ID</th>
+<th>TITLE</th>
+<th>AUTHOR</th>
+<th>GENRE</th>
+<th>PRICE</th>
+<th>STOCK</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0001</td>
+<td>ABAP 첫걸음</td>
+<td>김에이</td>
+<td>I</td>
+<td>25000</td>
+<td>3</td>
+</tr>
+<tr>
+<td>B0002</td>
+<td>바다의 노래</td>
+<td>박소설</td>
+<td>N</td>
+<td>15000</td>
+<td>0</td>
+</tr>
+<tr>
+<td>B0003</td>
+<td>오늘의 산책</td>
+<td>이수필</td>
+<td>E</td>
+<td>13000</td>
+<td>5</td>
+</tr>
+<tr>
+<td>B0004</td>
+<td>SQL 한 그릇</td>
+<td>김에이</td>
+<td>I</td>
+<td>28000</td>
+<td>2</td>
+</tr>
+<tr>
+<td>B0005</td>
+<td>별을 세는 밤</td>
+<td>정하늘</td>
+<td>N</td>
+<td>17000</td>
+<td>7</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="fig" id="fig-7-7"><div class="fig-body"><div class="gui narrow">
+  <div class="gui-head">Table YG##_BOOK Insert</div>
+  <div class="gui-apptool"><span class="gui-ico">▣<i>Save</i></span><span class="gui-ico">↺<i>Reset</i></span></div>
+  <div class="gui-body">
+    <div class="gui-row"><span class="gui-label">도서 번호</span><span class="gui-field s">B0001</span></div>
+    <div class="gui-row"><span class="gui-label">도서 제목</span><span class="gui-field">ABAP 첫걸음</span></div>
+    <div class="gui-row"><span class="gui-label">저자</span><span class="gui-field">김에이</span></div>
+    <div class="gui-row"><span class="gui-label">장르</span><span class="gui-field s">I</span><span class="gui-hint">← F4로 고르기</span></div>
+    <div class="gui-row"><span class="gui-label">가격</span><span class="gui-field s">25000</span></div>
+    <div class="gui-row"><span class="gui-label">재고</span><span class="gui-field s">3</span></div>
+  </div>
+  <div class="gui-status ok"><span>✔ Database record successfully created</span></div>
+</div></div><figcaption><b>그림 7-7.</b>Create Entries 입력 화면</figcaption></figure>
+<p>입력 칸 옆의 이름이 <code>도서 번호</code>, <code>도서 제목</code>으로 보이죠? 7-5에서 적은 <strong>Field Label</strong>이 자동으로 쓰인 거예요.</p>
+<h3>데이터 조회하기: SE16N</h3>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li>명령 필드에 <code>/nSE16N</code>을 입력해요.</li>
+<li><strong>Table</strong> 칸에 <code>YG<mark>##</mark>_BOOK</code>을 넣고 <kbd>Enter</kbd>를 눌러요.</li>
+<li>조건 없이 <kbd>F8</kbd>을 누르면 넣은 데이터가 모두 보여요. 조건 칸에 값을 넣으면 걸러서 볼 수도 있어요.</li>
+</ol></div>
+
+<figure class="fig" id="fig-7-8"><div class="fig-body"><div class="gui">
+  <div class="gui-head">Table to be searched YG##_BOOK   Number of hits 5</div>
+  <div class="gui-body">
+    <table class="gui-grid">
+      <tr><th>도서 번호</th><th>도서 제목</th><th>저자</th><th>장르</th><th>가격</th><th>재고</th></tr>
+      <tr><td>B0001</td><td>ABAP 첫걸음</td><td>김에이</td><td>I</td><td>25,000</td><td>3</td></tr>
+      <tr><td>B0002</td><td>바다의 노래</td><td>박소설</td><td>N</td><td>15,000</td><td>0</td></tr>
+      <tr><td>B0003</td><td>오늘의 산책</td><td>이수필</td><td>E</td><td>13,000</td><td>5</td></tr>
+      <tr><td>B0004</td><td>SQL 한 그릇</td><td>김에이</td><td>I</td><td>28,000</td><td>2</td></tr>
+      <tr><td>B0005</td><td>별을 세는 밤</td><td>정하늘</td><td>N</td><td>17,000</td><td>7</td></tr>
+    </table>
+  </div>
+</div></div><figcaption><b>그림 7-8.</b>SE16N 조회 결과</figcaption></figure>
+
+<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<li><strong>Create Entries가 안 보이거나 막혀요</strong>: 7-6에서 <strong>Data Browser/Table View Editing</strong>을 <code>Display/Maintenance Allowed</code>로 했는지 확인해요.</li>
+<li><strong>같은 도서 번호를 또 넣었더니 오류</strong>: Key가 같은 줄은 두 번 넣을 수 없어요. 정상이에요.</li>
+<li><strong>Table이 활성화되지 않아요</strong>: Data Element나 Domain 중 활성화 안 된 것이 있는지 확인해요. 아래 객체부터 차례로 활성화해야 해요.</li>
+</ul></div>
+
+<div class="box quiz"><div class="box-t">확인 문제</div><ol>
+<li>Domain과 Data Element는 각각 무엇을 정할까요? 한 단어씩으로 말해 보세요.</li>
+<li>제목과 저자가 같은 Domain <code>YG<mark>##</mark>_D_NAME</code>을 쓰는데도 화면에 다른 이름표가 보이는 이유는 무엇일까요?</li>
+<li>Table에 <code>MANDT</code>를 넣지 않으면 어떤 문제가 생길까요?</li>
+<li>Domain, Data Element, Table은 어떤 순서로 만들고 활성화해야 할까요?</li>
+<li>장르 칸에 <code>X</code>를 넣었더니 오류가 났어요. 왜 그럴까요?</li>
+</ol></div>
+
+<details class="answer solo"><summary>정답 보기</summary><ol>
+<li>Domain은 <strong>기술 규칙</strong>(Type·길이·허용 값), Data Element는 <strong>의미</strong>(설명·이름표)예요.</li>
+<li>이름표(Field Label)는 Domain이 아니라 <strong>Data Element</strong>에 있기 때문이에요. 제목과 저자는 Data Element가 서로 달라요.</li>
+<li>데이터가 클라이언트별로 나뉘지 않아서, <strong>다른 클라이언트에서도 같은 데이터가 보이게</strong> 돼요. 업무 데이터 Table에는 항상 <code>MANDT</code>를 첫 Key로 넣어요.</li>
+<li><strong>Domain → Data Element → Table</strong> 순서예요. 아래에서 쓰는 것이 먼저 활성화되어 있어야 해요.</li>
+<li><code>YG<mark>##</mark>_D_GENRE</code> Domain의 <strong>고정값</strong>에 <code>N</code>, <code>I</code>, <code>E</code>만 있기 때문이에요.</li>
+</ol></details>
+
+<div class="box summary"><div class="box-t">정리</div><ul>
+<li>오래 보관할 데이터는 DB Table에 저장하고, 그 설계도는 <code>SE11</code>(ABAP Dictionary)에서 만들어요.</li>
+<li>Domain은 기술 규칙, Data Element는 의미와 이름표, Table Field는 실제 칸이에요. 만드는 순서도 이 순서예요.</li>
+<li>Domain 하나를 여러 Data Element가 다시 쓸 수 있어요. 정해진 값만 받으려면 Domain의 고정값을 써요.</li>
+<li>Table에는 <code>MANDT</code>를 첫 Key로 넣고, Key는 한 줄을 콕 집어낼 수 있는 칸만 체크해요.</li>
+<li>데이터는 <strong>Utilities → Table Contents → Create Entries</strong>로 넣고, <code>SE16N</code>으로 조회해요.</li>
+</ul></div>
+
+<div class="box next"><div class="box-t">다음 장 예고</div><p>Table에 도서 다섯 권이 들어갔어요. 이 데이터를 프로그램으로 가져오면 <strong>여러 줄</strong>이 한꺼번에 와요. 8장에서는 여러 줄 데이터를 메모리에 담는 그릇, <strong>Internal Table</strong>을 배워요.</p></div>
+</section>
