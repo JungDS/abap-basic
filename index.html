@@ -792,7 +792,7 @@ html.cm-narrow .cm-anchor .cm-mark { top: 0.25rem; }
 .cm-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
 .cm-item { margin: 0; padding-bottom: 0.7rem; border-bottom: 1px solid var(--line); }
 .cm-meta { display: flex; align-items: center; gap: 0.5rem; font-size: 0.86rem; }
-.cm-meta b { font-family: var(--font-head); min-width: 0; overflow-wrap: anywhere; }
+.cm-meta b { font-family: var(--font-head); flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cm-meta time { color: var(--muted); font-size: 0.74rem; font-variant-numeric: tabular-nums; white-space: nowrap; margin-right: auto; }
 .cm-body { margin: 0.2rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.93rem; line-height: 1.6; }
 .cm-like { appearance: none; flex: none; display: inline-flex; align-items: center; gap: 0.3rem; font: inherit; font-size: 0.78rem; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.6rem; cursor: pointer; font-variant-numeric: tabular-nums; }
@@ -1313,9 +1313,29 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
     panel.appendChild(head); panel.appendChild(quoteBox); panel.appendChild(scroll); panel.appendChild(form);
     [fab, hint, bar, backdrop, panel].forEach(function (n) { document.body.appendChild(n); });
 
+    // 시트가 시각 글자를 날짜 값으로 바꿔 두면 "Wed Nov 18 2026 14:10:00 GMT+0900 (…)"처럼 길게 온다.
+    // 어떤 모양으로 오든 "11/18 14:10"으로 짧게 보여 준다.
+    function shortTime(t) {
+      t = String(t || '');
+      var p2 = function (n) { return (n < 10 ? '0' : '') + n; }, m;
+      if ((m = t.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?!.*(Z|[+-]\d{2}:?\d{2})$)/)))
+        return (+m[2]) + '/' + (+m[3]) + ' ' + m[4] + ':' + m[5];
+      var MON = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+      if ((m = t.match(/\b([A-Z][a-z]{2}) (\d{1,2}) (\d{4}) (\d{2}):(\d{2})/)) && MON[m[1]])
+        return MON[m[1]] + '/' + (+m[2]) + ' ' + m[4] + ':' + m[5];
+      var d = new Date(t);
+      if (!isNaN(d)) {
+        try {
+          var f = {}; new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+            .formatToParts(d).forEach(function (x) { f[x.type] = x.value; });
+          return f.month + '/' + f.day + ' ' + f.hour + ':' + f.minute;
+        } catch (e) { return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()); }
+      }
+      return t.slice(0, 16);
+    }
     function item(c) {
       var li = el('li', 'cm-item'), meta = el('div', 'cm-meta');
-      meta.appendChild(el('b', null, c.name)); meta.appendChild(el('time', null, c.time));
+      meta.appendChild(el('b', null, c.name)); meta.appendChild(el('time', null, shortTime(c.time)));
       var likeB = el('button', 'cm-like'); likeB.type = 'button';
       var num = el('span', null, String(c.likes || 0));
       likeB.appendChild(el('span', 'cm-heart', '♥')); likeB.appendChild(num);
