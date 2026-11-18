@@ -424,10 +424,10 @@ START-OF-SELECTION.
 <p>회사 코드에서도 흔히 보는 오래된 모양이에요. 6-8에서 처음 직접 써 보고, 9장부터는 "조건에 맞는 데이터가 없어요" 같은 안내에 계속 쓰니 짝으로 기억해 두세요.</p>
 <h2 id="s5-6">5-6. 메시지를 한곳에 모으기: Message Class</h2>
 <p>5-5에서는 오류 문장을 Text Symbol <code class="nb">E01</code>에 넣었어요. 그런데 Text Symbol은 <strong>그 프로그램 안에서만</strong> 쓸 수 있어요. 다른 프로그램에서 같은 문장이 필요하면 또 만들어야 해요. 그래서 회사 프로그램은 메시지를 <strong>Message Class</strong>라는 공용 보관함에 <strong>번호</strong>를 붙여 모아 두고, 여러 프로그램이 같이 꺼내 써요. 메시지를 관리하는 T-code <code class="nb">SE91</code>에서 내 Message Class를 하나 만들어 볼게요.</p>
-<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Message Class</b><span class="make-tc">SE91</span></div><dl><dt>Message Class</dt><dd><code class="nb">YMC_G<mark class="gno">##</mark></code></dd><dt>Short Description</dt><dd>G<mark class="gno">##</mark> 연습용 메시지</dd></dl></div>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Message Class</b><span class="make-tc">SE91</span></div><dl><dt>Message Class</dt><dd><code class="nb">YMSG_G<mark class="gno">##</mark></code></dd><dt>Short Description</dt><dd>G<mark class="gno">##</mark> 연습용 메시지</dd></dl></div>
 <div class="box try short"><div class="box-t">직접 해 보기</div><ol>
 <li>명령 필드에 <code class="nb">/nSE91</code>을 넣고 <kbd>Enter</kbd>를 눌러요.</li>
-<li><strong>Message class</strong> 칸에 <code class="nb">YMC_G<mark class="gno">##</mark></code>를 넣고 <strong>Create</strong>를 눌러요.</li>
+<li><strong>Message class</strong> 칸에 <code class="nb">YMSG_G<mark class="gno">##</mark></code>를 넣고 <strong>Create</strong>를 눌러요.</li>
 <li><strong>Short text</strong> 칸에 카드의 Short Description 값 <code>G<mark class="gno">##</mark> 연습용 메시지</code>를 넣고 저장(<kbd>Ctrl</kbd>+<kbd>S</kbd>)해요. 늘 하던 대로 <strong>Local Object</strong>를 골라요.</li>
 <li><strong>Messages</strong> 탭을 눌러요. <code class="nb">001</code> 줄에 <code>이름을 입력해 주세요</code>, <code class="nb">002</code> 줄에 <code>&amp;1님, 반가워요!</code>를 넣고 다시 저장해요.</li>
 </ol>
@@ -435,7 +435,7 @@ START-OF-SELECTION.
 <figure class="fig" id="fig-5-6"><div class="fig-body"><div class="gui">
   <div class="gui-head">Message Maintenance: Change Messages</div>
   <div class="gui-body">
-    <div class="gui-row"><span class="gui-label">Message class</span><span class="gui-field">YMC_G<mark class="gno">##</mark></span></div>
+    <div class="gui-row"><span class="gui-label">Message class</span><span class="gui-field">YMSG_G<mark class="gno">##</mark></span></div>
   </div>
   <div class="gui-tabs"><span>Attributes</span><span class="on">Messages</span></div>
   <div class="gui-body">
@@ -450,7 +450,7 @@ START-OF-SELECTION.
 </div></div><figcaption><b>그림 5-6.</b>SE91의 Messages 탭 (화면 모양은 버전에 따라 조금 달라요)</figcaption></figure>
 <p><code class="nb">&amp;1</code>은 <strong>나중에 값이 들어올 빈자리</strong>예요. 메시지를 띄울 때 프로그램이 넘겨준 값이 이 자리에 들어가요. 이제 이 메시지를 쓰는 프로그램을 만들어요.</p>
 <div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_122</code></dd><dt>Title</dt><dd>[예제] Message Class로 입력 검사</dd></dl></div>
-<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_122 MESSAGE-ID ymc_g##.   &quot; 이 프로그램이 쓸 Message Class
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_122 MESSAGE-ID ymsg_g##.   &quot; 이 프로그램이 쓸 Message Class
 
 PARAMETERS pa_name TYPE c LENGTH 10.
 
@@ -460,7 +460,7 @@ AT SELECTION-SCREEN.
   ENDIF.
 
 START-OF-SELECTION.
-  MESSAGE s002 WITH pa_name.          &quot; 002: &amp;1님, 반가워요!" title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_122 MESSAGE-ID ymc_g<mark class="gno">##</mark>.   <span class="tk-cmt">" 이 프로그램이 쓸 Message Class</span>
+  MESSAGE s002 WITH pa_name.          &quot; 002: &amp;1님, 반가워요!" title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_122 MESSAGE-ID ymsg_g<mark class="gno">##</mark>.   <span class="tk-cmt">" 이 프로그램이 쓸 Message Class</span>
 
 <span class="tk-kw">PARAMETERS</span> pa_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>.
 
@@ -472,16 +472,16 @@ START-OF-SELECTION.
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">MESSAGE</span> s002 <span class="tk-kw">WITH</span> pa_name.          <span class="tk-cmt">" 002: &amp;1님, 반가워요!</span></code></pre></div>
 <ul>
-<li>이번에는 SAP가 넣어 준 <code class="nb">REPORT</code> 줄도 고쳐요. 마침표 앞에 <code>MESSAGE-ID ymc_g<mark class="gno">##</mark></code>를 덧붙여요. "이 프로그램은 <code class="nb">YMC_G<mark class="gno">##</mark></code>의 메시지를 써요"라는 뜻이에요. 빼먹으면 <code>MESSAGE e001.</code> 줄에서 문법 오류가 나요.</li>
+<li>이번에는 SAP가 넣어 준 <code class="nb">REPORT</code> 줄도 고쳐요. 마침표 앞에 <code>MESSAGE-ID ymsg_g<mark class="gno">##</mark></code>를 덧붙여요. "이 프로그램은 <code class="nb">YMSG_G<mark class="gno">##</mark></code>의 메시지를 써요"라는 뜻이에요. 빼먹으면 <code>MESSAGE e001.</code> 줄에서 문법 오류가 나요.</li>
 <li><code>MESSAGE e001.</code>의 <code class="nb">e</code>는 5-5에서 배운 종류(Error), <code class="nb">001</code>은 메시지 번호예요. 종류 글자를 번호 앞에 붙여 써요. <code class="nb">s002</code>는 002번을 Success로 띄워요.</li>
 <li><code>WITH pa_name</code>은 메시지의 <code class="nb">&amp;1</code> 자리에 <code class="nb">pa_name</code>의 값을 넣어요. 빈자리는 <code class="nb">&amp;1</code>부터 <code class="nb">&amp;4</code>까지 네 개를 쓸 수 있어요.</li>
 <li>빈칸을 막는 것은 <code class="nb">OBLIGATORY</code>로도 돼요. 여기서는 내가 만든 메시지를 띄워 보려고 직접 검사했어요.</li>
 </ul>
 <p>이름을 비우고 <kbd>F8</kbd>을 누르면 상태 표시줄에 빨간색으로 <code>이름을 입력해 주세요</code>가 나와요. <code class="nb">홍길동</code>을 넣고 누르면 <code>홍길동님, 반가워요!</code>가 초록색으로 나와요. <code class="nb">WRITE</code>로 출력한 것이 없어서 결과 화면은 뜨지 않고 Selection Screen에 그대로 있어요. <code class="nb">s002</code>를 <code class="nb">i002</code>로 바꾸면 같은 문장이 팝업 창으로 나와요.</p>
-<p>이름표를 붙이지 않아서 입력 칸 옆에는 <code class="nb">PA_NAME</code>이 보여요. 문장 대신 <code class="nb">E:YMC_G<mark class="gno">##</mark>:001</code> 같은 글자가 나오면 SE91의 Messages 탭에서 그 번호에 글자를 넣고 저장했는지 봐요.</p>
+<p>이름표를 붙이지 않아서 입력 칸 옆에는 <code class="nb">PA_NAME</code>이 보여요. 문장 대신 <code class="nb">E:YMSG_G<mark class="gno">##</mark>:001</code> 같은 글자가 나오면 SE91의 Messages 탭에서 그 번호에 글자를 넣고 저장했는지 봐요.</p>
 <h3>회사 코드에서 만나는 모양</h3>
 <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-cmt">" ① Message Class 이름을 괄호 안에 적은 꼴</span>
-<span class="tk-kw">MESSAGE</span> s001(ymc_g<mark class="gno">##</mark>) <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+<span class="tk-kw">MESSAGE</span> s001(ymsg_g<mark class="gno">##</mark>) <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
 
 <span class="tk-cmt">" ② 다른 코드가 남긴 메시지를 그대로 다시 띄우는 꼴</span>
 <span class="tk-kw">MESSAGE</span> ID sy-msgid <span class="tk-kw">TYPE</span> sy-msgty NUMBER sy-msgno
