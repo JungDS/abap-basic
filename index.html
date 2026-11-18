@@ -144,6 +144,19 @@ td code { white-space: nowrap; }
   background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 0.15rem 0.55rem; cursor: pointer;
 }
 .code .copy:hover, .code .copy:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
+
+/* 새로 만들기 카드: 무엇을, 어떤 이름과 Title 로 만드는지 */
+.make { margin: 1.2rem 0; border: 1.5px solid var(--accent); border-radius: 10px; background: var(--paper); overflow: hidden; }
+.make-t { display: flex; align-items: baseline; gap: 0.55rem; padding: 0.38rem 0.9rem; background: var(--accent-soft); font-family: var(--font-head); font-size: 0.9rem; line-height: 1.5; }
+.make-k { font-weight: 700; color: var(--accent); font-size: 0.8rem; letter-spacing: 0.02em; }
+.make-t b { font-weight: 700; }
+.make-tc { margin-left: auto; font-family: var(--font-code); font-size: 0.82rem; color: var(--muted); }
+.make dl { margin: 0; padding: 0.55rem 0.9rem 0.6rem; display: grid; grid-template-columns: fit-content(44%) minmax(0, 1fr); gap: 0.28rem 1rem; align-items: baseline; }
+.make dt { font-family: var(--font-head); font-size: 0.84rem; font-weight: 600; color: var(--muted); word-break: keep-all; }   /* 긴 칸 이름은 좁은 화면에서 줄을 바꾼다(값이 낱말 가운데에서 꺾이지 않게) */
+.make dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.make dd code { white-space: normal; overflow-wrap: anywhere; }
+.make-note { margin: 0; padding: 0 0.9rem 0.6rem; font-size: 0.88rem; color: var(--muted); }
+.box .make { margin: 0.7rem 0; }
 .tk-kw { color: var(--kw); font-weight: 700; }
 .tk-str { color: var(--str); }
 .tk-cmt { color: var(--cmt); font-style: normal; }
@@ -326,7 +339,7 @@ html { scroll-behavior: smooth; }
     --gui-frame: #c3cdd9; --gui-bar: #e9eef4; --gui-bg: #f7f9fb; --gui-field: #ffffff; --gui-head: #355377; --gui-head-fg: #ffffff; --gui-btn: #ffffff; --gui-sel: #dde9f8;
     --ok: #1b7f3b; --err: #c2352b; color-scheme: light;
   }
-  body { font-size: 10.5pt; line-height: 1.65; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-size: 10pt; line-height: 1.6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .page { display: block; max-width: none; padding: 0; }
   main { max-width: none; }
   nav.toc, .code .copy { display: none !important; }
@@ -334,12 +347,17 @@ html { scroll-behavior: smooth; }
   section.chapter { break-before: page; padding-top: 0; border-top: 0 !important; margin-top: 0 !important; }
   h2 { margin-top: 1.6rem; }
   h2, h3, h4 { break-after: avoid; }
-  .box, figure.fig, .code, table, .compare, details.answer { break-inside: avoid; }
+  /* 짧은 것은 한 쪽에 모으고, 긴 코드·긴 상자·긴 표·정답은 쪽을 넘어가게 둔다(빈 자리가 크게 남지 않게) */
+  .box.short, figure.fig, .code:not(.long), table.short, .compare, .make { break-inside: avoid; }
+  .box-t, details.answer > summary { break-after: avoid; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  p, li { orphans: 2; widows: 2; }
   .box.goal + *, h2 + * { break-before: avoid; }
   .gui, .flow, .land, .bldg, .pkg, .steps7, .versions { min-width: 0; box-shadow: none; }
   .steps7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
   figure.fig .fig-body { overflow: visible; }
-  .code pre { white-space: pre-wrap; overflow: visible; font-size: 9pt; }
+  .code pre { white-space: pre-wrap; overflow: visible; font-size: 8.8pt; }
   a { color: inherit; text-decoration: none; }
   details.answer summary { list-style: none; }
   details.answer summary::-webkit-details-marker { display: none; }
@@ -561,7 +579,11 @@ pre.gui-code .ln.cur::after { content: "▶"; color: #e0a800; margin-left: -0.2r
 .sm-row.sm-sub { border-left-color: var(--try); background: var(--try-soft); }
 @media print { .srcmap { min-width: 0; } }
 @media (max-width: 560px) { .sm-row { grid-template-columns: 1fr; gap: 0.15rem; } .sm-row small { white-space: normal; } }
-.table-wrap td code { white-space: normal; overflow-wrap: anywhere; }
+/* 표 안의 이름(YST_G05_BOOK_LIST 등)은 글자 중간에서 꺾지 않는다. 좁은 화면에서는 표가 옆으로 밀린다. 인쇄에서만 넘치지 않게 꺾는다. */
+.table-wrap td code { white-space: normal; overflow-wrap: break-word; word-break: keep-all; }
+@media print { .table-wrap td code { overflow-wrap: anywhere; word-break: normal; } }
+code.nb { white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important; }
+@media print { .table-wrap td code.nb { white-space: normal !important; overflow-wrap: anywhere !important; } }
 @media (max-width: 560px) { p code, li code { white-space: normal; overflow-wrap: anywhere; } }
 
 .pair.stack { grid-template-columns: 1fr !important; display: grid; min-width: 0; }
@@ -630,6 +652,15 @@ pre.gui-code .ln.cur::after { content: "▶"; color: #e0a800; margin-left: -0.2r
   .cover .resume-link { display: none; }
 }
 
+/* ---- 옆으로 넘치는 그림·표 (좁은 화면): 밀 수 있다는 표시. build.py 의 ABAP_markScroll 이 .scrolls 를 붙인다 ---- */
+.scrolls::before { content: "옆으로 밀면 더 보여요 →"; position: sticky; left: 0; display: block; width: max-content; margin: 0 0 0.4rem; padding: 0.1rem 0.6rem; font-family: var(--font-head); font-size: 0.72rem; line-height: 1.5; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; }
+@media print { .scrolls::before { display: none; } }
+/* 앞의 조각을 다시 모은 전체 코드(접힌 상자): 인쇄에서는 작은 글씨 2단으로 실어 쪽수를 아낀다 */
+@media print {
+  details.fullcode .code.is-abap pre { font-size: 7.3pt; line-height: 1.38; column-count: 2; column-gap: 7mm; column-rule: 1px solid var(--line); }
+  .code pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+
 
 /* ================= GitHub Pages 전용 (첫 페이지, 장 불러오기, 요소 댓글) ================= */
 
@@ -652,6 +683,10 @@ html.entered .landing { display: none; }
 .lg-field label, .lg-card legend { font-family: var(--font-head); font-size: 0.82rem; font-weight: 600; color: var(--muted); }
 .lg-field input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 0.6rem 0.75rem; width: 100%; min-width: 0; }
 .lg-field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.lg-row { display: grid; grid-template-columns: minmax(0, 1fr) 5.6rem; gap: 0.6rem; }
+.lg-no input { text-align: center; font-family: var(--font-code); font-size: 1.05rem; letter-spacing: 0.08em; }
+.lg-hint { margin: -0.35rem 0 0.8rem; font-size: 0.78rem; line-height: 1.5; color: var(--muted); }
+.lg-hint b { font-family: var(--font-code); background: var(--mark); color: var(--mark-fg); padding: 0 0.2em; border-radius: 3px; }
 .lg-btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; font: inherit; font-family: var(--font-head); font-weight: 700; font-size: 1rem; color: #ffffff; background: var(--accent); border: 0; border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; }
 .lg-btn:hover { filter: brightness(1.08); }
 .lg-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -694,6 +729,24 @@ html.entered .landing { display: none; }
 .book-msg { margin: 2rem 0; padding: 1rem 1.2rem; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); }
 .book-retry, .toc-print, .toc-out { appearance: none; font: inherit; font-family: var(--font-head); font-size: 0.82rem; font-weight: 600; color: var(--accent); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 0.35rem 0.7rem; cursor: pointer; }
 .book-retry:hover, .toc-print:hover, .toc-out:hover { border-color: var(--accent); }
+.toc-no { appearance: none; font: inherit; font-family: var(--font-head); font-size: 0.82rem; font-weight: 600; color: var(--fg); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 0.35rem 0.7rem; cursor: pointer; }
+.toc-no:hover { border-color: var(--accent); }
+.toc-no b { font-family: var(--font-code); background: var(--mark); color: var(--mark-fg); padding: 0 0.3em; border-radius: 3px; margin-left: 0.15rem; }
+/* ---- 내 번호 창 ---- */
+.no-dlg { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgb(10 14 20 / 0.5); }
+.no-dlg[hidden] { display: none; }
+.no-card { width: min(24rem, 100%); background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 16px; padding: 1.2rem 1.3rem 1.3rem; box-shadow: 0 18px 48px rgb(0 0 0 / 0.3); }
+.no-card h2 { font-family: var(--font-head); font-size: 1.15rem; line-height: 1.4; margin: 0 0 0.3rem; padding: 0; border: 0; }
+.no-card p { margin: 0 0 0.9rem; font-size: 0.9rem; color: var(--muted); }
+.no-card p b { font-family: var(--font-code); background: var(--mark); color: var(--mark-fg); padding: 0 0.2em; border-radius: 3px; }
+.no-card .lg-field input { text-align: center; font-family: var(--font-code); font-size: 1.2rem; letter-spacing: 0.1em; }
+.no-card .lg-field { margin-bottom: 0.9rem; }
+.no-card .lg-status { margin: -0.3rem 0 0.7rem; min-height: 0; }
+.no-card .lg-status:empty { display: none; }
+.no-btns { display: flex; gap: 0.5rem; }
+.no-cancel { appearance: none; flex: none; font: inherit; font-family: var(--font-head); font-weight: 600; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 0 1.1rem; cursor: pointer; }
+.no-cancel[hidden] { display: none; }
+html.no-open { overflow: hidden; }
 .toc-tools { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.8rem 0.5rem; }
 .toc-out { color: var(--muted); }
 .toc-out.armed { color: var(--err); border-color: var(--err); }
@@ -768,7 +821,7 @@ html.cm-narrow .cm-anchor .cm-mark { top: 0.25rem; }
   .cm-panel { top: auto; left: 0; width: auto; max-height: 78%; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 30px rgb(0 0 0 / 0.25); }
 }
 @media print {
-  .landing, .cm-fab, .cm-hint, .cm-pickbar, .cm-panel, .cm-backdrop, .cm-mark, .cm-anchor, .toc-tools, .book-msg { display: none !important; }
+  .landing, .cm-fab, .cm-hint, .cm-pickbar, .cm-panel, .cm-backdrop, .cm-mark, .cm-anchor, .toc-tools, .book-msg, .no-dlg { display: none !important; }
   html.landing .page { display: block !important; }
   .cm-target { outline: 0; }
 }
@@ -777,10 +830,11 @@ html.cm-narrow .cm-anchor .cm-mark { top: 0.25rem; }
 <script>(function(){var d=document.documentElement,g=null,t=null;try{g=localStorage.getItem('abap-gate');t=localStorage.getItem('abap-theme');}catch(e){}if(g==='in'){d.classList.add('entered');if(t==='light'||t==='dark')d.setAttribute('data-theme',t);}else{d.classList.add('landing');d.setAttribute('data-theme','light');}})();</script>
 </head>
 <body>
-<div class="landing" id="landing"><div class="lg-wrap"><div class="lg-hero"><img class="lg-img" src="cover.webp" srcset="cover-720.webp 720w, cover.webp 1200w" sizes="(max-width: 900px) 100vw, 600px" width="1200" height="800" alt="바다가 보이는 밝은 강의실에서 학생 네 명이 손을 흔들고 주먹을 쥐어 올리며 반겨 주는 그림. 책상에는 노트북과 ABAP 책 다섯 권이 놓여 있어요."></div><div class="lg-side"><div class="eyebrow">CODE 2기 부산반 · ABAP 입문</div><h1>ABAP 첫걸음 교재</h1><p class="lg-lead">어서 와요! 처음 ABAP을 배우는 분이 혼자서도 따라 할 수 있도록, 한 걸음씩 나눠 만든 교재예요.</p><div class="lg-card" id="lgStep1"><h2>첫 한마디를 남기고 시작해요</h2><p class="lg-desc">아래 글을 그대로 보내도 되고, 하고 싶은 말로 바꿔도 돼요.</p><form id="lgForm" novalidate><div class="lg-field"><label for="lgName">이름</label><input id="lgName" type="text" maxlength="20" autocomplete="nickname" placeholder="이름이나 별명"></div><div class="lg-field"><label for="lgText">한마디</label><input id="lgText" type="text" maxlength="100" value="부산반 화이팅!"></div><input id="lgHp" class="cm-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"><button id="lgSend" type="submit" class="lg-btn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.8 18-3.7-7.5L3 9.8z"/></svg><span>남기고 들어가기</span></button><p id="lgStatus" class="lg-status" role="status"></p></form><p class="lg-note">이름과 한마디는 이 교재를 보는 모든 사람에게 보여요.</p></div><div class="lg-card" id="lgStep2" hidden><h2 id="lgHello" tabindex="-1">반가워요!</h2><p class="lg-desc">한마디가 잘 남겨졌어요. 두 가지만 고르면 바로 시작해요.</p><fieldset class="lg-themes"><legend>화면 색</legend><label class="lg-theme"><input type="radio" name="lgTheme" value="light" checked><span class="lg-prev light" aria-hidden="true"><i></i><i></i><i></i><em></em></span><b>밝게</b></label><label class="lg-theme"><input type="radio" name="lgTheme" value="dark"><span class="lg-prev dark" aria-hidden="true"><i></i><i></i><i></i><em></em></span><b>어둡게</b></label></fieldset><fieldset class="lg-chs"><legend>어디부터 볼까요?</legend><label class="lg-ch"><input type="radio" name="lgCh" value="ch00" checked><span><b>0장</b> 시작하기 전에</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch01"><span><b>1장</b> SAP 시스템과 SAP GUI 첫걸음</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch02"><span><b>2장</b> 첫 프로그램 만들기</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch03"><span><b>3장</b> 데이터와 Type</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch04"><span><b>4장</b> 조건문과 반복문</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch05"><span><b>5장</b> Selection Screen으로 입력 받기</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch06"><span><b>6장</b> 디버거 기초</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch07"><span><b>7장</b> ABAP Dictionary</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch08"><span><b>8장</b> Structure와 Internal Table</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch09"><span><b>9장</b> Open SQL</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch10"><span><b>10장</b> 모듈화</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch11"><span><b>11장</b> ALV로 결과 보기</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch12"><span><b>12장</b> 종합 실습</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch13"><span><b>부록</b> 찾아보기</span></label></fieldset><button id="lgStart" type="button" class="lg-btn"><span>시작하기</span><i aria-hidden="true">→</i></button></div></div><section class="lg-wall-sec" aria-labelledby="lgWallT"><h2 id="lgWallT">먼저 온 사람들의 한마디</h2><ul id="lgWall" class="lg-wall"></ul><p id="lgWallMsg" class="lg-wall-msg">불러오고 있어요…</p></section></div></div><div class="theme-switch" role="group" aria-label="화면 테마"><button type="button" data-theme-set="light" aria-pressed="false"><span aria-hidden="true">☀</span> 밝게</button><button type="button" data-theme-set="dark" aria-pressed="false"><span aria-hidden="true">☾</span> 어둡게</button></div><div class="page"><nav class="toc" aria-label="목차"><div class="toc-title">목차</div><div class="toc-tools"><button type="button" class="toc-print" onclick="window.print()">인쇄 · PDF로 저장</button><button type="button" class="toc-out" id="gateOut" title="첫 페이지로 돌아가요. 다시 들어오려면 한마디를 새로 남겨요.">나가기</button></div><ol><li><a href="#ch00"><b>0장</b> 시작하기 전에</a></li><li class="sub"><a href="#s0-1">0-1. 이 교재로 배우는 것</a></li><li class="sub"><a href="#s0-2">0-2. 교재 보는 법</a></li><li class="sub"><a href="#s0-3">0-3. 실습 이름 규칙</a></li><li class="sub"><a href="#s0-4">0-4. 막혔을 때</a></li><li><a href="#ch01"><b>1장</b> SAP 시스템과 SAP GUI 첫걸음</a></li><li class="sub"><a href="#s1-1">1-1. SAP 시스템은 하나가 아니에요</a></li><li class="sub"><a href="#s1-2">1-2. 한 시스템 안의 클라이언트</a></li><li class="sub"><a href="#s1-3">1-3. SAP GUI로 로그인하기</a></li><li class="sub"><a href="#s1-4">1-4. 첫 화면 둘러보기: SAP Easy Access</a></li><li class="sub"><a href="#s1-5">1-5. 트랜잭션 코드로 이동하기</a></li><li class="sub"><a href="#s1-6">1-6. 내가 만든 프로그램은 어디에 저장될까</a></li><li><a href="#ch02"><b>2장</b> 첫 프로그램 만들기</a></li><li class="sub"><a href="#s2-1">2-1. 전체 순서 미리 보기</a></li><li class="sub"><a href="#s2-2">2-2. 따라 하기: Hello ABAP</a></li><li class="sub"><a href="#s2-3">2-3. 저장과 활성화는 달라요</a></li><li class="sub"><a href="#s2-4">2-4. 첫 코드 뜯어보기</a></li><li class="sub"><a href="#s2-5">2-5. ABAP 문장의 다섯 가지 규칙</a></li><li class="sub"><a href="#s2-6">2-6. 오류를 일부러 만나 보기</a></li><li class="sub"><a href="#s2-7">2-7. 한 걸음 더: Text Symbol</a></li><li class="sub"><a href="#s2-8">2-8. 미니 실습: 자기소개 프로그램</a></li><li><a href="#ch03"><b>3장</b> 데이터와 Type</a></li><li class="sub"><a href="#s3-1">3-1. 변수는 이름표 붙은 상자예요</a></li><li class="sub"><a href="#s3-2">3-2. DATA로 변수 만들기</a></li><li class="sub"><a href="#s3-3">3-3. 꼭 알아야 할 기본 Type</a></li><li class="sub"><a href="#s3-4">3-4. 계산하기</a></li><li class="sub"><a href="#s3-5">3-5. 문자열 이어 붙이기</a></li><li class="sub"><a href="#s3-6">3-6. 날짜와 시스템 필드</a></li><li class="sub"><a href="#s3-7">3-7. 바뀌지 않는 값: CONSTANTS</a></li><li class="sub"><a href="#s3-8">3-8. 미니 실습: 장바구니 계산</a></li><li><a href="#ch04"><b>4장</b> 조건문과 반복문</a></li><li class="sub"><a href="#s4-1">4-1. 조건에 따라 다르게: IF</a></li><li class="sub"><a href="#s4-2">4-2. 비교 연산자</a></li><li class="sub"><a href="#s4-3">4-3. 여러 갈래로 나누기: ELSEIF</a></li><li class="sub"><a href="#s4-4">4-4. 조건 여러 개 묶기: AND · OR · NOT</a></li><li class="sub"><a href="#s4-5">4-5. 값 하나로 갈래 나누기: CASE</a></li><li class="sub"><a href="#s4-6">4-6. 정해진 횟수만큼 반복: DO … TIMES</a></li><li class="sub"><a href="#s4-7">4-7. 조건이 될 때까지 반복: EXIT와 WHILE</a></li><li class="sub"><a href="#s4-8">4-8. 이번 바퀴만 건너뛰기: CONTINUE와 CHECK</a></li><li class="sub"><a href="#s4-9">4-9. 반복 안의 반복: 구구단</a></li><li class="sub"><a href="#s4-10">4-10. 미니 실습: 3의 배수 모으기</a></li><li><a href="#ch05"><b>5장</b> Selection Screen으로 입력 받기</a></li><li class="sub"><a href="#s5-1">5-1. 입력 칸 만들기: PARAMETERS</a></li><li class="sub"><a href="#s5-2">5-2. 이름표 붙이기: Selection Text</a></li><li class="sub"><a href="#s5-3">5-3. 입력 칸 꾸미기</a></li><li class="sub"><a href="#s5-4">5-4. 프로그램이 실행되는 순서: 이벤트</a></li><li class="sub"><a href="#s5-5">5-5. 잘못된 값 막기: AT SELECTION-SCREEN과 MESSAGE</a></li><li class="sub"><a href="#s5-6">5-6. 미니 실습: 도서 대여 기간 계산</a></li><li><a href="#ch06"><b>6장</b> 디버거 기초</a></li><li class="sub"><a href="#s6-1">6-1. 디버거는 프로그램의 슬로 모션이에요</a></li><li class="sub"><a href="#s6-2">6-2. 연습용 프로그램 준비</a></li><li class="sub"><a href="#s6-3">6-3. 디버거 시작하는 세 가지 방법</a></li><li class="sub"><a href="#s6-4">6-4. 디버거 화면 둘러보기</a></li><li class="sub"><a href="#s6-5">6-5. 한 줄씩 움직이기: F5 · F6 · F7 · F8</a></li><li class="sub"><a href="#s6-6">6-6. 실행 중에 값 바꿔 보기</a></li><li class="sub"><a href="#s6-7">6-7. 한 걸음 더: Watchpoint</a></li><li class="sub"><a href="#s6-8">6-8. 미니 실습: 버그 잡기</a></li><li><a href="#ch07"><b>7장</b> ABAP Dictionary</a></li><li class="sub"><a href="#s7-1">7-1. 프로그램이 끝나도 남는 데이터</a></li><li class="sub"><a href="#s7-2">7-2. Domain · Data Element · Field의 관계</a></li><li class="sub"><a href="#s7-3">7-3. 이번 장에서 만들 것</a></li><li class="sub"><a href="#s7-4">7-4. Domain 만들기</a></li><li class="sub"><a href="#s7-5">7-5. Data Element 만들기</a></li><li class="sub"><a href="#s7-6">7-6. Table 만들기</a></li><li class="sub"><a href="#s7-7">7-7. 데이터 넣고 조회하기</a></li><li><a href="#ch08"><b>8장</b> Structure와 Internal Table</a></li><li class="sub"><a href="#s8-1">8-1. 여러 칸을 한 묶음으로: Structure</a></li><li class="sub"><a href="#s8-2">8-2. 여러 줄을 담는 그릇: Internal Table</a></li><li class="sub"><a href="#s8-3">8-3. 줄 넣기: APPEND</a></li><li class="sub"><a href="#s8-4">8-4. 한 줄씩 꺼내 보기: LOOP AT</a></li><li class="sub"><a href="#s8-5">8-5. 한 줄만 콕 집기: READ TABLE</a></li><li class="sub"><a href="#s8-6">8-6. 고치기 · 지우기 · 정렬하기</a></li><li class="sub"><a href="#s8-7">8-7. 미니 실습: 도서 목록 정리</a></li><li><a href="#ch09"><b>9장</b> Open SQL</a></li><li class="sub"><a href="#s9-1">9-1. DB에서 메모리로</a></li><li class="sub"><a href="#s9-2">9-2. 전부 읽어 오기: SELECT … INTO TABLE</a></li><li class="sub"><a href="#s9-3">9-3. 원하는 줄만, 원하는 칸만</a></li><li class="sub"><a href="#s9-4">9-4. 한 줄만 읽기와 결과 확인</a></li><li class="sub"><a href="#s9-5">9-5. 범위로 입력받기: SELECT-OPTIONS</a></li><li class="sub"><a href="#s9-6">9-6. DB Table 바꾸기: INSERT · UPDATE · MODIFY · DELETE</a></li><li class="sub"><a href="#s9-7">9-7. 미니 실습: 도서 조회 프로그램</a></li><li><a href="#ch10"><b>10장</b> 모듈화</a></li><li class="sub"><a href="#s10-1">10-1. 왜 나눠 써요?</a></li><li class="sub"><a href="#s10-2">10-2. 프로그램 안에서 나누기: FORM과 PERFORM</a></li><li class="sub"><a href="#s10-3">10-3. 모든 프로그램이 쓰는 기능: Function Module</a></li><li class="sub"><a href="#s10-4">10-4. 맛보기: 로컬 클래스의 Method</a></li><li class="sub"><a href="#s10-5">10-5. 미니 실습: 책 한 권 할인가 보기</a></li><li><a href="#ch11"><b>11장</b> ALV로 결과 보기</a></li><li class="sub"><a href="#s11-1">11-1. ALV가 뭐예요?</a></li><li class="sub"><a href="#s11-2">11-2. 가장 짧은 ALV</a></li><li class="sub"><a href="#s11-3">11-3. 컬럼 제목은 어디서 와요?</a></li><li class="sub"><a href="#s11-4">11-4. 버튼 켜기: 정렬 · 필터 · 합계 · 엑셀</a></li><li class="sub"><a href="#s11-5">11-5. 정리: ALV 프로그램의 순서</a></li><li class="sub"><a href="#s11-6">11-6. 미니 실습: 재고 부족 도서 ALV</a></li><li><a href="#ch12"><b>12장</b> 종합 실습</a></li><li class="sub"><a href="#s12-1">12-1. 무엇을 만들까요?</a></li><li class="sub"><a href="#s12-2">12-2. 먼저 설계하기</a></li><li class="sub"><a href="#s12-3">12-3. 1단계: 뼈대와 Selection Screen</a></li><li class="sub"><a href="#s12-4">12-4. 2단계: 읽어 담기 (get_data)</a></li><li class="sub"><a href="#s12-5">12-5. 3단계: 글자 채우고 정렬하기 (fill_text, sort_list)</a></li><li class="sub"><a href="#s12-6">12-6. 4단계: ALV로 보여 주기 (display_alv)</a></li><li class="sub"><a href="#s12-7">12-7. 완성 코드와 테스트</a></li><li class="sub"><a href="#s12-8">12-8. 더 해 보기</a></li><li><a href="#ch13"><b>부록</b> 찾아보기</a></li><li class="sub"><a href="#sx-A">A. 자주 쓰는 T-code와 단축키</a></li><li class="sub"><a href="#sx-B">B. 자주 쓰는 sy- 필드</a></li><li class="sub"><a href="#sx-C">C. 자주 보는 오류와 해결</a></li><li class="sub"><a href="#sx-D">D. 옛 문법과 새 문법 대응표</a></li><li class="sub"><a href="#sx-E">E. 용어 사전</a></li><li class="sub"><a href="#sx-F">F. 다음에 배울 것</a></li></ol></nav><main><header class="cover"><div class="eyebrow">CODE 2기 부산반 · ABAP 입문</div><h1>ABAP 첫걸음 교재</h1><p>SAP GUI로 시작하는 ABAP 입문 · v2</p><p>처음 ABAP을 배우는 분이 혼자서도 따라 할 수 있도록, 한 걸음씩 나눠 만든 교재예요.</p></header><p class="book-msg" id="bookMsg" role="status" hidden></p><div id="book"></div><footer class="doc-foot">ABAP 첫걸음 교재 v2 · 2026-11 · SAP GUI 화면은 설명 그림이며 실제 화면과 색·배치가 다를 수 있어요.</footer></main></div><div class="mnav-bar" id="mnavBar"><button type="button" class="mnav-open" id="mnavOpen" aria-haspopup="dialog" aria-controls="mnavDrawer"><span class="mnav-ico" aria-hidden="true">☰</span><span class="mnav-label">목차</span><span class="mnav-here" id="mnavHere"></span></button><button type="button" class="mnav-top" id="mnavTop" aria-label="맨 위로"><span aria-hidden="true">↑</span></button></div><div class="mnav-backdrop" id="mnavBackdrop" hidden></div><aside class="mnav-drawer" id="mnavDrawer" role="dialog" aria-modal="true" aria-label="목차" hidden><div class="mnav-head"><b>목차</b><div class="theme-switch in-drawer" role="group" aria-label="화면 테마"><button type="button" data-theme-set="light" aria-pressed="false"><span aria-hidden="true">☀</span> 밝게</button><button type="button" data-theme-set="dark" aria-pressed="false"><span aria-hidden="true">☾</span> 어둡게</button></div><button type="button" class="mnav-close" id="mnavClose" aria-label="목차 닫기">✕</button></div><div class="mnav-list" id="mnavList"></div></aside><script>
+<div class="landing" id="landing"><div class="lg-wrap"><div class="lg-hero"><img class="lg-img" src="cover.webp" srcset="cover-720.webp 720w, cover.webp 1200w" sizes="(max-width: 900px) 100vw, 600px" width="1200" height="800" alt="바다가 보이는 밝은 강의실에서 학생 네 명이 손을 흔들고 주먹을 쥐어 올리며 반겨 주는 그림. 책상에는 노트북과 ABAP 책 다섯 권이 놓여 있어요."></div><div class="lg-side"><div class="eyebrow">CODE 2기 부산반 · ABAP 입문</div><h1>ABAP 첫걸음 교재</h1><p class="lg-lead">어서 와요! 처음 ABAP을 배우는 분이 혼자서도 따라 할 수 있도록, 한 걸음씩 나눠 만든 교재예요.</p><div class="lg-card" id="lgStep1"><h2>첫 한마디를 남기고 시작해요</h2><p class="lg-desc">아래 글을 그대로 보내도 되고, 하고 싶은 말로 바꿔도 돼요.</p><form id="lgForm" novalidate><div class="lg-row"><div class="lg-field"><label for="lgName">이름</label><input id="lgName" type="text" maxlength="20" autocomplete="nickname" placeholder="이름이나 별명"></div><div class="lg-field lg-no"><label for="lgNo">번호</label><input id="lgNo" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="예: 05" aria-describedby="lgNoHint"></div></div><p class="lg-hint" id="lgNoHint">번호는 두 자리로 적어요. 교재 속 <b>##</b> 자리가 내 번호로 바뀌어 보여요. (05번이면 YG##_101 → YG05_101)</p><div class="lg-field"><label for="lgText">한마디</label><input id="lgText" type="text" maxlength="100" value="부산반 화이팅!"></div><input id="lgHp" class="cm-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"><button id="lgSend" type="submit" class="lg-btn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.8 18-3.7-7.5L3 9.8z"/></svg><span>남기고 들어가기</span></button><p id="lgStatus" class="lg-status" role="status"></p></form><p class="lg-note">이름과 한마디는 이 교재를 보는 모든 사람에게 보여요. 번호는 이 기기에만 저장돼요.</p></div><div class="lg-card" id="lgStep2" hidden><h2 id="lgHello" tabindex="-1">반가워요!</h2><p class="lg-desc">한마디가 잘 남겨졌어요. 두 가지만 고르면 바로 시작해요.</p><fieldset class="lg-themes"><legend>화면 색</legend><label class="lg-theme"><input type="radio" name="lgTheme" value="light" checked><span class="lg-prev light" aria-hidden="true"><i></i><i></i><i></i><em></em></span><b>밝게</b></label><label class="lg-theme"><input type="radio" name="lgTheme" value="dark"><span class="lg-prev dark" aria-hidden="true"><i></i><i></i><i></i><em></em></span><b>어둡게</b></label></fieldset><fieldset class="lg-chs"><legend>어디부터 볼까요?</legend><label class="lg-ch"><input type="radio" name="lgCh" value="ch00" checked><span><b>0장</b> 시작하기 전에</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch01"><span><b>1장</b> SAP 시스템과 SAP GUI 첫걸음</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch02"><span><b>2장</b> 첫 프로그램 만들기</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch03"><span><b>3장</b> 데이터와 Type</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch04"><span><b>4장</b> 조건문과 반복문</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch05"><span><b>5장</b> Selection Screen으로 입력받기</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch06"><span><b>6장</b> 디버거 기초</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch07"><span><b>7장</b> ABAP Dictionary</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch08"><span><b>8장</b> Structure와 Internal Table</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch09"><span><b>9장</b> Open SQL</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch10"><span><b>10장</b> 모듈화</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch11"><span><b>11장</b> ALV로 결과 보기</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch12"><span><b>12장</b> 종합 실습</span></label><label class="lg-ch"><input type="radio" name="lgCh" value="ch13"><span><b>부록</b> 찾아보기</span></label></fieldset><button id="lgStart" type="button" class="lg-btn"><span>시작하기</span><i aria-hidden="true">→</i></button></div></div><section class="lg-wall-sec" aria-labelledby="lgWallT"><h2 id="lgWallT">먼저 온 사람들의 한마디</h2><ul id="lgWall" class="lg-wall"></ul><p id="lgWallMsg" class="lg-wall-msg">불러오고 있어요…</p></section></div></div><div class="theme-switch" role="group" aria-label="화면 테마"><button type="button" data-theme-set="light" aria-pressed="false"><span aria-hidden="true">☀</span> 밝게</button><button type="button" data-theme-set="dark" aria-pressed="false"><span aria-hidden="true">☾</span> 어둡게</button></div><div class="page"><nav class="toc" aria-label="목차"><div class="toc-title">목차</div><div class="toc-tools"><button type="button" class="toc-print" onclick="window.print()">인쇄 · PDF로 저장</button><button type="button" class="toc-no" id="noBtn" title="교재 속 ## 자리에 들어가는 내 번호예요. 누르면 바꿀 수 있어요.">내 번호 <b id="noNow">##</b></button><button type="button" class="toc-out" id="gateOut" title="첫 페이지로 돌아가요. 다시 들어오려면 한마디를 새로 남겨요.">나가기</button></div><ol><li><a href="#ch00"><b>0장</b> 시작하기 전에</a></li><li class="sub"><a href="#s0-1">0-1. 이 교재로 배우는 것</a></li><li class="sub"><a href="#s0-2">0-2. 교재 보는 법</a></li><li class="sub"><a href="#s0-3">0-3. 실습 이름 규칙</a></li><li class="sub"><a href="#s0-4">0-4. 막혔을 때</a></li><li><a href="#ch01"><b>1장</b> SAP 시스템과 SAP GUI 첫걸음</a></li><li class="sub"><a href="#s1-1">1-1. SAP 시스템은 하나가 아니에요</a></li><li class="sub"><a href="#s1-2">1-2. 한 시스템 안의 클라이언트</a></li><li class="sub"><a href="#s1-3">1-3. SAP GUI로 로그인하기</a></li><li class="sub"><a href="#s1-4">1-4. 첫 화면 둘러보기: SAP Easy Access</a></li><li class="sub"><a href="#s1-5">1-5. 트랜잭션 코드로 이동하기</a></li><li class="sub"><a href="#s1-6">1-6. 내가 만든 프로그램은 어디에 저장될까</a></li><li><a href="#ch02"><b>2장</b> 첫 프로그램 만들기</a></li><li class="sub"><a href="#s2-1">2-1. 전체 순서 미리 보기</a></li><li class="sub"><a href="#s2-2">2-2. 따라 하기: Hello ABAP</a></li><li class="sub"><a href="#s2-3">2-3. 저장과 활성화는 달라요</a></li><li class="sub"><a href="#s2-4">2-4. 첫 코드 뜯어보기</a></li><li class="sub"><a href="#s2-5">2-5. ABAP 문장의 다섯 가지 규칙</a></li><li class="sub"><a href="#s2-6">2-6. 오류를 일부러 만나 보기</a></li><li class="sub"><a href="#s2-7">2-7. 한 걸음 더: Text Symbol</a></li><li class="sub"><a href="#s2-8">2-8. 만든 프로그램 다시 열기 · 고치기 · 복사 · 지우기</a></li><li class="sub"><a href="#s2-9">2-9. 미니 실습: 자기소개 프로그램</a></li><li><a href="#ch03"><b>3장</b> 데이터와 Type</a></li><li class="sub"><a href="#s3-1">3-1. 변수는 이름표 붙은 상자예요</a></li><li class="sub"><a href="#s3-2">3-2. DATA로 변수 만들기</a></li><li class="sub"><a href="#s3-3">3-3. 꼭 알아야 할 기본 Type</a></li><li class="sub"><a href="#s3-4">3-4. 계산하기</a></li><li class="sub"><a href="#s3-5">3-5. 문자열 이어 붙이기</a></li><li class="sub"><a href="#s3-6">3-6. 문자열 다루기</a></li><li class="sub"><a href="#s3-7">3-7. 날짜와 시스템 필드</a></li><li class="sub"><a href="#s3-8">3-8. 바뀌지 않는 값: CONSTANTS</a></li><li class="sub"><a href="#s3-9">3-9. 미니 실습: 장바구니 계산</a></li><li><a href="#ch04"><b>4장</b> 조건문과 반복문</a></li><li class="sub"><a href="#s4-1">4-1. 조건에 따라 다르게: IF</a></li><li class="sub"><a href="#s4-2">4-2. 비교 연산자</a></li><li class="sub"><a href="#s4-3">4-3. 여러 갈래로 나누기: ELSEIF</a></li><li class="sub"><a href="#s4-4">4-4. 조건 여러 개 묶기: AND · OR · NOT</a></li><li class="sub"><a href="#s4-5">4-5. 값 하나로 갈래 나누기: CASE</a></li><li class="sub"><a href="#s4-6">4-6. 정해진 횟수만큼 반복: DO … TIMES</a></li><li class="sub"><a href="#s4-7">4-7. 몇 번 돌지 모를 때: EXIT와 WHILE</a></li><li class="sub"><a href="#s4-8">4-8. 이번 바퀴만 건너뛰기: CONTINUE와 CHECK</a></li><li class="sub"><a href="#s4-9">4-9. 반복 안의 반복: 구구단</a></li><li class="sub"><a href="#s4-10">4-10. 미니 실습: 3의 배수 모으기</a></li><li><a href="#ch05"><b>5장</b> Selection Screen으로 입력받기</a></li><li class="sub"><a href="#s5-1">5-1. 입력 칸 만들기: PARAMETERS</a></li><li class="sub"><a href="#s5-2">5-2. 이름표 붙이기: Selection Text</a></li><li class="sub"><a href="#s5-3">5-3. 입력 칸 꾸미기</a></li><li class="sub"><a href="#s5-4">5-4. 프로그램이 실행되는 순서: 이벤트</a></li><li class="sub"><a href="#s5-5">5-5. 잘못된 값 막기: AT SELECTION-SCREEN과 MESSAGE</a></li><li class="sub"><a href="#s5-6">5-6. 메시지를 한곳에 모으기: Message Class</a></li><li class="sub"><a href="#s5-7">5-7. 미니 실습: 도서 대여 기간 계산</a></li><li><a href="#ch06"><b>6장</b> 디버거 기초</a></li><li class="sub"><a href="#s6-1">6-1. 디버거는 프로그램의 슬로 모션이에요</a></li><li class="sub"><a href="#s6-2">6-2. 연습용 프로그램 준비</a></li><li class="sub"><a href="#s6-3">6-3. 디버거 시작하는 세 가지 방법</a></li><li class="sub"><a href="#s6-4">6-4. 디버거 화면 둘러보기</a></li><li class="sub"><a href="#s6-5">6-5. 한 줄씩 움직이기: F5 · F6 · F7 · F8</a></li><li class="sub"><a href="#s6-6">6-6. 실행 중에 값 바꿔 보기</a></li><li class="sub"><a href="#s6-7">6-7. 한 걸음 더: Watchpoint</a></li><li class="sub"><a href="#s6-8">6-8. 프로그램이 멈췄을 때: 덤프 읽기</a></li><li class="sub"><a href="#s6-9">6-9. 미니 실습: 버그 잡기</a></li><li><a href="#ch07"><b>7장</b> ABAP Dictionary</a></li><li class="sub"><a href="#s7-1">7-1. 프로그램이 끝나도 남는 데이터</a></li><li class="sub"><a href="#s7-2">7-2. Domain · Data Element · Field의 관계</a></li><li class="sub"><a href="#s7-3">7-3. 이번 장에서 만들 것</a></li><li class="sub"><a href="#s7-4">7-4. Domain 만들기</a></li><li class="sub"><a href="#s7-5">7-5. Data Element 만들기</a></li><li class="sub"><a href="#s7-6">7-6. Table 만들기</a></li><li class="sub"><a href="#s7-7">7-7. 데이터 넣고 조회하기</a></li><li class="sub"><a href="#s7-8">7-8. 미니 실습: 대여 기록 Table 만들기</a></li><li><a href="#ch08"><b>8장</b> Structure와 Internal Table</a></li><li class="sub"><a href="#s8-1">8-1. 여러 칸을 한 묶음으로: Structure</a></li><li class="sub"><a href="#s8-2">8-2. 여러 줄을 담는 그릇: Internal Table</a></li><li class="sub"><a href="#s8-3">8-3. 줄 넣기: APPEND</a></li><li class="sub"><a href="#s8-4">8-4. 한 줄씩 꺼내 보기: LOOP AT</a></li><li class="sub"><a href="#s8-5">8-5. 한 줄만 콕 집기: READ TABLE</a></li><li class="sub"><a href="#s8-6">8-6. 고치기 · 지우기 · 정렬하기</a></li><li class="sub"><a href="#s8-7">8-7. 복사본이 아니라 그 줄 자체: Field Symbol</a></li><li class="sub"><a href="#s8-8">8-8. 미니 실습: 도서 목록 정리</a></li><li><a href="#ch09"><b>9장</b> Open SQL</a></li><li class="sub"><a href="#s9-1">9-1. DB에서 메모리로</a></li><li class="sub"><a href="#s9-2">9-2. 전부 읽어 오기: SELECT … INTO TABLE</a></li><li class="sub"><a href="#s9-3">9-3. 원하는 줄만, 원하는 칸만</a></li><li class="sub"><a href="#s9-4">9-4. 한 줄만 읽기와 결과 확인</a></li><li class="sub"><a href="#s9-5">9-5. 범위로 입력받기: SELECT-OPTIONS</a></li><li class="sub"><a href="#s9-6">9-6. Table 두 개를 이어 읽기: INNER JOIN</a></li><li class="sub"><a href="#s9-7">9-7. DB Table 바꾸기: INSERT · UPDATE · MODIFY · DELETE</a></li><li class="sub"><a href="#s9-8">9-8. 미니 실습: 장르와 가격으로 도서 조회</a></li><li><a href="#ch10"><b>10장</b> 모듈화</a></li><li class="sub"><a href="#s10-1">10-1. 왜 나눠 써요?</a></li><li class="sub"><a href="#s10-2">10-2. 프로그램 안에서 나누기: FORM과 PERFORM</a></li><li class="sub"><a href="#s10-3">10-3. 모든 프로그램이 쓰는 기능: Function Module</a></li><li class="sub"><a href="#s10-4">10-4. 맛보기: 로컬 클래스의 Method</a></li><li class="sub"><a href="#s10-5">10-5. 미니 실습: 책 한 권 할인가 보기</a></li><li><a href="#ch11"><b>11장</b> ALV로 결과 보기</a></li><li class="sub"><a href="#s11-1">11-1. ALV가 뭐예요?</a></li><li class="sub"><a href="#s11-2">11-2. 가장 짧은 ALV</a></li><li class="sub"><a href="#s11-3">11-3. 컬럼 제목은 어디서 와요?</a></li><li class="sub"><a href="#s11-4">11-4. 버튼 켜기: 정렬 · 필터 · 합계 · 엑셀</a></li><li class="sub"><a href="#s11-5">11-5. 정리: ALV 프로그램의 순서</a></li><li class="sub"><a href="#s11-6">11-6. 미니 실습: 재고 부족 도서 ALV</a></li><li><a href="#ch12"><b>12장</b> 종합 실습</a></li><li class="sub"><a href="#s12-1">12-1. 무엇을 만들까요?</a></li><li class="sub"><a href="#s12-2">12-2. 먼저 설계하기</a></li><li class="sub"><a href="#s12-3">12-3. 1단계: 뼈대와 Selection Screen</a></li><li class="sub"><a href="#s12-4">12-4. 2단계: 읽어 담기 (get_data)</a></li><li class="sub"><a href="#s12-5">12-5. 3단계: 글자 채우고 정렬하기 (fill_text, sort_list)</a></li><li class="sub"><a href="#s12-6">12-6. 4단계: ALV로 보여 주기 (display_alv)</a></li><li class="sub"><a href="#s12-7">12-7. 완성 코드와 테스트</a></li><li class="sub"><a href="#s12-8">12-8. 남이 만든 프로그램 읽는 법</a></li><li class="sub"><a href="#s12-9">12-9. 읽기 실습: 선배가 만든 프로그램 고치기</a></li><li class="sub"><a href="#s12-10">12-10. 더 해 보기</a></li><li><a href="#ch13"><b>부록</b> 찾아보기</a></li><li class="sub"><a href="#sx-A">A. 자주 쓰는 T-code와 단축키</a></li><li class="sub"><a href="#sx-B">B. 자주 쓰는 sy- 필드</a></li><li class="sub"><a href="#sx-C">C. 자주 보는 오류와 해결</a></li><li class="sub"><a href="#sx-D">D. 옛 문법과 새 문법 대응표</a></li><li class="sub"><a href="#sx-E">E. 회사 코드에서 만나는 옛 모양 읽기</a></li><li class="sub"><a href="#sx-F">F. 이름 규칙 한눈에 보기</a></li><li class="sub"><a href="#sx-G">G. 프로그램 번호표</a></li><li class="sub"><a href="#sx-H">H. 용어 사전</a></li><li class="sub"><a href="#sx-I">I. 다음에 배울 것</a></li></ol></nav><main><header class="cover"><div class="eyebrow">CODE 2기 부산반 · ABAP 입문</div><h1>ABAP 첫걸음 교재</h1><p>SAP GUI로 시작하는 ABAP 입문 · v2</p><p>처음 ABAP을 배우는 분이 혼자서도 따라 할 수 있도록, 한 걸음씩 나눠 만든 교재예요.</p></header><p class="book-msg" id="bookMsg" role="status" hidden></p><div id="book"></div><footer class="doc-foot">ABAP 첫걸음 교재 v2 · 2026-11 · SAP GUI 화면은 설명 그림이며 실제 화면과 색·배치가 다를 수 있어요.</footer></main></div><div class="mnav-bar" id="mnavBar"><button type="button" class="mnav-open" id="mnavOpen" aria-haspopup="dialog" aria-controls="mnavDrawer"><span class="mnav-ico" aria-hidden="true">☰</span><span class="mnav-label">목차</span><span class="mnav-here" id="mnavHere"></span></button><button type="button" class="mnav-top" id="mnavTop" aria-label="맨 위로"><span aria-hidden="true">↑</span></button></div><div class="mnav-backdrop" id="mnavBackdrop" hidden></div><aside class="mnav-drawer" id="mnavDrawer" role="dialog" aria-modal="true" aria-label="목차" hidden><div class="mnav-head"><b>목차</b><div class="theme-switch in-drawer" role="group" aria-label="화면 테마"><button type="button" data-theme-set="light" aria-pressed="false"><span aria-hidden="true">☀</span> 밝게</button><button type="button" data-theme-set="dark" aria-pressed="false"><span aria-hidden="true">☾</span> 어둡게</button></div><button type="button" class="mnav-close" id="mnavClose" aria-label="목차 닫기">✕</button></div><div class="mnav-list" id="mnavList"></div></aside><div class="no-dlg" id="noDlg" role="dialog" aria-modal="true" aria-labelledby="noDlgT" hidden><form class="no-card" id="noForm" novalidate><h2 id="noDlgT">내 번호를 알려 주세요</h2><p>교재 속 <b>##</b> 자리를 내 번호로 바꿔서 보여 줘요. 복사 버튼으로 복사할 때도 내 번호가 들어가요. 번호는 이 기기에만 저장돼요.</p><div class="lg-field"><label for="noInput">번호 (두 자리)</label><input id="noInput" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="예: 05"></div><p class="lg-status" id="noStatus" role="status"></p><div class="no-btns"><button type="button" class="no-cancel" id="noCancel" hidden>취소</button><button type="submit" class="lg-btn">저장</button></div></form></div><script>
 document.addEventListener('click', function (e) {
   var b = e.target.closest('.copy'); if (!b) return;
   var t = b.getAttribute('data-code');
+  if (window.ABAP_NO) t = t.replace(/##/g, window.ABAP_NO);       // 첫 페이지에서 적은 내 번호로 바꿔서 복사
   function done(ok) { b.textContent = ok ? '복사됨' : '선택됨'; setTimeout(function () { b.textContent = '복사'; }, 1500); }
   function fallback() { var pre = b.parentNode.querySelector('pre'); var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); done(false); }
   try { navigator.clipboard.writeText(t).then(function () { done(true); }, fallback); } catch (err) { fallback(); }
@@ -799,9 +853,27 @@ document.addEventListener('click', function (e) {
   sync();
   window.ABAP_syncTheme = sync;
 })();
+// 좁은 화면에서 옆으로 넘치는 그림·표에 "옆으로 밀면 더 보여요" 표시를 붙인다 (한 번 밀면 사라진다)
+(function () {
+  function mark() {
+    document.querySelectorAll('figure.fig .fig-body, .table-wrap').forEach(function (b) {
+      if (b.getAttribute('data-swiped')) return;
+      b.classList.toggle('scrolls', b.scrollWidth > b.clientWidth + 12);
+    });
+  }
+  document.addEventListener('scroll', function (e) {
+    var b = e.target; if (!b || !b.classList || !b.classList.contains('scrolls')) return;
+    if (b.scrollLeft > 12) { b.setAttribute('data-swiped', '1'); b.classList.remove('scrolls'); }
+  }, true);
+  document.addEventListener('toggle', function () { mark(); }, true);      // 접힌 정답을 펼쳤을 때
+  var t = 0; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(mark, 200); });
+  window.ABAP_markScroll = mark;
+})();
 // 장 내용이 화면에 들어온 뒤에 한 번 부른다 (한 파일짜리는 바로, GitHub Pages는 장 파일을 불러온 뒤)
 window.ABAP_initBook = function (opt) {
   opt = opt || {};
+  window.ABAP_markScroll();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(window.ABAP_markScroll);
   var drawer = document.getElementById('mnavDrawer'), backdrop = document.getElementById('mnavBackdrop'),
       list = document.getElementById('mnavList'), here = document.getElementById('mnavHere'),
       openBtn = document.getElementById('mnavOpen');
@@ -883,7 +955,7 @@ window.ABAP_initBook = function (opt) {
 window.addEventListener('beforeprint', function () { document.querySelectorAll('details').forEach(function (d) { d.dataset.wasOpen = d.open ? '1' : ''; d.open = true; }); });
 window.addEventListener('afterprint', function () { document.querySelectorAll('details').forEach(function (d) { d.open = d.dataset.wasOpen === '1'; }); });
 </script>
-<script>window.ABAP_SITE = {"api": "https://script.google.com/macros/s/AKfycbxNGLRFedUVCzMZhQ02TPmR6TSX88Vo48QPaNm8DEl7AIEfn3GalGlLk-JYEEHgRQLG/exec", "chapters": ["ch00", "ch01", "ch02", "ch03", "ch04", "ch05", "ch06", "ch07", "ch08", "ch09", "ch10", "ch11", "ch12", "ch13"], "v": "8eafa50a4e"};</script>
+<script>window.ABAP_SITE = {"api": "https://script.google.com/macros/s/AKfycbxNGLRFedUVCzMZhQ02TPmR6TSX88Vo48QPaNm8DEl7AIEfn3GalGlLk-JYEEHgRQLG/exec", "chapters": ["ch00", "ch01", "ch02", "ch03", "ch04", "ch05", "ch06", "ch07", "ch08", "ch09", "ch10", "ch11", "ch12", "ch13"], "v": "ec6f76bfdf"};</script>
 <script>
 /* GitHub Pages 전용: 첫 페이지(첫 한마디) → 테마와 장 고르기 → 장 파일 불러오기.
    설정은 window.ABAP_SITE = { api: 댓글 웹 앱 주소, chapters: ['ch00', …], v: 내용 버전 } */
@@ -935,6 +1007,36 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
   function like(id) { return send({ action: 'like', id: id, voter: voter }); }
   window.ABAP_API = { on: !!API, list: getList, add: add, like: like, lsGet: lsGet, lsSet: lsSet, el: el };
 
+  // ---------------------------------------------------------------- 내 번호: 교재 속 ## 자리를 바꿔 보여 준다 (이 브라우저에만 저장)
+  var NO = 'abap-no', NO_MSG = '번호를 두 자리 숫자로 적어 주세요. (예: 05)';
+  function normNo(v) { v = String(v == null ? '' : v).trim(); if (/^\d$/.test(v)) v = '0' + v; return /^\d\d$/.test(v) ? v : ''; }
+  var myNo = normNo(lsGet(NO));
+  function setNo(v) { myNo = normNo(v); if (myNo) lsSet(NO, myNo); }
+  function applyNo() {
+    window.ABAP_NO = myNo;
+    document.querySelectorAll('mark.gno').forEach(function (m) { m.textContent = myNo || '##'; });
+    var now = $('noNow'); if (now) now.textContent = myNo || '##';
+  }
+  var noDlg = $('noDlg'), noForm = $('noForm'), noInput = $('noInput'), noStatus = $('noStatus'), noCancel = $('noCancel'), noBtn = $('noBtn');
+  function askNo(force) {
+    if (!noDlg) return;
+    noInput.value = myNo; noStatus.textContent = ''; noCancel.hidden = !!force;
+    noDlg.hidden = false; root.classList.add('no-open');
+    noInput.focus(); noInput.select();
+  }
+  function closeNo() { noDlg.hidden = true; root.classList.remove('no-open'); }
+  if (noDlg) {
+    noForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = normNo(noInput.value);
+      if (!v) { noStatus.textContent = NO_MSG; noInput.focus(); return; }
+      setNo(v); closeNo(); applyNo();
+    });
+    noCancel.addEventListener('click', closeNo);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !noDlg.hidden && !noCancel.hidden) closeNo(); });
+    if (noBtn) noBtn.addEventListener('click', function () { askNo(false); });
+  }
+
   // ---------------------------------------------------------------- 장 파일 불러오기
   var book = $('book'), msg = $('bookMsg'), inited = false;
   function loadBook() {
@@ -970,6 +1072,8 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
         if (window.ABAP_initBook) window.ABAP_initBook({ noResume: true });
         if (window.ABAP_initComments) window.ABAP_initComments();
       }
+      applyNo();                      // 댓글 이름표(요소 글자)를 만든 뒤에 번호로 바꾼다: 이름표는 번호와 상관없이 같아야 한다
+      if (!myNo) askNo(true);         // 번호 없이 들어온 기기(예전에 들어온 사람)는 한 번 물어본다
       var hash = '', last = null;
       try { hash = decodeURIComponent((location.hash || '').slice(1)); } catch (e) {}
       try { last = JSON.parse(lsGet('abap-last') || 'null'); } catch (e) {}
@@ -996,7 +1100,7 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
 
   // ---------------------------------------------------------------- 첫 페이지
   var GATE = 'abap-gate';
-  var form = $('lgForm'), nameI = $('lgName'), textI = $('lgText'), hp = $('lgHp'), sendB = $('lgSend'), status = $('lgStatus'),
+  var form = $('lgForm'), nameI = $('lgName'), noI = $('lgNo'), textI = $('lgText'), hp = $('lgHp'), sendB = $('lgSend'), status = $('lgStatus'),
       step1 = $('lgStep1'), step2 = $('lgStep2'), hello = $('lgHello'), wall = $('lgWall'), wallMsg = $('lgWallMsg');
   var MSG = { no_name: '이름을 적어 주세요.', no_text: '한마디를 적어 주세요.', too_fast: '방금 남기셨어요. 조금 뒤에 다시 해 주세요.' };
   var mineId = null;
@@ -1008,7 +1112,7 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
   function wallItem(c, mine) {
     var li = el('li', mine ? 'mine' : null); li.appendChild(el('b', null, c.name)); li.appendChild(el('span', null, c.text)); return li;
   }
-  nameI.value = lsGet('abap-name') || '';
+  nameI.value = lsGet('abap-name') || ''; noI.value = myNo;
   if (lsGet(GATE) === 'posted') showStep2(lsGet('abap-name') || '', false);
   getList().then(function (all) {
     var items = all.filter(function (c) { return c.sec === 'cover' && c.id !== mineId; }).reverse().slice(0, 60);
@@ -1021,13 +1125,15 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
   });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var n = nameI.value.trim(), t = textI.value.trim();
+    var n = nameI.value.trim(), t = textI.value.trim(), no = normNo(noI.value);
     if (!n) { status.textContent = MSG.no_name; nameI.focus(); return; }
+    if (!no) { status.textContent = NO_MSG; noI.focus(); return; }
     if (!t) { status.textContent = MSG.no_text; textI.focus(); return; }
+    noI.value = no;
     sendB.disabled = true; status.textContent = '남기는 중이에요…';
     add({ sec: 'cover', el: '', title: '첫 페이지', name: n, text: t, hp: hp.value }).then(function (res) {
       if (!res || !res.ok) throw (res || {});
-      lsSet('abap-name', n); lsSet(GATE, 'posted');
+      lsSet('abap-name', n); setNo(no); lsSet(GATE, 'posted');
       if (res.comment) { mineId = res.comment.id; wall.insertBefore(wallItem(res.comment, true), wall.firstChild); wallMsg.hidden = true; }
       showStep2(n, true);
     }).catch(function (res) {
@@ -1077,9 +1183,26 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
     function saveLiked() { lsSet('abap-liked', JSON.stringify(Object.keys(liked))); }
 
     // ------------------------------------------------------------ 요소마다 이름표 붙이기
-    var COMPOSITE = 'figure.fig, .code, .table-wrap', SEL = 'h1.ch-title, h2, h3, h4, p, li, ' + COMPOSITE;
+    var COMPOSITE = 'figure.fig, .code, .table-wrap, .make', SEL = 'h1.ch-title, h2, h3, h4, p, li, ' + COMPOSITE;
     var index = {}, snip = {}, secLabel = {};
     function norm(s) { return s.replace(/\s+/g, ' ').trim(); }
+    function showText(e, text) {                                             // 보여 줄 글: 카드·표는 칸마다 띄어서
+      var q = e.classList.contains('make') ? '.make-k, .make-t b, dd' : e.classList.contains('table-wrap') ? 'th, td' : '';
+      if (q) {
+        var out = [], n = 0, ps = e.querySelectorAll(q);
+        for (var i = 0; i < ps.length && n < 100; i++) { var t = norm(ps[i].textContent); if (t) { out.push(t); n += t.length + 3; } }
+        if (out.length) text = out.join(' · ');
+      }
+      text = text.replace(/^(그림 [0-9A-Z-]+\.)(?=\S)/, '$1 ');
+      return text.length > 90 ? text.slice(0, 90) + '…' : text;
+    }
+    function liveSnip(e, k) {                                                // 지금 화면의 글(내 번호가 들어간 글)로 다시 만든다
+      if (!e.getAttribute('data-cid')) return snip[k] || '';
+      var c = e.cloneNode(true), x = c.querySelectorAll('.cm-mark, .copy'), i;
+      for (i = 0; i < x.length; i++) x[i].parentNode.removeChild(x[i]);
+      var src = c.classList.contains('code') ? (c.querySelector('pre') || c) : c.tagName === 'FIGURE' ? (c.querySelector('figcaption') || c) : c;
+      return showText(c, norm(src.textContent)) || snip[k] || '';
+    }
     function fnv(s) {
       var h = 0x811c9dc5;
       for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; }
@@ -1100,13 +1223,13 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
           text = norm(src.textContent); if (!text) return;
           if (e.tagName === 'FIGURE' && e.id) { key = e.id; var cap = e.querySelector('figcaption'); if (cap) text = norm(cap.textContent); }
           else {
-            var type = e.tagName === 'P' ? 'p' : e.tagName === 'LI' ? 'l' : /^H\d$/.test(e.tagName) ? 'h' : e.classList.contains('code') ? 'c' : 't';
+            var type = e.tagName === 'P' ? 'p' : e.tagName === 'LI' ? 'l' : /^H\d$/.test(e.tagName) ? 'h' : e.classList.contains('code') ? 'c' : e.classList.contains('make') ? 'm' : 't';
             key = type + '-' + fnv(text);
             seen[key] = (seen[key] || 0) + 1; if (seen[key] > 1) key += '~' + seen[key];
           }
         }
         e.setAttribute('data-csec', sec); e.setAttribute('data-cid', key);
-        index[sec + '|' + key] = e; snip[sec + '|' + key] = text.length > 90 ? text.slice(0, 90) + '…' : text;
+        index[sec + '|' + key] = e; snip[sec + '|' + key] = showText(e, text);
       });
     });
     function keyOfEl(e) { return e.getAttribute('data-csec') + '|' + e.getAttribute('data-cid'); }
@@ -1165,7 +1288,7 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
     bar.appendChild(el('span', null, '한마디를 남길 곳을 눌러 주세요'));
     var cancel = el('button', null, '취소'); cancel.type = 'button'; bar.appendChild(cancel);
     var hint = el('div', 'cm-hint'); hint.hidden = true;
-    hint.appendChild(el('span', null, '이 단추를 누른 뒤 글의 원하는 곳을 누르면 한마디를 남길 수 있어요.'));
+    hint.appendChild(el('span', null, '이 버튼을 누른 뒤 글의 원하는 곳을 누르면 한마디를 남길 수 있어요.'));
     var hintX = el('button', null, '✕'); hintX.type = 'button'; hintX.setAttribute('aria-label', '안내 닫기'); hint.appendChild(hintX);
 
     var backdrop = el('div', 'cm-backdrop'); backdrop.hidden = true;
@@ -1244,7 +1367,7 @@ window.addEventListener('afterprint', function () { document.querySelectorAll('d
       if (cur && index[cur]) index[cur].classList.remove('cm-target');
       cur = k; e.classList.add('cm-target');
       where.textContent = secLabel[k.split('|')[0]] || '';
-      quote.textContent = snip[k] || '';
+      quote.textContent = liveSnip(e, k);
       syncName();
       status.textContent = '';
       keepPlace(e, function () { panel.hidden = false; backdrop.hidden = false; root.classList.add('cm-open'); });

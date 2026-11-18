@@ -1,20 +1,26 @@
-<section class="chapter" id="ch04"><div class="ch-eyebrow">4장</div><h1 class="ch-title">조건문과 반복문</h1>
-<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
-<li><code>IF</code>와 <code>CASE</code>로 조건에 따라 다른 일을 하게 만들 수 있어요.</li>
-<li>비교 연산자와 <code>AND</code>·<code>OR</code>·<code>NOT</code>으로 조건을 정확하게 쓸 수 있어요.</li>
-<li><code>DO</code>와 <code>WHILE</code>로 같은 일을 여러 번 반복하고, <code>sy-index</code>로 몇 번째인지 알 수 있어요.</li>
-<li><code>EXIT</code>·<code>CONTINUE</code>로 반복을 멈추거나 건너뛸 수 있어요.</li>
+<section class="chapter" id="ch04"><div class="ch-eyebrow">4장</div><h1 class="ch-title">조건문과 반복문</h1><div class="box goal short"><div class="box-t">이번 장 목표</div><ul>
+<li><code class="nb">IF</code>와 <code class="nb">CASE</code>로 조건에 따라 다른 일을 하게 만들 수 있어요.</li>
+<li>비교 연산자와 <code class="nb">AND</code>·<code class="nb">OR</code>·<code class="nb">NOT</code>으로 조건을 정확하게 쓸 수 있어요.</li>
+<li><code class="nb">DO</code>와 <code class="nb">WHILE</code>로 같은 일을 여러 번 반복하고, <code class="nb">sy-index</code>로 몇 번째 바퀴인지 알 수 있어요.</li>
+<li><code class="nb">EXIT</code>·<code class="nb">CONTINUE</code>·<code class="nb">CHECK</code>로 반복을 멈추거나 건너뛸 수 있어요.</li>
+<li>반복문 안에 반복문을 넣어 구구단을 출력할 수 있어요.</li>
 </ul></div>
 <h2 id="s4-1">4-1. 조건에 따라 다르게: IF</h2>
-<p>지금까지의 프로그램은 위에서 아래로 한 줄씩 전부 실행됐어요. 하지만 "60점 이상이면 합격, 아니면 불합격"처럼 <strong>상황에 따라 다른 일</strong>을 해야 할 때가 많아요. 이때 쓰는 것이 <code>IF</code>예요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA gv_score TYPE i VALUE 75.
+<p>지금까지의 프로그램은 위에서 아래로 한 줄씩 전부 실행됐어요. 하지만 "60점 이상이면 합격, 아니면 불합격"처럼 <strong>상황에 따라 다른 일</strong>을 해야 할 때가 많아요. 이때 쓰는 것이 <code class="nb">IF</code>예요. 이렇게 조건에 따라 갈라지는 문장을 <strong>조건문</strong>이라고 해요.</p>
+<p>이 장에서도 카드가 붙은 예제는 2-2에서 한 순서대로 새 프로그램을 만들어 실행해 보세요. 카드 없이 나오는 짧은 코드는 모양만 눈에 익히면 돼요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_109</code></dd><dt>Title</dt><dd>[예제] IF로 합격 판정</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_109.
+
+DATA gv_score TYPE i VALUE 75.
 
 START-OF-SELECTION.
   IF gv_score &gt;= 60.
     WRITE / &#x27;합격이에요&#x27;.
   ELSE.
     WRITE / &#x27;아쉽지만 불합격이에요&#x27;.
-  ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_score <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">75</span>.
+  ENDIF." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_109.
+
+<span class="tk-kw">DATA</span> gv_score <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">75</span>.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">IF</span> gv_score &gt;= <span class="tk-num">60</span>.
@@ -22,25 +28,33 @@ START-OF-SELECTION.
   <span class="tk-kw">ELSE</span>.
     <span class="tk-kw">WRITE</span> / <span class="tk-str">'아쉽지만 불합격이에요'</span>.
   <span class="tk-kw">ENDIF</span>.</code></pre></div>
-<figure class="fig" id="fig-4-1"><div class="fig-body"><svg class="fc" viewBox="0 0 360 290" width="360" role="img" aria-label="IF 흐름도">
+<p>75점은 60점 이상이라 실행하면 이렇게 나와요.</p>
+<div class="code"><pre><code class="lang-text">합격이에요</code></pre></div>
+<figure class="fig" id="fig-4-1"><div class="fig-body"><svg class="fc" viewBox="0 0 445 290" width="445" role="img" aria-label="IF 흐름도">
   <defs><marker id="ah41" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="fc-ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
-  <rect class="fc-n" x="110" y="8" width="140" height="34" rx="8"/><text x="180" y="30">IF 문 시작</text>
-  <path class="fc-l" d="M180,42 V62" marker-end="url(#ah41)"/>
-  <polygon class="fc-d" points="180,64 285,102 180,140 75,102"/><text x="180" y="107" class="code">gv_score &gt;= 60 ?</text>
-  <path class="fc-l" d="M75,102 H48 V164" marker-end="url(#ah41)"/><text x="58" y="94" class="lbl yes">예</text>
-  <path class="fc-l" d="M285,102 H312 V164" marker-end="url(#ah41)"/><text x="300" y="94" class="lbl no">아니요</text>
-  <rect class="fc-n yes" x="0" y="166" width="96" height="36" rx="8"/><text x="48" y="189" class="code">'합격'</text>
-  <rect class="fc-n no" x="252" y="166" width="108" height="36" rx="8"/><text x="306" y="189" class="code">'불합격'</text>
-  <path class="fc-l" d="M48,202 V228 H180"/><path class="fc-l" d="M306,202 V228 H180"/>
-  <path class="fc-l" d="M180,228 V246" marker-end="url(#ah41)"/>
-  <rect class="fc-n" x="110" y="248" width="140" height="34" rx="8"/><text x="180" y="270">ENDIF 다음 줄로</text>
+  <rect class="fc-n" x="152" y="8" width="140" height="34" rx="8"/><text x="222" y="30">IF 문 시작</text>
+  <path class="fc-l" d="M222,42 V62" marker-end="url(#ah41)"/>
+  <polygon class="fc-d" points="222,64 327,102 222,140 117,102"/><text x="222" y="107" class="code">gv_score &gt;= 60 ?</text>
+  <path class="fc-l" d="M117,102 H70 V164" marker-end="url(#ah41)"/><text x="92" y="94" class="lbl yes">예</text>
+  <path class="fc-l" d="M327,102 H350 V164" marker-end="url(#ah41)"/><text x="352" y="94" class="lbl no">아니요</text>
+  <rect class="fc-n yes" x="10" y="166" width="120" height="36" rx="8"/><text x="70" y="189" class="code">'합격이에요'</text>
+  <rect class="fc-n no" x="265" y="166" width="170" height="36" rx="8"/><text x="350" y="189" class="code">'아쉽지만 불합격이에요'</text>
+  <path class="fc-l" d="M70,202 V228 H222"/><path class="fc-l" d="M350,202 V228 H222"/>
+  <path class="fc-l" d="M222,228 V246" marker-end="url(#ah41)"/>
+  <rect class="fc-n" x="152" y="248" width="140" height="34" rx="8"/><text x="222" y="270">ENDIF 다음 줄로</text>
 </svg></div><figcaption><b>그림 4-1.</b>IF … ELSE … ENDIF의 흐름</figcaption></figure>
 <ul>
 <li><code>IF 조건.</code> 뒤에는 <strong>조건이 맞을 때</strong> 할 일을 써요.</li>
-<li><code>ELSE.</code> 뒤에는 <strong>조건이 틀릴 때</strong> 할 일을 써요. 필요 없으면 <code>ELSE</code> 부분은 빼도 돼요.</li>
-<li>마지막은 꼭 <code>ENDIF.</code>로 닫아요. <code>IF</code>마다 <code>ENDIF</code>가 하나씩 짝을 이뤄요.</li>
-<li>조건 안쪽 줄은 두 칸 들여 써서 "여기는 IF 안이에요"가 보이게 해요(<kbd>Shift</kbd>+<kbd>F1</kbd>).</li>
+<li><code class="nb">ELSE.</code> 뒤에는 <strong>조건이 틀릴 때</strong> 할 일을 써요. 필요 없으면 <code class="nb">ELSE</code> 부분은 빼도 돼요.</li>
+<li>마지막은 꼭 <code class="nb">ENDIF.</code>로 닫아요. <code class="nb">IF</code>마다 <code class="nb">ENDIF</code>가 하나씩 짝을 이뤄요. 빠뜨리면 문법 오류가 엉뚱한 줄(대개 그보다 아래 줄)에서 나기도 해요. 그럴 땐 <code class="nb">IF</code>와 <code class="nb">ENDIF</code>의 짝부터 세어 봐요.</li>
+<li><code class="nb">IF</code>와 <code class="nb">ENDIF</code> 사이의 줄은 두 칸 들여 써서 "여기는 IF 안이에요"가 보이게 해요. Pretty Printer(<kbd>Shift</kbd>+<kbd>F1</kbd>)를 누르면 알아서 맞춰 줘요.</li>
 </ul>
+<div class="box try short"><div class="box-t">직접 해 보기 · 점수를 바꿔 가며 실행하기</div><p>조건문은 값을 바꿔서 <strong>다른 갈래로 가는 것</strong>을 직접 봐야 내 것이 돼요.</p>
+<ol>
+<li><code>VALUE 75</code>를 <code>VALUE 40</code>으로 바꾸고 다시 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>)해서 실행(<kbd>F8</kbd>)해요. 이번에는 <code>아쉽지만 불합격이에요</code>가 나와요.</li>
+<li><code>VALUE 60</code>이면 어떻게 될까요? 먼저 예상해 보고 실행해서 확인해요. <code class="nb">합격이에요</code>가 나오면 맞아요. <code class="nb">&gt;=</code>는 "크거나 같다"라서 60도 들어가요.</li>
+</ol></div>
+<div class="box note short"><div class="box-t">실행했는데 아무 화면도 안 나와요</div><p><code class="nb">ELSE</code>가 없는 <code class="nb">IF</code>는 조건이 틀리면 아무 일도 하지 않아요. 출력한 것이 하나도 없으면 결과 화면이 뜨지 않고 ABAP Editor에 그대로 있어요. 고장이 아니라 "보여 줄 게 없어요"라는 뜻이에요.</p></div>
 <h2 id="s4-2">4-2. 비교 연산자</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -54,38 +68,38 @@ START-OF-SELECTION.
 <tbody>
 <tr>
 <td>같다</td>
-<td><code>=</code></td>
-<td><code>EQ</code></td>
+<td><code class="nb">=</code></td>
+<td><code class="nb">EQ</code></td>
 <td><code>gv_a = 10</code></td>
 </tr>
 <tr>
 <td>다르다</td>
-<td><code>&lt;&gt;</code></td>
-<td><code>NE</code></td>
+<td><code class="nb">&lt;&gt;</code></td>
+<td><code class="nb">NE</code></td>
 <td><code>gv_a &lt;&gt; 0</code></td>
 </tr>
 <tr>
 <td>작다</td>
-<td><code>&lt;</code></td>
-<td><code>LT</code></td>
+<td><code class="nb">&lt;</code></td>
+<td><code class="nb">LT</code></td>
 <td><code>gv_a &lt; 60</code></td>
 </tr>
 <tr>
 <td>크다</td>
-<td><code>&gt;</code></td>
-<td><code>GT</code></td>
+<td><code class="nb">&gt;</code></td>
+<td><code class="nb">GT</code></td>
 <td><code>gv_a &gt; 100</code></td>
 </tr>
 <tr>
 <td>작거나 같다</td>
-<td><code>&lt;=</code></td>
-<td><code>LE</code></td>
+<td><code class="nb">&lt;=</code></td>
+<td><code class="nb">LE</code></td>
 <td><code>gv_a &lt;= 9</code></td>
 </tr>
 <tr>
 <td>크거나 같다</td>
-<td><code>&gt;=</code></td>
-<td><code>GE</code></td>
+<td><code class="nb">&gt;=</code></td>
+<td><code class="nb">GE</code></td>
 <td><code>gv_a &gt;= 1</code></td>
 </tr>
 <tr>
@@ -100,41 +114,64 @@ START-OF-SELECTION.
 <td><code>IS INITIAL</code></td>
 <td><code>gv_name IS INITIAL</code></td>
 </tr>
+<tr>
+<td>비어 있지 않다</td>
+<td></td>
+<td><code>IS NOT INITIAL</code></td>
+<td><code>gv_name IS NOT INITIAL</code></td>
+</tr>
 </tbody>
 </table></div>
-<p>기호와 글자는 뜻이 똑같아요. 회사 코드에서는 둘 다 보이니 읽을 줄만 알면 돼요. 이 교재는 기호를 써요.</p>
-<div class="box note"><div class="box-t">BETWEEN은 양 끝을 포함해요</div><p><code>gv_a BETWEEN 1 AND 100</code>은 <code>gv_a &gt;= 1 AND gv_a &lt;= 100</code>과 같아요. 1과 100도 "사이"에 들어가요.</p></div>
+<p>기호와 글자는 뜻이 똑같아요. 회사 코드에서는 둘 다 보이니 읽을 줄만 알면 돼요. 이 교재는 기호를 써요. 글자 쪽은 영어 줄임말이에요. <code class="nb">EQ</code>(Equal), <code class="nb">NE</code>(Not Equal), <code class="nb">LT</code>(Less Than), <code class="nb">GT</code>(Greater Than), <code class="nb">LE</code>(Less or Equal), <code class="nb">GE</code>(Greater or Equal).</p>
+<ul>
+<li><code>IS INITIAL</code>은 변수가 <strong>지금 비어 있는지</strong> 물어요. "비어 있다"는 3-2에서 본 초기값이라는 뜻이에요. 글자는 공백, 숫자는 0이면 조건이 맞아요. <code>VALUE 75</code>로 만든 변수는 한 번도 안 바꿨어도 75가 들어 있으니 비어 있지 않아요.</li>
+<li><code class="nb">'A'</code> 같은 글자 값도 <code class="nb">=</code>로 비교해요. <code>gv_grade = 'A'</code>처럼 값을 작은따옴표로 감싸고, 대문자와 소문자는 다른 글자로 봐요.</li>
+</ul>
+<div class="box note short"><div class="box-t">BETWEEN은 양 끝을 포함해요</div><p><code>gv_a BETWEEN 1 AND 100</code>은 "1 이상이고 100 이하"라는 뜻이에요. 1과 100도 "사이"에 들어가요.</p></div>
+<div class="box note short"><div class="box-t">JavaScript와 다른 점</div><ul>
+<li>비교도 <code class="nb">=</code> 하나로 써요. JavaScript처럼 <code class="nb">=</code>를 두 개나 세 개 이어 쓰지 않아요. <code>gv_a = 10.</code>처럼 문장이 변수로 시작하면 "값 넣기"(3-2)이고, <code>IF gv_a = 10.</code>처럼 <code class="nb">IF</code> 뒤에 오면 "같은지 비교"예요.</li>
+<li>"다르다"는 <code class="nb">!=</code>가 아니라 <code class="nb">&lt;&gt;</code>예요.</li>
+<li>조건을 괄호로 감쌀 필요가 없고, 중괄호 <code>{ }</code> 대신 <code class="nb">ENDIF.</code>로 닫아요.</li>
+<li>비교 기호 앞뒤는 꼭 한 칸씩 띄워요. <code class="nb">gv_a&gt;=60</code>처럼 붙여 쓰면 문법 오류가 나요. <code>IF 조건.</code>, <code class="nb">ELSE.</code>, <code class="nb">ENDIF.</code> 끝의 마침표도 빼먹기 쉬워요.</li>
+</ul></div>
 <h2 id="s4-3">4-3. 여러 갈래로 나누기: ELSEIF</h2>
-<p>갈래가 셋 이상이면 <code>ELSEIF</code>를 이어 써요. <strong>위에서부터 차례로</strong> 검사하다가 처음 맞는 곳 하나만 실행해요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA gv_score TYPE i VALUE 85.
+<p>갈래가 셋 이상이면 <code class="nb">ELSEIF</code>를 이어 써요. <strong>위에서부터 차례로</strong> 검사하다가 처음 맞는 곳 하나만 실행해요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_110</code></dd><dt>Title</dt><dd>[예제] ELSEIF로 등급 나누기</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_110.
+
+DATA gv_score TYPE i VALUE 85.
 
 START-OF-SELECTION.
   IF gv_score &gt;= 90.
     WRITE / &#x27;A 등급&#x27;.
   ELSEIF gv_score &gt;= 80.
-    WRITE / &#x27;B 등급&#x27;.          &quot; 85점은 여기서 멈춰요
+    WRITE / &#x27;B 등급&#x27;.          &quot; 85점은 여기에 걸려요
   ELSEIF gv_score &gt;= 70.
     WRITE / &#x27;C 등급&#x27;.
   ELSE.
     WRITE / &#x27;다시 도전!&#x27;.
-  ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_score <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">85</span>.
+  ENDIF." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_110.
+
+<span class="tk-kw">DATA</span> gv_score <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">85</span>.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">IF</span> gv_score &gt;= <span class="tk-num">90</span>.
     <span class="tk-kw">WRITE</span> / <span class="tk-str">'A 등급'</span>.
   <span class="tk-kw">ELSEIF</span> gv_score &gt;= <span class="tk-num">80</span>.
-    <span class="tk-kw">WRITE</span> / <span class="tk-str">'B 등급'</span>.          <span class="tk-cmt">" 85점은 여기서 멈춰요</span>
+    <span class="tk-kw">WRITE</span> / <span class="tk-str">'B 등급'</span>.          <span class="tk-cmt">" 85점은 여기에 걸려요</span>
   <span class="tk-kw">ELSEIF</span> gv_score &gt;= <span class="tk-num">70</span>.
     <span class="tk-kw">WRITE</span> / <span class="tk-str">'C 등급'</span>.
   <span class="tk-kw">ELSE</span>.
     <span class="tk-kw">WRITE</span> / <span class="tk-str">'다시 도전!'</span>.
   <span class="tk-kw">ENDIF</span>.</code></pre></div>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<div class="code"><pre><code class="lang-text">B 등급</code></pre></div>
+<p>85점은 첫 조건(<code>&gt;= 90</code>)에는 안 맞고 둘째 조건(<code>&gt;= 80</code>)에 맞아요. 그래서 <code>B 등급</code>만 출력하고, 그 아래 갈래는 검사하지 않아요. 85를 95, 72, 50으로 바꿔 가며 실행해 보세요. 차례로 <code>A 등급</code>, <code>C 등급</code>, <code>다시 도전!</code>이 나와요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
 <li><strong>순서가 거꾸로면 결과가 틀려요.</strong> <code>IF gv_score &gt;= 70.</code>을 맨 위에 두면 95점도 첫 줄에서 걸려서 C 등급이 돼요. 큰 기준부터 차례로 써요.</li>
-<li><code>ELSEIF</code>는 <strong>붙여서</strong> 한 단어로 써요. <code>ELSE IF</code>로 띄우면 문법 오류가 나요.</li>
+<li><code class="nb">ELSEIF</code>는 <strong>붙여서</strong> 한 단어로 써요. <code>ELSE IF</code>로 띄우면 문법 오류가 나요.</li>
 </ul></div>
 <h2 id="s4-4">4-4. 조건 여러 개 묶기: AND · OR · NOT</h2>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>연산자</th>
@@ -144,34 +181,45 @@ START-OF-SELECTION.
 </thead>
 <tbody>
 <tr>
-<td><code>AND</code></td>
+<td><code class="nb">AND</code></td>
 <td>둘 다 맞아야</td>
 <td><code>gv_age &gt;= 20 AND gv_age &lt; 30</code> (20대)</td>
 </tr>
 <tr>
-<td><code>OR</code></td>
+<td><code class="nb">OR</code></td>
 <td>하나만 맞아도</td>
-<td><code>gv_day = 6 OR gv_day = 7</code> (주말)</td>
+<td><code>gv_day = 6 OR gv_day = 7</code> (토요일이나 일요일. 월요일을 1로 셀 때)</td>
 </tr>
 <tr>
-<td><code>NOT</code></td>
+<td><code class="nb">NOT</code></td>
 <td>반대로</td>
 <td><code>NOT gv_name IS INITIAL</code> (이름이 비어 있지 않으면)</td>
 </tr>
 </tbody>
 </table></div>
-<div class="code"><button type="button" class="copy" data-code="IF gv_num &lt; 1 OR gv_num &gt; 100.
-  WRITE / &#x27;1부터 100 사이의 숫자만 넣어 주세요&#x27;.
-ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span> gv_num &lt; <span class="tk-num">1</span> <span class="tk-kw">OR</span> gv_num &gt; <span class="tk-num">100</span>.
+<p><code>NOT gv_name IS INITIAL</code>은 4-2의 <code>gv_name IS NOT INITIAL</code>과 같은 뜻이에요. 회사 코드에서는 두 모양이 다 보여요. 그리고 JavaScript의 <code class="nb">&amp;&amp;</code>, <code class="nb">||</code>, <code class="nb">!</code> 자리에 ABAP은 <code class="nb">AND</code>, <code class="nb">OR</code>, <code class="nb">NOT</code>을 글자로 써요.</p>
+<p>예를 들어 "1보다 작거나 100보다 크면"은 이렇게 써요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">IF</span> gv_num &lt; <span class="tk-num">1</span> <span class="tk-kw">OR</span> gv_num &gt; <span class="tk-num">100</span>.
   <span class="tk-kw">WRITE</span> / <span class="tk-str">'1부터 100 사이의 숫자만 넣어 주세요'</span>.
 <span class="tk-kw">ENDIF</span>.</code></pre></div>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p><code>IF gv_day = 6 OR 7.</code>처럼 쓰면 안 돼요. 사람 말로는 자연스럽지만 ABAP은 <code>OR</code> 양쪽을 <strong>각각 완전한 조건</strong>으로 읽어요. <code>IF gv_day = 6 OR gv_day = 7.</code>처럼 변수를 다시 써 줘요.</p></div>
-
-<div class="box note"><div class="box-t">조건이 헷갈릴 땐 괄호</div><p><code>AND</code>와 <code>OR</code>를 섞으면 <code>AND</code>가 먼저 묶여요. 헷갈리면 괄호로 확실하게 묶어 주세요. 괄호 안쪽은 꼭 한 칸씩 띄워요.</p>
-<div class="code"><button type="button" class="copy" data-code="IF ( gv_day = 6 OR gv_day = 7 ) AND gv_rain = &#x27;X&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span> ( gv_day = <span class="tk-num">6</span> <span class="tk-kw">OR</span> gv_day = <span class="tk-num">7</span> ) <span class="tk-kw">AND</span> gv_rain = <span class="tk-str">'X'</span>.</code></pre></div></div>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><p><code>IF gv_day = 6 OR 7.</code>처럼 쓰면 안 돼요. 사람 말로는 자연스럽지만 ABAP은 <code class="nb">OR</code> 양쪽을 <strong>각각 완전한 조건</strong>으로 읽어요. <code>IF gv_day = 6 OR gv_day = 7.</code>처럼 변수를 다시 써 줘요.</p></div>
+<div class="box note"><div class="box-t">조건이 헷갈릴 땐 괄호</div><p><code class="nb">AND</code>와 <code class="nb">OR</code>를 섞으면 <code class="nb">AND</code>가 먼저 묶여요. 헷갈리면 괄호로 확실하게 묶어 주세요. 괄호 안쪽은 꼭 한 칸씩 띄워요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">IF</span> ( gv_day = <span class="tk-num">6</span> <span class="tk-kw">OR</span> gv_day = <span class="tk-num">7</span> ) <span class="tk-kw">AND</span> gv_rain = <span class="tk-str">'X'</span>.
+  <span class="tk-kw">WRITE</span> / <span class="tk-str">'비 오는 주말이에요'</span>.
+<span class="tk-kw">ENDIF</span>.</code></pre></div>
+<p><code class="nb">gv_day</code>는 요일 번호(6은 토요일, 7은 일요일)이고, <code>gv_rain = 'X'</code>는 "비가 오면"이라는 뜻이에요. ABAP에서는 "예"를 <code class="nb">'X'</code>, "아니요"를 빈칸으로 적는 습관이 있어요. 5장에서 다시 나와요.</p></div>
+<div class="box try short"><div class="box-t">직접 해 보기 · 조건 두 개 묶기</div><p>점수는 100점까지니까, 100을 넘는 잘못된 값은 합격으로 치지 않게 해 볼게요.</p>
+<ol>
+<li>4-1에서 만든 <code class="nb">YG<mark class="gno">##</mark>_109</code>를 다시 열어요(2-8). <code>IF gv_score &gt;= 60.</code>을 <code>IF gv_score &gt;= 60 AND gv_score &lt;= 100.</code>으로 바꿔요.</li>
+<li><code class="nb">VALUE</code>를 75, 120으로 바꿔 가며 활성화하고 실행해요. 75는 <code class="nb">합격이에요</code>, 120은 <code>아쉽지만 불합격이에요</code>가 나와요.</li>
+<li>같은 줄을 <code>IF gv_score BETWEEN 60 AND 100.</code>으로 바꿔도 결과가 같은지 확인해요.</li>
+</ol></div>
 <h2 id="s4-5">4-5. 값 하나로 갈래 나누기: CASE</h2>
-<p>변수 <strong>하나의 값</strong>에 따라 갈래가 여러 개라면 <code>CASE</code>가 더 읽기 쉬워요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA gv_menu TYPE i VALUE 2.
+<p>변수 <strong>하나의 값</strong>에 따라 갈래가 여러 개라면 <code class="nb">CASE</code>가 더 읽기 쉬워요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_111</code></dd><dt>Title</dt><dd>[예제] CASE로 메뉴 고르기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_111.
+
+DATA gv_menu TYPE i VALUE 2.
 
 START-OF-SELECTION.
   CASE gv_menu.
@@ -183,7 +231,9 @@ START-OF-SELECTION.
       WRITE / &#x27;스무디&#x27;.
     WHEN OTHERS.
       WRITE / &#x27;없는 메뉴예요&#x27;.
-  ENDCASE.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_menu <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">2</span>.
+  ENDCASE." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_111.
+
+<span class="tk-kw">DATA</span> gv_menu <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">2</span>.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">CASE</span> gv_menu.
@@ -196,48 +246,69 @@ START-OF-SELECTION.
     <span class="tk-kw">WHEN</span> <span class="tk-kw">OTHERS</span>.
       <span class="tk-kw">WRITE</span> / <span class="tk-str">'없는 메뉴예요'</span>.
   <span class="tk-kw">ENDCASE</span>.</code></pre></div>
+<div class="code"><pre><code class="lang-text">카페라테</code></pre></div>
+<p><code>VALUE 2</code>를 <code class="nb">4</code>로 바꾸면 <code class="nb">스무디</code>, <code class="nb">9</code>로 바꾸면 <code>없는 메뉴예요</code>가 나와요.</p>
 <ul>
-<li><code>WHEN 값.</code> 아래에 그 값일 때 할 일을 써요. <code>WHEN 3 OR 4.</code>처럼 여러 값을 묶을 수도 있어요.</li>
-<li><code>WHEN OTHERS.</code>는 위의 어떤 값에도 해당하지 않을 때예요. <code>IF</code>의 <code>ELSE</code>와 같아요.</li>
-<li>마지막은 <code>ENDCASE.</code>로 닫아요.</li>
+<li><code>WHEN 값.</code> 아래에 그 값일 때 할 일을 써요. 맞는 <code class="nb">WHEN</code> 하나만 실행하고 <code class="nb">ENDCASE</code> 다음으로 넘어가요. JavaScript의 <code class="nb">switch</code>와 달리 <code class="nb">break</code>를 쓸 필요가 없어요. 글자 값이면 <code>WHEN 'A'.</code>처럼 작은따옴표로 감싸요.</li>
+<li><code>WHEN 3 OR 4.</code>처럼 여러 값을 묶을 수도 있어요. 이 <code class="nb">OR</code>는 <code class="nb">WHEN</code> 뒤에서만 되는 <strong>값 나열</strong>이에요. <code class="nb">IF</code>에서는 4-4에서 본 대로 <code>gv_menu = 3 OR gv_menu = 4</code>라고 써야 해요.</li>
+<li><code>WHEN OTHERS.</code>는 위의 어떤 값에도 해당하지 않을 때예요. <code class="nb">IF</code>의 <code class="nb">ELSE</code>와 같아요. 맨 마지막에 한 번만 써요.</li>
+<li>마지막은 <code class="nb">ENDCASE.</code>로 닫아요.</li>
 </ul>
-<div class="box note"><div class="box-t">IF와 CASE, 언제 뭘 쓰나요?</div><p>"값이 1이면, 2면, 3이면…"처럼 <strong>같은 변수의 값을 하나씩 비교</strong>하면 <code>CASE</code>, "60점 이상이면"처럼 <strong>범위나 여러 변수를 비교</strong>하면 <code>IF</code>가 잘 어울려요.</p></div>
+<div class="box note short"><div class="box-t">IF와 CASE, 언제 뭘 쓰나요?</div><p>"값이 1이면, 2면, 3이면…"처럼 <strong>같은 변수의 값을 하나씩 비교</strong>하면 <code class="nb">CASE</code>, "60점 이상이면"처럼 <strong>범위나 여러 변수를 비교</strong>하면 <code class="nb">IF</code>가 잘 어울려요.</p></div>
 <h2 id="s4-6">4-6. 정해진 횟수만큼 반복: DO … TIMES</h2>
 <p>같은 일을 여러 번 해야 할 때 코드를 복사해서 붙이는 대신 <strong>반복문</strong>을 써요.</p>
-<div class="code"><button type="button" class="copy" data-code="DO 3 TIMES.
-  WRITE / &#x27;ABAP 화이팅!&#x27;.
-ENDDO.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">3</span> <span class="tk-kw">TIMES</span>.
-  <span class="tk-kw">WRITE</span> / <span class="tk-str">'ABAP 화이팅!'</span>.
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">3</span> <span class="tk-kw">TIMES</span>.
+  <span class="tk-kw">WRITE</span> / <span class="tk-str">'ABAP 파이팅!'</span>.
 <span class="tk-kw">ENDDO</span>.</code></pre></div>
-<p><code>DO 횟수 TIMES.</code>와 <code>ENDDO.</code> 사이를 정한 횟수만큼 반복해요. 이 코드는 <code>ABAP 화이팅!</code>을 세 줄 출력해요.</p>
+<p><code>DO 횟수 TIMES.</code>와 <code class="nb">ENDDO.</code> 사이를 정한 횟수만큼 반복해요. 이 코드는 <code>ABAP 파이팅!</code>을 세 줄 출력해요. 횟수 자리에는 <code>DO gv_cnt TIMES.</code>처럼 숫자 변수를 써도 돼요.</p>
 <h3>몇 번째 바퀴인지 알려 주는 sy-index</h3>
-<p>반복하는 동안 SAP는 <strong>지금이 몇 번째 바퀴인지</strong>를 시스템 필드 <code>sy-index</code>에 넣어 줘요. 첫 바퀴는 1, 두 번째 바퀴는 2예요. 이걸 이용하면 1부터 5까지 더하기를 이렇게 쓸 수 있어요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA gv_sum TYPE i.
+<p>반복문이 한 번 도는 것을 이 교재에서는 "한 바퀴"라고 부를게요. 반복하는 동안 SAP는 <strong>지금이 몇 번째 바퀴인지</strong>를 시스템 필드 <code class="nb">sy-index</code>에 넣어 줘요. 첫 바퀴는 1, 두 번째 바퀴는 2예요. JavaScript의 <code class="nb">for</code>에서 쓰던 <code class="nb">i</code>처럼 0부터가 아니라 1부터 세요. 이걸 이용하면 1부터 5까지 더하기를 이렇게 쓸 수 있어요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_112</code></dd><dt>Title</dt><dd>[예제] 1부터 5까지의 합</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_112.
+
+DATA gv_sum TYPE i.
 
 START-OF-SELECTION.
   DO 5 TIMES.
     gv_sum = gv_sum + sy-index.
   ENDDO.
 
-  WRITE: / &#x27;1부터 5까지의 합:&#x27;, gv_sum.     &quot; 15">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_sum <span class="tk-kw">TYPE</span> i.
+  WRITE: / &#x27;1부터 5까지의 합:&#x27;, gv_sum." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_112.
+
+<span class="tk-kw">DATA</span> gv_sum <span class="tk-kw">TYPE</span> i.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">DO</span> <span class="tk-num">5</span> <span class="tk-kw">TIMES</span>.
     gv_sum = gv_sum + sy-index.
   <span class="tk-kw">ENDDO</span>.
 
-  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'1부터 5까지의 합:'</span>, gv_sum.     <span class="tk-cmt">" 15</span></code></pre></div>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'1부터 5까지의 합:'</span>, gv_sum.</code></pre></div>
+<div class="code"><pre><code class="lang-text">1부터 5까지의 합:         15</code></pre></div>
+<p>숫자 앞의 긴 공백은 3-2에서 본 그대로예요. 칸 수는 조금 달라도 괜찮아요.</p>
+<ul>
+<li><code>gv_sum = gv_sum + sy-index.</code>는 "지금 <code class="nb">gv_sum</code>에 <code class="nb">sy-index</code>를 더한 값을 다시 <code class="nb">gv_sum</code>에 넣어라"로 읽어요. 처음 <code class="nb">gv_sum</code>은 0이에요(3-2의 초기값).</li>
+<li><code class="nb">WRITE</code>는 <code class="nb">ENDDO.</code> 아래, 반복문 <strong>밖</strong>에 있어서 반복이 다 끝난 뒤 한 번만 실행돼요. 이 줄을 <code class="nb">ENDDO.</code> 위로 옮기면 바퀴마다 한 줄씩 1, 3, 6, 10, 15가 출력돼요. 직접 옮겨서 확인해 보세요.</li>
+</ul>
 <figure class="fig" id="fig-4-2"><div class="fig-body"><div class="trace">
   <div class="tr-h">바퀴</div><div class="tr-c">1</div><div class="tr-c">2</div><div class="tr-c">3</div><div class="tr-c">4</div><div class="tr-c">5</div>
-  <div class="tr-h"><code>sy-index</code></div><div class="tr-c v">1</div><div class="tr-c v">2</div><div class="tr-c v">3</div><div class="tr-c v">4</div><div class="tr-c v">5</div>
-  <div class="tr-h"><code>gv_sum</code></div><div class="tr-c s">0 + 1 = <b>1</b></div><div class="tr-c s">1 + 2 = <b>3</b></div><div class="tr-c s">3 + 3 = <b>6</b></div><div class="tr-c s">6 + 4 = <b>10</b></div><div class="tr-c s">10 + 5 = <b>15</b></div>
+  <div class="tr-h"><code class="nb">sy-index</code></div><div class="tr-c v">1</div><div class="tr-c v">2</div><div class="tr-c v">3</div><div class="tr-c v">4</div><div class="tr-c v">5</div>
+  <div class="tr-h"><code class="nb">gv_sum</code></div><div class="tr-c s">0 + 1 = <b>1</b></div><div class="tr-c s">1 + 2 = <b>3</b></div><div class="tr-c s">3 + 3 = <b>6</b></div><div class="tr-c s">6 + 4 = <b>10</b></div><div class="tr-c s">10 + 5 = <b>15</b></div>
 </div></div><figcaption><b>그림 4-2.</b>반복할 때마다 sy-index와 gv_sum이 바뀌는 모습</figcaption></figure>
 <p>이렇게 표로 값을 따라가 보는 연습을 해 두면, 6장에서 디버거로 직접 확인할 때 훨씬 쉬워요.</p>
-<h2 id="s4-7">4-7. 조건이 될 때까지 반복: EXIT와 WHILE</h2>
-<p>몇 번 반복할지 <strong>미리 모를 때</strong>도 있어요. 예를 들어 "1부터 차례로 더하다가 합이 100을 넘는 순간 멈추기"가 그래요.</p>
+<h2 id="s4-7">4-7. 몇 번 돌지 모를 때: EXIT와 WHILE</h2>
+<p>몇 번 반복할지 <strong>미리 모를 때</strong>도 있어요. 예를 들어 "1부터 차례로 더하다가 합이 100을 넘는 순간 멈추기"가 그래요. 방법은 두 가지예요. 횟수를 쓰지 않은 <code class="nb">DO.</code>로 계속 돌다가 <code class="nb">EXIT.</code>로 빠져나오는 방법과, 조건이 맞는 동안만 도는 <code class="nb">WHILE</code>이에요. 코드를 치기 전에 아래 상자부터 읽어요.</p>
+<div class="box warn"><div class="box-t">실행하기 전에: 끝나지 않는 반복</div><ul>
+<li><strong><code class="nb">EXIT</code>가 없는 <code class="nb">DO.</code>는 끝나지 않아요(무한 반복).</strong> <kbd>F8</kbd>을 눌렀는데 결과 화면이 나오지 않고 화면이 멈춘 듯 계속 기다리기만 하면 무한 반복이에요. <code class="nb">WHILE</code>도 조건이 영원히 맞으면 똑같아요. 출력이 없어서 곧바로 ABAP Editor로 돌아온 경우(4-1)와는 달라요.</li>
+<li>멈추려면 SAP GUI 창 <strong>맨 왼쪽 위 구석의 작은 아이콘</strong>을 눌러서, 열린 메뉴에서 <strong>Stop Transaction</strong>을 골라요. 아이콘 모양은 SAP GUI 버전과 테마에 따라 조금 달라요. 멈춘 뒤 다른 화면으로 돌아가 있으면 SE38에서 프로그램을 다시 열어요(2-8). 멈추지 않고 두면 한참 뒤에야(보통 10분쯤) SAP가 프로그램을 강제로 끝내요.</li>
+<li>Stop Transaction을 누르면 <strong>저장하지 않은 코드는 사라질 수 있어요.</strong> 그래서 반복문이 든 프로그램은 실행하기 전에 <kbd>Ctrl</kbd>+<kbd>S</kbd>부터 눌러요.</li>
+<li>아래 예제처럼 숫자를 계속 더하는 반복문은 <code class="nb">EXIT</code>를 빠뜨리면 합계가 <code>TYPE i</code>에 담을 수 있는 크기를 금방 넘어서, 기다릴 틈도 없이 영어가 가득한 오류 화면(<strong>덤프</strong>, 6-8)이 뜨기도 해요. 놀라지 말고 <kbd>F3</kbd>으로 돌아와 <code class="nb">EXIT</code>와 조건을 확인해요.</li>
+</ul></div>
 <h3>방법 1. DO + EXIT</h3>
-<p><code>DO.</code>에 횟수를 쓰지 않으면 계속 반복해요. 멈추고 싶은 곳에서 <code>EXIT.</code>를 쓰면 반복문을 빠져나가요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA: gv_sum   TYPE i,
+<p><code class="nb">DO.</code>에 횟수를 쓰지 않으면 계속 반복해요. 멈추고 싶은 곳에서 <code class="nb">EXIT.</code>를 쓰면 반복문을 빠져나가요. JavaScript의 <code class="nb">break</code>와 같아요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_113</code></dd><dt>Title</dt><dd>[예제] DO와 EXIT로 100 넘기기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_113.
+
+DATA: gv_sum   TYPE i,
       gv_count TYPE i.
 
 START-OF-SELECTION.
@@ -249,8 +320,10 @@ START-OF-SELECTION.
     ENDIF.
   ENDDO.
 
-  WRITE: / &#x27;더한 횟수:&#x27;, gv_count,     &quot; 14
-         / &#x27;합계:&#x27;,      gv_sum.       &quot; 105">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_sum   <span class="tk-kw">TYPE</span> i,
+  WRITE: / &#x27;더한 횟수:&#x27;, gv_count,
+         / &#x27;합계:&#x27;,      gv_sum." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_113.
+
+<span class="tk-kw">DATA</span>: gv_sum   <span class="tk-kw">TYPE</span> i,
       gv_count <span class="tk-kw">TYPE</span> i.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
@@ -262,11 +335,17 @@ START-OF-SELECTION.
     <span class="tk-kw">ENDIF</span>.
   <span class="tk-kw">ENDDO</span>.
 
-  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'더한 횟수:'</span>, gv_count,     <span class="tk-cmt">" 14</span>
-         / <span class="tk-str">'합계:'</span>,      gv_sum.       <span class="tk-cmt">" 105</span></code></pre></div>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'더한 횟수:'</span>, gv_count,
+         / <span class="tk-str">'합계:'</span>,      gv_sum.</code></pre></div>
+<div class="code"><pre><code class="lang-text">더한 횟수:         14
+합계:        105</code></pre></div>
+<p>반복문 안에 <code class="nb">IF</code>를 넣었어요. 바퀴마다 합을 검사하다가 100을 넘는 순간 <code class="nb">EXIT</code>로 빠져나와요. 1부터 13까지 더하면 91이라 아직 100을 넘지 않고, 14번째 바퀴에서 105가 되면서 처음으로 100을 넘어요. 반복문이 끝나면 <code class="nb">sy-index</code>는 반복 전 값으로 돌아가기 때문에, 빠져나오기 직전에 <code class="nb">gv_count</code>에 옮겨 뒀어요(아래 "자주 하는 실수").</p>
 <h3>방법 2. WHILE</h3>
 <p><code>WHILE 조건.</code>은 <strong>조건이 맞는 동안</strong> 반복해요. 바퀴를 시작하기 전에 조건부터 검사해요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA: gv_sum TYPE i,
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_114</code></dd><dt>Title</dt><dd>[예제] WHILE로 100 넘기기</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_114.
+
+DATA: gv_sum TYPE i,
       gv_num TYPE i.
 
 START-OF-SELECTION.
@@ -275,8 +354,10 @@ START-OF-SELECTION.
     gv_sum = gv_sum + gv_num.
   ENDWHILE.
 
-  WRITE: / &#x27;더한 횟수:&#x27;, gv_num,      &quot; 14
-         / &#x27;합계:&#x27;,      gv_sum.      &quot; 105">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_sum <span class="tk-kw">TYPE</span> i,
+  WRITE: / &#x27;더한 횟수:&#x27;, gv_num,
+         / &#x27;합계:&#x27;,      gv_sum." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_114.
+
+<span class="tk-kw">DATA</span>: gv_sum <span class="tk-kw">TYPE</span> i,
       gv_num <span class="tk-kw">TYPE</span> i.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
@@ -285,135 +366,171 @@ START-OF-SELECTION.
     gv_sum = gv_sum + gv_num.
   <span class="tk-kw">ENDWHILE</span>.
 
-  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'더한 횟수:'</span>, gv_num,      <span class="tk-cmt">" 14</span>
-         / <span class="tk-str">'합계:'</span>,      gv_sum.      <span class="tk-cmt">" 105</span></code></pre></div>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
-<li><strong>반복문이 끝나면 <code>sy-index</code>는 반복 전 값(보통 0)으로 돌아가요.</strong> 그래서 위 <code>DO</code> 예제처럼 <code>ENDDO</code> 뒤에서 몇 번째였는지 알고 싶으면, 반복문 <strong>안에서</strong> 다른 변수에 옮겨 둬야 해요.</li>
-<li><strong><code>EXIT</code>가 없는 <code>DO.</code>는 끝나지 않아요(무한 반복).</strong> 프로그램이 멈춘 것처럼 보이면 SAP GUI 창 왼쪽 위의 아이콘(Customize Local Layout, <kbd>Alt</kbd>+<kbd>F12</kbd>) 메뉴에서 <strong>Stop Transaction</strong>을 눌러 멈춰요. <code>WHILE</code>도 조건이 영원히 맞으면 똑같아요.</li>
-</ul></div>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'더한 횟수:'</span>, gv_num,
+         / <span class="tk-str">'합계:'</span>,      gv_sum.</code></pre></div>
+<p>실행 결과는 방법 1과 똑같이 14와 105예요.</p>
+<ul>
+<li>방법 1의 <code>IF gv_sum &gt; 100.</code>은 <strong>멈출 조건</strong>이고, 방법 2의 <code>WHILE gv_sum &lt;= 100.</code>은 <strong>계속할 조건</strong>이에요. 서로 정반대예요. <code>WHILE gv_sum &gt; 100.</code>이라고 쓰면 처음부터 조건이 틀려서 한 바퀴도 돌지 않아요.</li>
+<li><code class="nb">WHILE</code> 안에서도 <code class="nb">sy-index</code>는 1, 2, 3으로 올라가요. 위 코드의 <code class="nb">gv_num</code>은 <code class="nb">sy-index</code>와 같은 값이에요.</li>
+</ul>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><p><strong>반복문이 끝나면 <code class="nb">sy-index</code>는 반복 전 값(보통 0)으로 돌아가요.</strong> 그래서 <code class="nb">ENDDO</code>나 <code class="nb">ENDWHILE</code> 뒤에서 몇 번째 바퀴였는지 알고 싶으면, 위 예제들처럼 반복문 <strong>안에서</strong> 다른 변수(<code class="nb">gv_count</code>, <code class="nb">gv_num</code>)에 옮겨 둬야 해요.</p></div>
 <h2 id="s4-8">4-8. 이번 바퀴만 건너뛰기: CONTINUE와 CHECK</h2>
-<p><code>EXIT</code>가 반복문 <strong>전체</strong>를 끝낸다면, <code>CONTINUE</code>는 <strong>이번 바퀴만</strong> 건너뛰고 다음 바퀴로 가요.</p>
-<div class="code"><button type="button" class="copy" data-code="DO 10 TIMES.
-  IF sy-index MOD 2 = 0.     &quot; 짝수면
-    CONTINUE.                &quot; 아래는 건너뛰고 다음 바퀴로
-  ENDIF.
-  WRITE / sy-index.          &quot; 1 3 5 7 9 만 출력돼요
-ENDDO.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">10</span> <span class="tk-kw">TIMES</span>.
-  <span class="tk-kw">IF</span> sy-index <span class="tk-kw">MOD</span> <span class="tk-num">2</span> = <span class="tk-num">0</span>.     <span class="tk-cmt">" 짝수면</span>
-    <span class="tk-kw">CONTINUE</span>.                <span class="tk-cmt">" 아래는 건너뛰고 다음 바퀴로</span>
-  <span class="tk-kw">ENDIF</span>.
-  <span class="tk-kw">WRITE</span> / sy-index.          <span class="tk-cmt">" 1 3 5 7 9 만 출력돼요</span>
-<span class="tk-kw">ENDDO</span>.</code></pre></div>
-<p>같은 일을 <code>CHECK</code>로 더 짧게 쓸 수도 있어요. <code>CHECK 조건.</code>은 <strong>조건이 틀리면</strong> 이번 바퀴의 나머지를 건너뛰어요.</p>
-<div class="code"><button type="button" class="copy" data-code="DO 10 TIMES.
-  CHECK sy-index MOD 2 = 1.  &quot; 홀수일 때만 아래로 내려가요
-  WRITE / sy-index.
-ENDDO.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">10</span> <span class="tk-kw">TIMES</span>.
-  <span class="tk-kw">CHECK</span> sy-index <span class="tk-kw">MOD</span> <span class="tk-num">2</span> = <span class="tk-num">1</span>.  <span class="tk-cmt">" 홀수일 때만 아래로 내려가요</span>
-  <span class="tk-kw">WRITE</span> / sy-index.
-<span class="tk-kw">ENDDO</span>.</code></pre></div>
-<figure class="fig" id="fig-4-3"><div class="fig-body"><div class="exitcmp">
-  <div class="ec-col"><b><code>CONTINUE</code> · <code>CHECK</code></b><div class="ec-laps"><i>1</i><i>2</i><i class="skip">3</i><i>4</i><i>5</i></div><small>3번째 바퀴만 건너뛰고 4번째부터 계속해요</small></div>
-  <div class="ec-col"><b><code>EXIT</code></b><div class="ec-laps"><i>1</i><i>2</i><i class="stop">3</i><i class="gone">4</i><i class="gone">5</i></div><small>3번째에서 반복문을 완전히 빠져나가요</small></div>
-</div></div><figcaption><b>그림 4-3.</b>EXIT와 CONTINUE의 차이</figcaption></figure>
+<p><code class="nb">EXIT</code>가 반복문 <strong>전체</strong>를 끝낸다면, <code class="nb">CONTINUE</code>는 <strong>이번 바퀴만</strong> 건너뛰고 다음 바퀴로 가요. JavaScript의 <code class="nb">continue</code>와 같아요. 다섯 바퀴짜리 반복문을 두 번 돌려 볼게요. 앞의 반복문은 3번째 바퀴에서 <code class="nb">CONTINUE</code>를 쓰고, 뒤의 반복문은 3번째 바퀴에서 <code class="nb">EXIT</code>를 써요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_115</code></dd><dt>Title</dt><dd>[예제] CONTINUE와 EXIT 비교</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_115.
 
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p><code>CHECK</code>와 <code>EXIT</code>는 반복문 <strong>밖에서</strong> 쓰면 반복문이 아니라 지금 실행 중인 블록(예: <code>START-OF-SELECTION</code>) 전체를 끝내 버려요. 지금은 반복문 안에서만 쓰기로 해요.</p></div>
+START-OF-SELECTION.
+  WRITE / &#x27;CONTINUE를 쓴 반복&#x27;.
+  DO 5 TIMES.
+    IF sy-index = 3.         &quot; 3번째 바퀴면
+      CONTINUE.              &quot; 아래는 건너뛰고 다음 바퀴로
+    ENDIF.
+    WRITE / sy-index.
+  ENDDO.
+
+  WRITE / &#x27;EXIT를 쓴 반복&#x27;.
+  DO 5 TIMES.
+    IF sy-index = 3.         &quot; 3번째 바퀴면
+      EXIT.                  &quot; 반복문을 완전히 빠져나가기
+    ENDIF.
+    WRITE / sy-index.
+  ENDDO." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_115.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">WRITE</span> / <span class="tk-str">'CONTINUE를 쓴 반복'</span>.
+  <span class="tk-kw">DO</span> <span class="tk-num">5</span> <span class="tk-kw">TIMES</span>.
+    <span class="tk-kw">IF</span> sy-index = <span class="tk-num">3</span>.         <span class="tk-cmt">" 3번째 바퀴면</span>
+      <span class="tk-kw">CONTINUE</span>.              <span class="tk-cmt">" 아래는 건너뛰고 다음 바퀴로</span>
+    <span class="tk-kw">ENDIF</span>.
+    <span class="tk-kw">WRITE</span> / sy-index.
+  <span class="tk-kw">ENDDO</span>.
+
+  <span class="tk-kw">WRITE</span> / <span class="tk-str">'EXIT를 쓴 반복'</span>.
+  <span class="tk-kw">DO</span> <span class="tk-num">5</span> <span class="tk-kw">TIMES</span>.
+    <span class="tk-kw">IF</span> sy-index = <span class="tk-num">3</span>.         <span class="tk-cmt">" 3번째 바퀴면</span>
+      <span class="tk-kw">EXIT</span>.                  <span class="tk-cmt">" 반복문을 완전히 빠져나가기</span>
+    <span class="tk-kw">ENDIF</span>.
+    <span class="tk-kw">WRITE</span> / sy-index.
+  <span class="tk-kw">ENDDO</span>.</code></pre></div>
+<div class="code"><pre><code class="lang-text">CONTINUE를 쓴 반복
+         1
+         2
+         4
+         5
+EXIT를 쓴 반복
+         1
+         2</code></pre></div>
+<p>숫자 앞 공백 칸 수는 조금 달라도 괜찮아요.</p>
+<ul>
+<li>앞의 반복문은 1, 2, 4, 5를 출력해요. 3번째 바퀴에서 <code class="nb">CONTINUE</code>를 만나 아래 <code class="nb">WRITE</code>를 건너뛰었지만, 4번째와 5번째 바퀴는 그대로 돌았어요.</li>
+<li>뒤의 반복문은 1, 2만 출력해요. 3번째 바퀴에서 <code class="nb">EXIT</code>를 만나 반복문을 빠져나와서, 4번째와 5번째 바퀴는 돌지도 않았어요.</li>
+</ul>
+<p>그림으로 보면 이래요. 그림에 함께 적힌 <code class="nb">CHECK</code>는 바로 아래에서 배워요. <code class="nb">CONTINUE</code>와 같은 쪽이에요.</p>
+<figure class="fig" id="fig-4-3"><div class="fig-body"><div class="exitcmp">
+  <div class="ec-col"><b><code class="nb">CONTINUE</code> · <code class="nb">CHECK</code></b><div class="ec-laps"><i>1</i><i>2</i><i class="skip">3</i><i>4</i><i>5</i></div><small>3번째 바퀴만 건너뛰고 4번째부터 계속해요<br>출력: 1 2 4 5</small></div>
+  <div class="ec-col"><b><code class="nb">EXIT</code></b><div class="ec-laps"><i>1</i><i>2</i><i class="stop">3</i><i class="gone">4</i><i class="gone">5</i></div><small>3번째에서 반복문을 완전히 빠져나가요<br>출력: 1 2</small></div>
+</div></div><figcaption><b>그림 4-3.</b>EXIT와 CONTINUE의 차이</figcaption></figure>
+<h3>더 짧게 쓰는 CHECK</h3>
+<p><code>CHECK 조건.</code>은 <strong>조건이 틀리면</strong> 이번 바퀴의 나머지를 건너뛰어요. <code class="nb">YG<mark class="gno">##</mark>_115</code>에서 <strong>앞의 반복문</strong>에 있는 <code>IF sy-index = 3.</code>부터 <code class="nb">ENDIF.</code>까지 세 줄(<code class="nb">CONTINUE</code>가 들어 있는 쪽)을 <code>CHECK sy-index &lt;&gt; 3.</code> 한 줄로 바꿔도 똑같이 1, 2, 4, 5가 나와요. <code class="nb">IF</code>와 <code class="nb">CONTINUE</code>에는 <strong>건너뛸</strong> 조건을, <code class="nb">CHECK</code>에는 <strong>통과시킬</strong> 조건을 써요. 서로 반대예요.</p>
+<p><code class="nb">CHECK</code>는 3-4에서 배운 <code class="nb">MOD</code>(나머지)와 함께 "홀수만", "3의 배수만"처럼 골라낼 때 자주 써요. 2로 나눈 나머지가 1이면 홀수, 0이면 짝수예요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">10</span> <span class="tk-kw">TIMES</span>.
+  <span class="tk-kw">CHECK</span> sy-index <span class="tk-kw">MOD</span> <span class="tk-num">2</span> = <span class="tk-num">1</span>.  <span class="tk-cmt">" 홀수일 때만 아래로 내려가요</span>
+  <span class="tk-kw">WRITE</span> / sy-index.          <span class="tk-cmt">" 홀수(1, 3, 5, 7, 9)만 출력돼요</span>
+<span class="tk-kw">ENDDO</span>.</code></pre></div>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li><code class="nb">EXIT</code>와 <code class="nb">CHECK</code>를 반복문 <strong>밖에서</strong> 쓰면 뜻이 달라져요. 반복문이 아니라 <code class="nb">START-OF-SELECTION</code> 아래에 남은 코드를 전부 건너뛰어 버려요(<code class="nb">CHECK</code>는 조건이 틀릴 때만요). <code class="nb">CONTINUE</code>는 반복문 밖에서는 아예 쓸 수 없어요.</li>
+<li>그래서 <code class="nb">EXIT</code>·<code class="nb">CONTINUE</code>·<code class="nb">CHECK</code>는 반복문 안에서만 쓰기로 해요. 반복문이 아니라 지금 하던 처리 덩어리(예: <code class="nb">START-OF-SELECTION</code> 아래 전체)를 통째로 끝내고 싶을 때는 <code class="nb">RETURN</code>을 써요. 5장부터 자주 나와요.</li>
+</ul></div>
 <h2 id="s4-9">4-9. 반복 안의 반복: 구구단</h2>
-<p>반복문 안에 반복문을 넣을 수도 있어요. 구구단 2단과 3단을 출력해 볼게요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_04_gugu.
+<p>구구단 2단만 출력한다면 반복문 하나로 충분해요. 곱하는 수가 1부터 9까지 바뀌니 <code class="nb">sy-index</code>를 그대로 쓰면 돼요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">9</span> <span class="tk-kw">TIMES</span>.
+  gv_result = <span class="tk-num">2</span> * sy-index.
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'2 x'</span>, sy-index, <span class="tk-str">'='</span>, gv_result.
+<span class="tk-kw">ENDDO</span>.</code></pre></div>
+<p>2 곱하기 1부터 2 곱하기 9까지 아홉 줄을 출력해요. 숫자 앞에는 긴 공백이 붙는데, 조금 뒤에 줄여 볼 거예요.</p>
+<p>3단도 출력하려면 이 반복문 전체를 한 번 더 돌려야 해요. 그래서 이 반복문을 <code>DO 2 TIMES.</code>로 한 번 더 감싸고, 숫자 <code class="nb">2</code> 자리에는 단을 담은 변수 <code class="nb">gv_dan</code>을 써요. 이렇게 <strong>반복문 안에 반복문</strong>을 넣으면 바깥 반복문이 단을 바꾸고(2단, 3단), 안쪽 반복문이 1부터 9까지 곱해요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_116</code></dd><dt>Title</dt><dd>[예제] 구구단 2단과 3단</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_116.
 
 DATA: gv_dan    TYPE i,
       gv_result TYPE i.
 
 START-OF-SELECTION.
   DO 2 TIMES.                        &quot; 바깥 반복: 단 (2단, 3단)
-    gv_dan = sy-index + 1.           &quot; 1, 2 → 2, 3
+    gv_dan = sy-index + 1.           &quot; 바깥 바퀴 1, 2 → 2단, 3단
     DO 9 TIMES.                      &quot; 안쪽 반복: 곱하는 수 (1~9)
       gv_result = gv_dan * sy-index.
-      WRITE: /(2) gv_dan, &#x27;x&#x27;, (1) sy-index, &#x27;=&#x27;, (2) gv_result.
+      WRITE: /(1) gv_dan, &#x27;x&#x27;, (1) sy-index, &#x27;=&#x27;, (2) gv_result.
     ENDDO.
     SKIP.                            &quot; 단 사이에 빈 줄 하나
-  ENDDO.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_04_gugu.
+  ENDDO." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_116.
 
 <span class="tk-kw">DATA</span>: gv_dan    <span class="tk-kw">TYPE</span> i,
       gv_result <span class="tk-kw">TYPE</span> i.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">DO</span> <span class="tk-num">2</span> <span class="tk-kw">TIMES</span>.                        <span class="tk-cmt">" 바깥 반복: 단 (2단, 3단)</span>
-    gv_dan = sy-index + <span class="tk-num">1</span>.           <span class="tk-cmt">" 1, 2 → 2, 3</span>
+    gv_dan = sy-index + <span class="tk-num">1</span>.           <span class="tk-cmt">" 바깥 바퀴 1, 2 → 2단, 3단</span>
     <span class="tk-kw">DO</span> <span class="tk-num">9</span> <span class="tk-kw">TIMES</span>.                      <span class="tk-cmt">" 안쪽 반복: 곱하는 수 (1~9)</span>
       gv_result = gv_dan * sy-index.
-      <span class="tk-kw">WRITE</span>: /(<span class="tk-num">2</span>) gv_dan, <span class="tk-str">'x'</span>, (<span class="tk-num">1</span>) sy-index, <span class="tk-str">'='</span>, (<span class="tk-num">2</span>) gv_result.
+      <span class="tk-kw">WRITE</span>: /(<span class="tk-num">1</span>) gv_dan, <span class="tk-str">'x'</span>, (<span class="tk-num">1</span>) sy-index, <span class="tk-str">'='</span>, (<span class="tk-num">2</span>) gv_result.
     <span class="tk-kw">ENDDO</span>.
     <span class="tk-kw">SKIP</span>.                            <span class="tk-cmt">" 단 사이에 빈 줄 하나</span>
   <span class="tk-kw">ENDDO</span>.</code></pre></div>
 <figure class="fig" id="fig-4-4"><div class="fig-body"><div class="gui">
-  <div class="gui-head">구구단</div>
+  <div class="gui-head">[예제] 구구단 2단과 3단</div>
   <div class="gui-body list">
-<pre class="gui-list"> 2 x 1 =  2
- 2 x 2 =  4
- 2 x 3 =  6
- …
- 2 x 9 = 18
+<pre class="gui-list">2 x 1 = 2
+2 x 2 = 4
+2 x 3 = 6
+…
+2 x 9 = 18
 
- 3 x 1 =  3
- …</pre>
+3 x 1 = 3
+…</pre>
   </div>
 </div></div><figcaption><b>그림 4-4.</b>실행 결과 (앞부분)</figcaption></figure>
 <ul>
-<li>반복문이 겹치면 <code>sy-index</code>는 <strong>지금 돌고 있는 가장 안쪽 반복문</strong>의 바퀴 수예요. 그래서 바깥쪽 바퀴 수(단)는 안쪽 반복이 시작되기 전에 <code>gv_dan</code>에 옮겨 둬요.</li>
-<li><code>WRITE</code> 뒤 <code>/(2)</code>, <code>(1)</code>처럼 괄호 안에 숫자를 쓰면 <strong>그 칸 수만큼만</strong> 써서 출력해요. 3장에서 본 숫자 앞의 긴 공백을 줄일 수 있어요.</li>
-<li><code>SKIP.</code>은 빈 줄을 하나 넣어요.</li>
+<li>반복문이 겹치면 <code class="nb">sy-index</code>는 <strong>지금 돌고 있는 가장 안쪽 반복문</strong>의 바퀴 수예요. 안쪽 <code>DO 9 TIMES</code> 안에서는 <code class="nb">sy-index</code>가 1부터 9까지 바뀌어서, 바깥쪽이 몇 번째 바퀴였는지 알 수 없어요. 그래서 안쪽 반복이 시작되기 전에 단을 <code class="nb">gv_dan</code>에 옮겨 둬요.</li>
+<li>바깥 반복은 1, 2로 도는데 단은 2, 3이어야 해서 <code>sy-index + 1</code>로 1을 더했어요.</li>
+<li><code class="nb">SKIP.</code>은 빈 줄을 하나 넣어요.</li>
 </ul>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p><code>(2)</code>처럼 칸을 정했는데 값이 더 길면 <strong>잘려서</strong> 나와요. 숫자는 앞에 <code>*</code>가 붙어서 "칸이 모자라요"라고 알려 줘요. 예를 들어 합계가 100을 넘을 수 있는데 <code>(2) gv_sum</code>으로 쓰면 <code>*0</code>처럼 보여요. 나올 수 있는 가장 큰 값을 생각해서 칸 수를 정해요.</p></div>
+<h3>출력할 칸 수 정하기</h3>
+<p><code class="nb">WRITE</code>에서 변수 <strong>앞</strong>에 <code class="nb">(1)</code>, <code class="nb">(2)</code>처럼 괄호 안에 숫자를 쓰면 <strong>그 칸 수만큼만</strong> 써서 출력해요. 3장에서 본 숫자 앞의 긴 공백이 없어져요. 단과 곱하는 수는 한 자리라 <code class="nb">(1)</code>, 결과는 두 자리까지 나오니 <code class="nb">(2)</code>로 정했어요. <code class="nb">/(1)</code>은 줄 바꿈 <code class="nb">/</code>와 칸 수 <code class="nb">(1)</code>을 붙여 쓴 거예요.</p>
+<p>3-6에서 배운 "일부만 꺼내기"는 괄호가 변수 이름 <strong>뒤</strong>에 붙고(<code class="nb">gv_date(4)</code>), 출력 칸 수는 변수 이름 <strong>앞</strong>에 와요. 생김새는 비슷해도 다른 문법이에요.</p>
+<div class="box note short"><div class="box-t">한 자리 수가 왼쪽에 붙는 까닭</div><p><code>TYPE i</code> 같은 숫자는 원래 맨 오른쪽 한 칸이 <code class="nb">-</code> 부호 자리예요. 칸이 넉넉하면 그 칸을 비워 두고, 칸이 모자랄 때만 양수가 그 칸까지 써요. 그래서 <code class="nb">(2)</code>로 찍은 <code class="nb">2</code>는 왼쪽 칸에 오고(오른쪽 칸은 빈 부호 자리), <code class="nb">18</code>은 두 칸을 다 써요. 그림 4-4에서 <code class="nb">=</code> 뒤의 숫자가 왼쪽으로 맞춰진 것도 이 때문이에요.</p></div>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li>이 괄호는 4-4의 조건 괄호와 달라요. <code class="nb">(2)</code>처럼 <strong>괄호 안을 띄우지 않고</strong> 숫자를 바로 붙여 써요.</li>
+<li>칸을 정했는데 값이 더 길면 <strong>잘려서</strong> 나와요. 숫자는 맨 앞 칸에 <code class="nb">*</code>가 찍혀서 "칸이 모자라요"라고 알려 줘요. 예를 들어 값이 105인데 <code class="nb">(2)</code>로 쓰면 <code class="nb">*5</code>가 나와요. 나올 수 있는 가장 큰 값을 생각해서 칸 수를 정해요. 음수가 나올 수 있으면 <code class="nb">-</code> 부호 자리로 한 칸을 더 잡아요.</li>
+</ul></div>
 <h2 id="s4-10">4-10. 미니 실습: 3의 배수 모으기</h2>
-<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_04_MULTI</code>를 만들어 보세요.</p>
+<p>이 장에서 배운 반복문, 건너뛰기, 조건문을 한 프로그램에 모아 볼게요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_117</code></dd><dt>Title</dt><dd>[실습] 3의 배수 모으기</dd></dl></div>
+<div class="box try"><div class="box-t">직접 해 보기</div><p>위 카드대로 프로그램을 만들고, 아래 순서로 코드를 써 보세요.</p>
 <ol>
-<li>1부터 20까지 반복하면서 <strong>3의 배수만</strong> 출력해요. (<code>MOD</code>와 <code>CONTINUE</code> 또는 <code>CHECK</code>)</li>
+<li>1부터 20까지 반복하면서 <strong>3의 배수만</strong> 한 줄에 하나씩 출력해요. (3으로 나눈 나머지가 0이면 3의 배수예요. <code class="nb">MOD</code>와 <code class="nb">CONTINUE</code>(또는 <code class="nb">CHECK</code>)를 써요. 숫자는 4-9처럼 <code class="nb">(2)</code>로 두 칸에 출력해요.)</li>
 <li>출력한 3의 배수를 모두 더해서 합계를 출력해요.</li>
 <li>합계가 50보다 크면 <code>많이 모았어요!</code>, 아니면 <code>조금 더 모아 봐요</code>를 출력해요. (<code>IF … ELSE</code>)</li>
-</ol></div>
-
+<li>다 됐으면 <code>DO 20 TIMES</code>를 <code>DO 10 TIMES</code>로 바꿔서 다시 실행해 보세요. 합계가 18이 되고 <code>조금 더 모아 봐요</code>가 나오면 성공이에요.</li>
+</ol>
+<p>막히면 이렇게 확인해요. 합계가 210이면 더하는 줄이 <code class="nb">CHECK</code>(또는 <code>IF … CONTINUE … ENDIF</code>)보다 위에 있는 거예요. <code class="nb">합계:</code>가 여러 번 나오면 그 <code class="nb">WRITE</code>가 <code class="nb">ENDDO.</code> 위에 있는 거예요.</p></div>
 <figure class="fig" id="fig-4-5"><div class="fig-body"><div class="gui">
-  <div class="gui-head">3의 배수 모으기</div>
+  <div class="gui-head">[실습] 3의 배수 모으기</div>
   <div class="gui-body list">
-<pre class="gui-list"> 3
- 6
- 9
+<pre class="gui-list">3
+6
+9
 12
 15
 18
-합계:          63
+합계:         63
 많이 모았어요!</pre>
   </div>
-</div></div><figcaption><b>그림 4-5.</b>미니 실습의 예상 결과</figcaption></figure>
-
-<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
-* 설명: 반복문(DO), 건너뛰기(CHECK), 조건문(IF) 연습
-*&amp;---------------------------------------------------------------------*
-REPORT yg##_04_multi.
-
-DATA gv_sum TYPE i.
-
-START-OF-SELECTION.
-  &quot; 1~20 중 3의 배수만 출력하고 더하기
-  DO 20 TIMES.
-    CHECK sy-index MOD 3 = 0.        &quot; 3의 배수가 아니면 건너뛰기
-    WRITE: /(2) sy-index.
-    gv_sum = gv_sum + sy-index.
-  ENDDO.
-
-  WRITE: / &#x27;합계:&#x27;, gv_sum.
-
-  &quot; 합계에 따라 다른 메시지
-  IF gv_sum &gt; 50.
-    WRITE / &#x27;많이 모았어요!&#x27;.
-  ELSE.
-    WRITE / &#x27;조금 더 모아 봐요&#x27;.
-  ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+</div></div><figcaption><b>그림 4-5.</b>미니 실습의 예상 결과 (숫자 앞 공백 칸 수는 조금 달라도 괜찮아요)</figcaption></figure>
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code long is-abap"><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
 <span class="tk-cmt">* 설명: 반복문(DO), 건너뛰기(CHECK), 조건문(IF) 연습</span>
 <span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
-<span class="tk-kw">REPORT</span> yg<mark>##</mark>_04_multi.
+<span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_117.
 
 <span class="tk-kw">DATA</span> gv_sum <span class="tk-kw">TYPE</span> i.
 
@@ -433,44 +550,58 @@ START-OF-SELECTION.
   <span class="tk-kw">ELSE</span>.
     <span class="tk-kw">WRITE</span> / <span class="tk-str">'조금 더 모아 봐요'</span>.
   <span class="tk-kw">ENDIF</span>.</code></pre></div></details>
-
 <div class="box quiz"><div class="box-t">확인 문제</div><ol>
-<li>아래 코드에서 <code>gv_score</code>가 95일 때 무엇이 출력될까요? 그리고 무엇이 문제일까요?
-   <div class="code"><button type="button" class="copy" data-code="IF gv_score &gt;= 60.
-  WRITE &#x27;합격&#x27;.
-ELSEIF gv_score &gt;= 90.
-  WRITE &#x27;우수&#x27;.
-ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span> gv_score &gt;= <span class="tk-num">60</span>.
+<li>아래 코드에서 <code class="nb">gv_score</code>가 95일 때 무엇이 출력될까요? 그리고 무엇이 문제일까요?
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">IF</span> gv_score &gt;= <span class="tk-num">60</span>.
   <span class="tk-kw">WRITE</span> <span class="tk-str">'합격'</span>.
 <span class="tk-kw">ELSEIF</span> gv_score &gt;= <span class="tk-num">90</span>.
   <span class="tk-kw">WRITE</span> <span class="tk-str">'우수'</span>.
 <span class="tk-kw">ENDIF</span>.</code></pre></div></li>
 <li><code>IF gv_a = 1 OR 2.</code>는 왜 틀렸을까요? 바르게 고쳐 보세요.</li>
-<li>아래 코드가 끝난 뒤 <code>gv_x</code>의 값은 얼마일까요?
-   <div class="code"><button type="button" class="copy" data-code="DO 4 TIMES.
-  gv_x = gv_x + 10.
-ENDDO.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">4</span> <span class="tk-kw">TIMES</span>.
+<li>아래 코드가 끝난 뒤 <code class="nb">gv_x</code>의 값은 얼마일까요? (<code class="nb">gv_x</code>는 <code>TYPE i</code>이고 처음 값은 0이에요.)
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">4</span> <span class="tk-kw">TIMES</span>.
   gv_x = gv_x + <span class="tk-num">10</span>.
 <span class="tk-kw">ENDDO</span>.</code></pre></div></li>
-<li><code>EXIT</code>와 <code>CONTINUE</code>의 차이를 한 문장으로 말해 보세요.</li>
+<li>아래 코드는 어떤 숫자를 출력할까요? <code class="nb">CONTINUE</code>를 <code class="nb">EXIT</code>로 바꾸면 어떻게 달라질까요?
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DO</span> <span class="tk-num">6</span> <span class="tk-kw">TIMES</span>.
+  <span class="tk-kw">IF</span> sy-index = <span class="tk-num">4</span>.
+    <span class="tk-kw">CONTINUE</span>.
+  <span class="tk-kw">ENDIF</span>.
+  <span class="tk-kw">WRITE</span> / sy-index.
+<span class="tk-kw">ENDDO</span>.</code></pre></div></li>
 <li>반복문이 끝난 뒤 <code>WRITE sy-index.</code>를 했더니 0이 나왔어요. 왜 그럴까요?</li>
+<li>1부터 차례로 더하다가 합이 100을 넘으면 멈추려고 아래처럼 썼어요. 반복이 끝난 뒤 <code class="nb">gv_sum</code>은 얼마일까요? 어떻게 고쳐야 할까요? (두 변수 모두 <code>TYPE i</code>이고 처음 값은 0이에요.)
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">WHILE</span> gv_sum &gt; <span class="tk-num">100</span>.
+  gv_num = gv_num + <span class="tk-num">1</span>.
+  gv_sum = gv_sum + gv_num.
+<span class="tk-kw">ENDWHILE</span>.</code></pre></div></li>
+<li><code class="nb">gv_menu</code>가 4일 때 아래 코드는 무엇을 출력할까요? <code>WHEN OTHERS.</code>와 그 아래 줄을 지우면 어떻게 될까요?
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">CASE</span> gv_menu.
+  <span class="tk-kw">WHEN</span> <span class="tk-num">1</span>.
+    <span class="tk-kw">WRITE</span> <span class="tk-str">'아메리카노'</span>.
+  <span class="tk-kw">WHEN</span> <span class="tk-num">2</span> <span class="tk-kw">OR</span> <span class="tk-num">3</span>.
+    <span class="tk-kw">WRITE</span> <span class="tk-str">'라테'</span>.
+  <span class="tk-kw">WHEN</span> <span class="tk-kw">OTHERS</span>.
+    <span class="tk-kw">WRITE</span> <span class="tk-str">'없는 메뉴'</span>.
+<span class="tk-kw">ENDCASE</span>.</code></pre></div></li>
 </ol></div>
-
-<details class="answer solo"><summary>정답 보기</summary><ol>
-<li><strong><code>합격</code></strong>이 출력돼요. 95점은 첫 조건 <code>&gt;= 60</code>에서 이미 맞아서 아래 <code>ELSEIF</code>는 검사하지 않아요. 큰 기준(<code>&gt;= 90</code>)을 먼저 써야 해요.</li>
-<li><code>OR</code> 양쪽은 각각 완전한 조건이어야 해요. <code>IF gv_a = 1 OR gv_a = 2.</code>로 고쳐요.</li>
-<li><strong>40</strong>이에요(처음 값이 0이라면). 네 바퀴 동안 10씩 더해요.</li>
-<li><code>EXIT</code>는 반복문을 <strong>완전히 끝내고</strong>, <code>CONTINUE</code>는 <strong>이번 바퀴만</strong> 건너뛰고 다음 바퀴를 계속해요.</li>
-<li>반복문이 끝나면 <code>sy-index</code>가 반복 전 값으로 돌아가기 때문이에요. 바퀴 수가 필요하면 반복문 안에서 다른 변수에 옮겨 둬요.</li>
+<details class="answer"><summary>정답 보기</summary><ol>
+<li><strong><code class="nb">합격</code></strong>이 출력돼요. 95점은 첫 조건 <code>&gt;= 60</code>에서 이미 맞아서 아래 <code class="nb">ELSEIF</code>는 검사하지 않아요. 큰 기준(<code>&gt;= 90</code>)을 먼저 써야 해요.</li>
+<li><code class="nb">OR</code> 양쪽은 각각 완전한 조건이어야 해요. <code>IF gv_a = 1 OR gv_a = 2.</code>로 고쳐요.</li>
+<li><strong>40</strong>이에요. 네 바퀴 동안 10씩 더해요.</li>
+<li><strong>1, 2, 3, 5, 6</strong>을 출력해요. 4번째 바퀴만 건너뛰어요. <code class="nb">EXIT</code>로 바꾸면 <strong>1, 2, 3</strong>만 출력해요. 4번째 바퀴에서 반복문을 빠져나가서 5번째와 6번째 바퀴는 돌지 않아요.</li>
+<li>반복문이 끝나면 <code class="nb">sy-index</code>가 반복 전 값으로 돌아가기 때문이에요. 바퀴 수가 필요하면 반복문 안에서 다른 변수에 옮겨 둬요.</li>
+<li><strong>0</strong>이에요. <code class="nb">WHILE</code>에는 멈출 조건이 아니라 <strong>계속할 조건</strong>을 써요. 처음에 <code class="nb">gv_sum</code>이 0이라 <code>gv_sum &gt; 100</code>이 틀려서 한 바퀴도 돌지 않아요. <code>WHILE gv_sum &lt;= 100.</code>으로 고쳐요.</li>
+<li><strong><code>없는 메뉴</code></strong>가 출력돼요. <code>WHEN OTHERS.</code>를 지우면 맞는 <code class="nb">WHEN</code>이 없어서 아무것도 출력하지 않아요. 출력이 없으니 결과 화면도 뜨지 않아요(4-1).</li>
 </ol></details>
-
 <div class="box summary"><div class="box-t">정리</div><ul>
 <li><code>IF … ELSEIF … ELSE … ENDIF</code>로 조건에 따라 다른 일을 해요. 위에서부터 처음 맞는 하나만 실행해요.</li>
+<li>조건은 <code class="nb">=</code>, <code class="nb">&lt;&gt;</code>, <code class="nb">&lt;</code>, <code class="nb">&gt;</code>, <code class="nb">&lt;=</code>, <code class="nb">&gt;=</code>, <code>IS INITIAL</code>로 쓰고 <code class="nb">AND</code>·<code class="nb">OR</code>·<code class="nb">NOT</code>으로 묶어요. <code class="nb">OR</code> 양쪽은 각각 완전한 조건이어야 해요.</li>
 <li>같은 변수의 값으로 갈래를 나눌 땐 <code>CASE … WHEN … ENDCASE</code>가 읽기 좋아요.</li>
-<li><code>DO n TIMES</code>는 정해진 횟수, <code>DO</code> + <code>EXIT</code>나 <code>WHILE</code>은 조건이 될 때까지 반복해요.</li>
-<li><code>sy-index</code>는 지금 몇 번째 바퀴인지 알려 주고, 반복문이 끝나면 원래 값으로 돌아가요.</li>
-<li><code>EXIT</code>는 반복 끝내기, <code>CONTINUE</code>·<code>CHECK</code>는 이번 바퀴 건너뛰기예요.</li>
+<li><code>DO 횟수 TIMES</code>는 정해진 횟수만큼 반복해요. 횟수를 모를 땐 <code class="nb">DO</code> + <code class="nb">EXIT</code>(멈출 조건)나 <code class="nb">WHILE</code>(계속할 조건)을 써요.</li>
+<li>반복이 끝나지 않으면(무한 반복) 창 맨 왼쪽 위 아이콘 메뉴의 <strong>Stop Transaction</strong>으로 멈춰요. 반복문은 실행하기 전에 저장부터 해요.</li>
+<li><code class="nb">sy-index</code>는 지금 몇 번째 바퀴인지 알려 주고, 반복문이 끝나면 원래 값으로 돌아가요. 반복문이 겹치면 가장 안쪽 반복문의 바퀴 수예요.</li>
+<li><code class="nb">EXIT</code>는 반복 끝내기, <code class="nb">CONTINUE</code>·<code class="nb">CHECK</code>는 이번 바퀴 건너뛰기예요. 셋 다 반복문 안에서만 써요.</li>
+<li><code>WRITE (2) gv_result</code>처럼 변수 앞에 괄호를 쓰면 출력할 칸 수를 정할 수 있어요.</li>
 </ul></div>
-
-<div class="box next"><div class="box-t">다음 장 예고</div><p>지금은 점수나 숫자를 코드 안에 직접 적어 넣었어요. 5장에서는 프로그램을 실행할 때 <strong>사용자에게 값을 입력받는 화면(Selection Screen)</strong>을 만들고, 잘못된 값은 오류 메시지로 막아 볼 거예요.</p></div>
-</section>
+<div class="box next short"><div class="box-t">다음 장 예고</div><p>지금은 점수나 숫자를 코드 안에 직접 적어 넣었어요. 5장에서는 프로그램을 실행할 때 <strong>사용자에게 값을 입력받는 화면(Selection Screen)</strong>을 만들고, 잘못된 값은 오류 메시지로 막아 볼 거예요.</p></div></section>

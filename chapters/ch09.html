@@ -1,132 +1,229 @@
-<section class="chapter" id="ch09"><div class="ch-eyebrow">9장</div><h1 class="ch-title">Open SQL</h1>
-<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
-<li>DB Table의 데이터를 <code>SELECT</code>로 읽어 Internal Table에 담을 수 있어요.</li>
-<li><code>WHERE</code>로 원하는 줄만, 필드 목록으로 원하는 칸만 가져올 수 있어요.</li>
-<li><code>SELECT SINGLE</code>로 한 줄만 읽고, <code>sy-subrc</code>·<code>sy-dbcnt</code>로 결과를 확인할 수 있어요.</li>
-<li><code>SELECT-OPTIONS</code>로 범위 조건을 입력받아 <code>IN</code>으로 걸러 낼 수 있어요.</li>
-<li><code>INSERT</code>·<code>UPDATE</code>·<code>MODIFY</code>·<code>DELETE</code>로 DB Table을 바꿀 수 있어요.</li>
+<section class="chapter" id="ch09"><div class="ch-eyebrow">9장</div><h1 class="ch-title">Open SQL</h1><div class="box goal short"><div class="box-t">이번 장 목표</div><ul>
+<li>DB Table의 데이터를 <code class="nb">SELECT</code>로 읽어 Internal Table에 담을 수 있어요.</li>
+<li><code class="nb">WHERE</code>로 원하는 줄만, Field 목록으로 원하는 칸만 가져올 수 있어요.</li>
+<li><code>SELECT SINGLE</code>로 한 줄만 읽고, <code class="nb">sy-subrc</code>·<code class="nb">sy-dbcnt</code>로 결과를 확인할 수 있어요.</li>
+<li><code class="nb">SELECT-OPTIONS</code>로 범위 조건을 입력받아 <code class="nb">IN</code>으로 걸러 낼 수 있어요.</li>
+<li>Table 두 개를 <code>INNER JOIN</code>으로 이어 읽을 수 있어요.</li>
+<li><code class="nb">INSERT</code>·<code class="nb">UPDATE</code>·<code class="nb">MODIFY</code>·<code class="nb">DELETE</code>로 DB Table을 바꾸고, 처음 상태로 되돌릴 수 있어요.</li>
 </ul></div>
 <h2 id="s9-1">9-1. DB에서 메모리로</h2>
-<p>ABAP 프로그램이 DB Table을 읽고 쓰는 SQL을 <strong>Open SQL</strong>(요즘 이름은 ABAP SQL)이라고 해요. 7장에서 만든 <code>YG<mark>##</mark>_BOOK</code>을 읽어서, 8장에서 배운 Internal Table에 담는 것이 이번 장의 첫 목표예요.</p>
+<p>DB에게 "이런 데이터를 주세요", "이렇게 바꿔 주세요" 하고 부탁할 때 쓰는 말을 <strong>SQL</strong>이라고 해요. ABAP 프로그램 안에서 쓰는 SQL이 <strong>Open SQL</strong>(요즘 이름은 ABAP SQL)이에요. 7장에서 만든 <code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code>을 읽어서, 8장에서 배운 Internal Table에 담는 것이 이번 장의 첫 목표예요.</p>
 <figure class="fig" id="fig-9-1"><div class="fig-body"><div class="dbflow">
-  <div class="df-box db"><b>DB Table</b><code>YG##_BOOK</code><small>데이터베이스 · 계속 남아요</small></div>
-  <div class="df-arrow"><code>SELECT</code>→</div>
-  <div class="df-box it"><b>Internal Table</b><code>gt_book</code><small>메모리 · 실행 중에만</small></div>
-  <div class="df-arrow"><code>LOOP</code>→</div>
-  <div class="df-box out"><b>화면</b><code>WRITE</code><small>11장에서는 ALV</small></div>
+  <div class="df-box db"><b>DB Table</b><code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code><small>데이터베이스 · 계속 남아요</small></div>
+  <div class="df-arrow"><code class="nb">SELECT</code>→</div>
+  <div class="df-box it"><b>Internal Table</b><code class="nb">gt_book</code><small>메모리 · 실행 중에만</small></div>
+  <div class="df-arrow"><code class="nb">LOOP</code>→</div>
+  <div class="df-box out"><b>화면</b><code class="nb">WRITE</code><small>11장에서는 ALV</small></div>
 </div></div><figcaption><b>그림 9-1.</b>DB Table → SELECT → Internal Table → 출력</figcaption></figure>
 <h2 id="s9-2">9-2. 전부 읽어 오기: SELECT … INTO TABLE</h2>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_09_select.
+<p>7-7에서 넣은 다섯 권을 <strong>조건 없이 전부</strong> 읽어서 한 줄씩 출력해 볼게요. 시작하기 전에 <code class="nb">/nSE16N</code>에서 <code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code>을 조회해서 다섯 줄이 있는지 먼저 확인해요. 이 장의 결과는 모두 그 다섯 줄 기준이에요. 줄 수나 값이 7-7의 표와 다르면 9-7의 <code class="nb">YG<mark class="gno">##</mark>_137</code>(도서 데이터 처음 상태로 되돌리기)을 먼저 만들어 실행해도 돼요.</p>
+<p>이 장에서도 카드가 붙은 예제는 2-2에서 한 순서대로 새 프로그램을 만들어 실행해요. 카드 없이 나오는 짧은 코드는 눈으로만 봐요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_129</code></dd><dt>Title</dt><dd>[예제] 도서 전체 조회</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_129.
 
-DATA: gt_book TYPE TABLE OF yg##_book,     &quot; DB Table과 같은 모양의 Internal Table
-      gs_book TYPE yg##_book.              &quot; 같은 모양의 Work Area
+DATA: gt_book TYPE TABLE OF yta_g##_book,  &quot; DB Table과 같은 모양의 Internal Table
+      gs_book TYPE yta_g##_book.           &quot; 같은 모양의 Work Area
 
 START-OF-SELECTION.
-  SELECT * FROM yg##_book INTO TABLE gt_book.
+  SELECT * FROM yta_g##_book INTO TABLE gt_book.
 
   LOOP AT gt_book INTO gs_book.
     WRITE: / gs_book-book_id, gs_book-title(20), gs_book-price, gs_book-stock.
-  ENDLOOP.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_09_select.
+  ENDLOOP." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_129.
 
-<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yg<mark>##</mark>_book,     <span class="tk-cmt">" DB Table과 같은 모양의 Internal Table</span>
-      gs_book <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book.              <span class="tk-cmt">" 같은 모양의 Work Area</span>
+<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yta_g<mark class="gno">##</mark>_book,  <span class="tk-cmt">" DB Table과 같은 모양의 Internal Table</span>
+      gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book.           <span class="tk-cmt">" 같은 모양의 Work Area</span>
 
 <span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book.
+  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book.
 
   <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book.
     <span class="tk-kw">WRITE</span>: / gs_book-book_id, gs_book-title(<span class="tk-num">20</span>), gs_book-price, gs_book-stock.
   <span class="tk-kw">ENDLOOP</span>.</code></pre></div>
 <figure class="fig" id="fig-9-2"><div class="fig-body"><div class="sqlparts">
-  <span class="sp kw">SELECT</span><span class="sp a">*</span><span class="sp kw">FROM</span><span class="sp b">yg##_book</span><span class="sp kw">INTO TABLE</span><span class="sp c">gt_book</span><span class="sp">.</span>
+  <span class="sp kw">SELECT</span><span class="sp a">*</span><span class="sp kw">FROM</span><span class="sp b">yta_g<mark class="gno">##</mark>_book</span><span class="sp kw">INTO TABLE</span><span class="sp c">gt_book</span><span class="sp">.</span>
   <div class="sp-lbl a">무엇을<br><small>* = 모든 칸</small></div>
   <div class="sp-lbl b">어디서<br><small>DB Table</small></div>
   <div class="sp-lbl c">어디에 담을까<br><small>Internal Table</small></div>
 </div></div><figcaption><b>그림 9-2.</b>SELECT 문 뜯어보기</figcaption></figure>
+<p>활성화하고 실행하면 SE16N에서 본 다섯 줄이 그대로 나와요. 이 장의 실행 결과는 칸 사이 빈칸을 줄여서 적었어요. 실제 화면에서는 숫자 앞이 더 넓게 벌어져요.</p>
+<div class="code"><pre><code class="lang-text">B0001 ABAP 첫걸음   25,000  3
+B0002 바다의 노래   15,000  0
+B0003 오늘의 산책   13,000  5
+B0004 SQL 한 그릇   28,000  2
+B0005 별을 세는 밤  17,000  7</code></pre></div>
 <ul>
 <li><code>INTO TABLE</code>은 읽은 줄을 <strong>모두</strong> Internal Table에 담아요. 원래 들어 있던 줄은 지워지고 새로 채워져요.</li>
-<li><code>MANDT</code>는 신경 쓰지 않아도 돼요. SAP가 <strong>지금 로그인한 클라이언트의 데이터만</strong> 알아서 골라 줘요(1장 1-2).</li>
-<li><code>gs_book-title(20)</code>처럼 칸 이름 뒤에 <code>(20)</code>을 붙이면 앞 20칸만 출력해요. 제목이 40칸이라 줄이 너무 길어지지 않게 했어요.</li>
+<li><code class="nb">MANDT</code>는 신경 쓰지 않아도 돼요. SAP가 <strong>지금 로그인한 클라이언트의 데이터만</strong> 알아서 골라 줘요(1장 1-2).</li>
+<li><code class="nb">gs_book-title(20)</code>은 3-6에서 배운 글자 일부만 꺼내기예요. 칸 이름 뒤에 <code class="nb">(20)</code>을 붙여서 앞 20칸만 출력해요. 제목이 40칸이라 줄이 너무 길어지지 않게 했어요.</li>
+<li>지금은 보통 도서 번호 순서로 나와요. 하지만 순서를 정하지 않고 읽으면 어떤 순서로 나올지는 약속되어 있지 않아요. 순서를 정하는 방법은 9-3에서 배워요.</li>
 </ul>
+<div class="box warn short"><div class="box-t">회사 Table은 다 읽지 않아요</div><p>우리 Table은 다섯 줄이라 조건 없이 다 읽어도 괜찮아요. 회사 Table은 수백만 줄이에요. 그런 Table을 <code class="nb">WHERE</code> 없이 읽으면 아주 오래 걸리거나 메모리가 모자라서 멈춰요. 회사에서는 <code class="nb">WHERE</code> 없이 읽지 않아요. <code class="nb">WHERE</code>는 바로 다음 절에서 배워요.</p></div>
+<div class="box note short"><div class="box-t">실행했는데 아무것도 안 나와요</div><p>결과 화면 없이 편집기로 돌아왔다면 <code class="nb">SELECT</code>가 한 줄도 읽지 못한 거예요. 코드보다 <strong>데이터</strong>를 먼저 봐요. SE16N에서 <code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code>에 줄이 없으면 7-7로 돌아가 다섯 권을 넣어요. 다른 클라이언트로 로그인했을 때도 안 보여요(1장 1-2).</p>
+<p>활성화부터 막힐 때도 있어요. <code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code>을 모른다는 오류가 나면 코드의 Table 이름 철자를 먼저 봐요. 철자가 맞으면 SE11에서 그 Table이 <strong>Active</strong>인지 확인해요(7-6).</p></div>
 <h2 id="s9-3">9-3. 원하는 줄만, 원하는 칸만</h2>
 <h3>원하는 줄만: WHERE</h3>
-<div class="code"><button type="button" class="copy" data-code="PARAMETERS pa_genre TYPE yg##_e_genre.      &quot; Data Element로 만든 입력 칸
+<p>이번에는 다섯 권 가운데 <strong>장르가 같은 책만</strong> 읽어요. 장르는 화면에서 입력받아요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_130</code></dd><dt>Title</dt><dd>[예제] 장르로 도서 조회</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_130.
+
+DATA: gt_book TYPE TABLE OF yta_g##_book,
+      gs_book TYPE yta_g##_book.
+
+PARAMETERS pa_genre TYPE yde_g##_genre.      &quot; Data Element로 만든 입력 칸
 
 START-OF-SELECTION.
-  SELECT * FROM yg##_book
+  SELECT * FROM yta_g##_book
     INTO TABLE gt_book
     WHERE genre = pa_genre
-    ORDER BY price DESCENDING.             &quot; 비싼 순서로 정렬해서 가져오기">복사</button><pre><code class="lang-abap"><span class="tk-kw">PARAMETERS</span> pa_genre <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_genre.      <span class="tk-cmt">" Data Element로 만든 입력 칸</span>
+    ORDER BY price DESCENDING.             &quot; 비싼 순서로 정렬해서 가져오기
+
+  LOOP AT gt_book INTO gs_book.
+    WRITE: / gs_book-book_id, gs_book-title(20),
+             gs_book-genre, gs_book-price.
+  ENDLOOP." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_130.
+
+<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yta_g<mark class="gno">##</mark>_book,
+      gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book.
+
+<span class="tk-kw">PARAMETERS</span> pa_genre <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_genre.      <span class="tk-cmt">" Data Element로 만든 입력 칸</span>
 
 <span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
     <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book
     <span class="tk-kw">WHERE</span> genre = pa_genre
-    <span class="tk-kw">ORDER</span> <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>.             <span class="tk-cmt">" 비싼 순서로 정렬해서 가져오기</span></code></pre></div>
+    <span class="tk-kw">ORDER</span> <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>.             <span class="tk-cmt">" 비싼 순서로 정렬해서 가져오기</span>
+
+  <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book.
+    <span class="tk-kw">WRITE</span>: / gs_book-book_id, gs_book-title(<span class="tk-num">20</span>),
+             gs_book-genre, gs_book-price.
+  <span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<p>활성화하고 실행해요. 입력 칸 <code class="nb">PA_GENRE</code>에 <code class="nb">N</code>(소설)을 넣고 <kbd>F8</kbd>을 누르면 소설 두 권이 비싼 순서로 나와요.</p>
+<div class="code"><pre><code class="lang-text">B0005 별을 세는 밤  N  17,000
+B0002 바다의 노래   N  15,000</code></pre></div>
 <ul>
-<li><code>WHERE</code>에는 4장의 비교 연산자, <code>AND</code>·<code>OR</code>를 그대로 써요.</li>
-<li><code>ORDER BY 칸 DESCENDING</code>을 붙이면 정렬된 상태로 가져와요.</li>
-<li><code>PARAMETERS</code>를 Data Element(<code>yg<mark>##</mark>_e_genre</code>)로 만들면 고정값 목록(<kbd>F4</kbd>)이 저절로 붙어요. Selection Text에서 <strong>Dictionary Ref.</strong>를 체크하면 이름표도 Field Label(<code>장르</code>)로 붙어요.</li>
+<li><code class="nb">SELECT</code>부터 <code>ORDER BY</code>까지 네 줄이 <strong>한 문장</strong>이에요. 마침표는 맨 끝에 하나만 찍어요(2-5). 이 장의 예제는 늘 <code class="nb">SELECT</code> → <code class="nb">FROM</code> → <code class="nb">INTO</code> → <code class="nb">WHERE</code> → <code>ORDER BY</code> 순서로 써요.</li>
+<li><code class="nb">WHERE</code>에는 4장의 비교 연산자, <code class="nb">AND</code>·<code class="nb">OR</code>를 그대로 써요. 8-4의 <code>LOOP AT … WHERE</code>처럼 왼쪽에는 <strong>칸 이름만</strong> 써요.</li>
+<li><code>ORDER BY 칸 DESCENDING</code>을 붙이면 정렬된 상태로 가져와요. <code class="nb">DESCENDING</code>을 빼면 작은 값부터 나와요. 한번 지우고 실행해 보세요. 두 줄의 순서가 뒤바뀌어요(확인한 뒤에는 다시 적어 둬요).</li>
+<li>장르를 <strong>비워 두고</strong> 실행하면 한 줄도 안 나와요. 고장이 아니에요. 빈칸은 "조건 없음"이 아니라 "<code class="nb">genre</code>가 빈칸인 줄을 찾아 줘"라는 뜻이거든요. 비우면 전부 나오게 하는 방법은 9-5에서 배워요.</li>
 </ul>
-<div class="box note"><div class="box-t">글자 일부로 찾기: LIKE</div><p>제목에 <code>ABAP</code>이 들어간 책을 찾고 싶으면 <code>LIKE</code>와 <code>%</code>를 써요. <code>%</code>는 "아무 글자나 몇 글자든"이라는 뜻이에요.</p>
-<div class="code"><button type="button" class="copy" data-code="WHERE title LIKE &#x27;%ABAP%&#x27;">복사</button><pre><code class="lang-abap"><span class="tk-kw">WHERE</span> <span class="tk-kw">title</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'%ABAP%'</span></code></pre></div>
-<p>DB는 대소문자를 구분해요. <code>abap</code>으로 찾으면 <code>ABAP 첫걸음</code>은 나오지 않아요.</p></div>
-<h3>원하는 칸만: 필드 목록</h3>
-<p><code>SELECT *</code>는 모든 칸을 가져와요. 칸이 많은 Table에서 필요한 건 두세 칸뿐이라면 낭비예요. <strong>필요한 칸만 적는 습관</strong>을 들여요.</p>
-<div class="code"><button type="button" class="copy" data-code="TYPES: BEGIN OF ty_list,
-         book_id TYPE yg##_e_book_id,
-         title   TYPE yg##_e_title,
-         price   TYPE yg##_e_price,
+<div class="box try"><div class="box-t">직접 해 보기 · 이름표 붙이기</div><p>입력 칸 옆에 <code class="nb">PA_GENRE</code>라고 보였죠? 5-2에서는 이름표 글자를 직접 적었어요. 이번에는 7-5에서 Data Element에 적어 둔 글자를 가져와요.</p>
+<ol>
+<li><kbd>F3</kbd>으로 편집기까지 돌아와서 메뉴 <strong>Goto → Text Elements</strong>로 들어가 <strong>Selection Texts</strong> 탭을 눌러요(5-2).</li>
+<li><code class="nb">PA_GENRE</code> 줄의 <strong>Dictionary Ref.</strong> 칸에 체크하고 <kbd>Enter</kbd>를 눌러요. Text 칸에 <code class="nb">장르</code>가 저절로 들어와요. Data Element의 Field Label이에요.</li>
+<li>저장하고 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>)한 뒤 <kbd>F3</kbd>으로 돌아와서 <kbd>F8</kbd>로 실행해요. 입력 칸 옆 글자가 <code class="nb">PA_GENRE</code>에서 <code class="nb">장르</code>로 바뀌어 있어요.</li>
+<li>장르 칸에서 <kbd>F4</kbd>를 눌러 봐요. 7-4에서 Domain에 넣은 고정값 세 개가 목록으로 나와요. 입력 칸을 Data Element(<code class="nb">yde_g<mark class="gno">##</mark>_genre</code>)로 만들어서 저절로 붙은 거예요.</li>
+</ol>
+<p>Text Elements 화면은 버전에 따라 조금 달라요. 체크했는데 글자가 바로 안 보이면 저장하고 활성화한 뒤 다시 봐요. 그래도 안 들어오면 체크를 풀고 Text 칸에 <code class="nb">장르</code>를 직접 적어도 돼요(5-2). 화면에 보이는 이름표는 같아요.</p></div>
+<div class="box note"><div class="box-t">글자 일부로 찾기: LIKE</div><p>제목에 <code class="nb">ABAP</code>이 들어간 책을 찾고 싶으면 <code class="nb">LIKE</code>와 <code class="nb">%</code>를 써요. <code class="nb">%</code>는 "아무 글자나 몇 글자든"이라는 뜻이에요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">WHERE</span> title <span class="tk-kw">LIKE</span> <span class="tk-str">'%ABAP%'</span></code></pre></div>
+<p>DB는 대소문자를 구분해요. <code class="nb">abap</code>으로 찾으면 <code>ABAP 첫걸음</code>은 나오지 않아요. 저장된 글자와 대소문자까지 똑같이 적어야 해요. 대문자로만 저장하는 칸이라면, 입력받은 글자를 3-6의 <code>TRANSLATE … TO UPPER CASE</code>로 대문자로 바꾼 뒤에 찾아요.</p></div>
+<h3>원하는 칸만: Field 목록</h3>
+<p><code>SELECT *</code>는 모든 칸을 가져와요. 칸이 많은 Table에서 필요한 건 두세 칸뿐이라면 낭비예요. <code class="nb">*</code> 자리에 가져올 칸 이름을 적으면 그 칸만 읽어 와요. 이렇게 적은 칸 이름들을 <strong>Field 목록</strong>이라고 해요. <strong>필요한 칸만 적는 습관</strong>을 들여요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_131</code></dd><dt>Title</dt><dd>[예제] 필요한 칸만 조회</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_131.
+
+TYPES: BEGIN OF ty_list,
+         book_id TYPE yde_g##_book_id,
+         title   TYPE yde_g##_title,
+         price   TYPE yde_g##_price,
        END OF ty_list.
 
-DATA gt_list TYPE TABLE OF ty_list.
+DATA: gt_list TYPE TABLE OF ty_list,
+      gs_list TYPE ty_list.               &quot; 출력할 때 쓸 Work Area
 
 START-OF-SELECTION.
   SELECT book_id title price
-    FROM yg##_book
+    FROM yta_g##_book
     INTO CORRESPONDING FIELDS OF TABLE gt_list
-    WHERE genre = &#x27;I&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_list,
-         book_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_book_id,
-         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_title,
-         price   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_price,
+    WHERE genre = &#x27;I&#x27;.
+
+  LOOP AT gt_list INTO gs_list.
+    WRITE: / gs_list-book_id, gs_list-title(20), gs_list-price.
+  ENDLOOP." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_131.
+
+<span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_list,
+         book_id <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_book_id,
+         title   <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_title,
+         price   <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_price,
        <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_list.
 
-<span class="tk-kw">DATA</span> gt_list <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_list.
+<span class="tk-kw">DATA</span>: gt_list <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_list,
+      gs_list <span class="tk-kw">TYPE</span> ty_list.               <span class="tk-cmt">" 출력할 때 쓸 Work Area</span>
 
 <span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">SELECT</span> book_id <span class="tk-kw">title</span> price
-    <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+  <span class="tk-kw">SELECT</span> book_id title price
+    <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
     <span class="tk-kw">INTO</span> <span class="tk-kw">CORRESPONDING</span> <span class="tk-kw">FIELDS</span> <span class="tk-kw">OF</span> <span class="tk-kw">TABLE</span> gt_list
-    <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'I'</span>.</code></pre></div>
-<p><code>INTO CORRESPONDING FIELDS OF TABLE</code>은 <strong>이름이 같은 칸끼리</strong> 짝을 지어 담아 줘요. Internal Table의 칸 순서가 SELECT 목록과 달라도 괜찮아요.</p>
+    <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'I'</span>.
+
+  <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_list <span class="tk-kw">INTO</span> gs_list.
+    <span class="tk-kw">WRITE</span>: / gs_list-book_id, gs_list-title(<span class="tk-num">20</span>), gs_list-price.
+  <span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<p>IT 책 두 권의 번호, 제목, 가격만 나와요.</p>
+<div class="code"><pre><code class="lang-text">B0001 ABAP 첫걸음   25,000
+B0004 SQL 한 그릇   28,000</code></pre></div>
+<ul>
+<li>세 칸만 담을 표가 필요해서 <code class="nb">ty_list</code>를 새로 만들었어요. <code class="nb">TYPE</code> 뒤에 7장의 Data Element를 쓰면 Table의 그 칸과 <strong>똑같은 Type</strong>이 돼요. 8-1의 note에서 미리 본 방법이에요.</li>
+<li>Field 목록의 칸 이름 사이에는 <strong>쉼표를 쓰지 않아요.</strong> 빈칸으로만 띄워요.</li>
+<li><code>INTO CORRESPONDING FIELDS OF TABLE</code>은 <strong>이름이 같은 칸끼리</strong> 짝을 지어 담아 줘요. 8-1의 <code class="nb">MOVE-CORRESPONDING</code>과 같은 생각이에요. Internal Table의 칸 순서가 Field 목록과 달라도 괜찮아요.</li>
+<li>칸의 순서와 Type이 받는 쪽과 똑같으면 <code>INTO TABLE gt_list</code>만 써도 돼요. 이 예제가 그런 경우예요. 그때는 Field 목록에 적은 순서대로 왼쪽 칸부터 채워져요. 회사 코드에서는 이 모양을 더 자주 봐요.</li>
+<li><code class="nb">'I'</code>를 소문자 <code class="nb">'i'</code>로 적으면 한 줄도 안 나와요. 따옴표 안의 값은 DB에 저장된 값과 <strong>대소문자까지</strong> 같아야 해요. <code class="nb">YG<mark class="gno">##</mark>_130</code>의 입력 칸은 <code class="nb">n</code>을 넣어도 대문자로 바꿔서 받지만(5-3), 코드에 적은 값은 아무도 바꿔 주지 않아요.</li>
+</ul>
+<p>이 뒤의 짧은 예제들은 코드를 줄이려고 다시 <code>SELECT *</code>를 써요. 미니 실습에서는 필요한 칸만 읽어 봐요.</p>
 <h2 id="s9-4">9-4. 한 줄만 읽기와 결과 확인</h2>
 <h3>SELECT SINGLE</h3>
 <p>Key로 <strong>딱 한 줄</strong>만 읽을 땐 <code>SELECT SINGLE</code>을 써요. 담는 곳도 Internal Table이 아니라 <strong>Work Area</strong>예요.</p>
-<div class="code"><button type="button" class="copy" data-code="PARAMETERS pa_id TYPE yg##_e_book_id.
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_132</code></dd><dt>Title</dt><dd>[예제] 도서 한 권 조회</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_132.
+
+DATA gs_book TYPE yta_g##_book.
+
+PARAMETERS pa_id TYPE yde_g##_book_id.
 
 START-OF-SELECTION.
-  SELECT SINGLE * FROM yg##_book
+  SELECT SINGLE * FROM yta_g##_book
     INTO gs_book
     WHERE book_id = pa_id.
 
   IF sy-subrc = 0.
     WRITE: / gs_book-title, &#x27;재고:&#x27;, gs_book-stock.
   ELSE.
-    MESSAGE TEXT-e01 TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.   &quot; 없는 도서 번호예요
-  ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">PARAMETERS</span> pa_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_book_id.
+    MESSAGE &#x27;없는 도서 번호예요&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+  ENDIF." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_132.
+
+<span class="tk-kw">DATA</span> gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book.
+
+<span class="tk-kw">PARAMETERS</span> pa_id <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_book_id.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">SELECT</span> <span class="tk-kw">SINGLE</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+  <span class="tk-kw">SELECT</span> <span class="tk-kw">SINGLE</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
     <span class="tk-kw">INTO</span> gs_book
     <span class="tk-kw">WHERE</span> book_id = pa_id.
 
   <span class="tk-kw">IF</span> sy-subrc = <span class="tk-num">0</span>.
     <span class="tk-kw">WRITE</span>: / gs_book-title, <span class="tk-str">'재고:'</span>, gs_book-stock.
   <span class="tk-kw">ELSE</span>.
-    <span class="tk-kw">MESSAGE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">e01</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.   <span class="tk-cmt">" 없는 도서 번호예요</span>
+    <span class="tk-kw">MESSAGE</span> <span class="tk-str">'없는 도서 번호예요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
   <span class="tk-kw">ENDIF</span>.</code></pre></div>
+<p><code class="nb">B0003</code>을 넣고 실행하면 이렇게 나와요.</p>
+<div class="code"><pre><code class="lang-text">오늘의 산책   재고:  5</code></pre></div>
+<p>없는 번호 <code class="nb">B0009</code>를 넣으면 결과 화면이 뜨지 않아요. Selection Screen 맨 아래 상태 표시줄에 <code>없는 도서 번호예요</code>가 나와요.</p>
+<ul>
+<li>읽었는지는 <strong>바로 다음 줄</strong>에서 <code class="nb">sy-subrc</code>로 확인해요. 0이면 찾은 것, 4면 그런 책이 없는 거예요(8-5).</li>
+<li><code>TYPE 'S' DISPLAY LIKE 'E'</code>는 5-5에서 배운 모양이에요. 종류는 <code class="nb">S</code>(계속 진행)인데 모양만 오류처럼 보여 줘요.</li>
+<li>짧은 예제라서 메시지 글자를 따옴표 안에 바로 적었어요. 미니 실습에서는 Text Symbol로 빼 볼 거예요.</li>
+<li>입력 칸 옆에는 <code class="nb">PA_ID</code>라고 보여요. 9-3처럼 Dictionary Ref.에 체크하면 <code>도서 번호</code>로 바뀌어요.</li>
+</ul>
+<p><strong>한 칸만</strong> 필요하면 Work Area 대신 변수 하나에 바로 담을 수 있어요. 아래는 눈으로만 보는 조각이에요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_title <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_title.
+
+<span class="tk-kw">SELECT</span> <span class="tk-kw">SINGLE</span> title <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
+  <span class="tk-kw">INTO</span> gv_title
+  <span class="tk-kw">WHERE</span> book_id = pa_id.</code></pre></div>
+<p><code class="nb">*</code> 자리에 칸 이름 하나를, <code class="nb">INTO</code> 뒤에 변수 하나를 썼어요. 회사 코드에서 이름이나 설명 한 칸을 읽어 올 때 가장 흔한 모양이에요.</p>
 <h3>sy-subrc와 sy-dbcnt</h3>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>시스템 필드</th>
@@ -136,66 +233,85 @@ START-OF-SELECTION.
 </thead>
 <tbody>
 <tr>
-<td><code>sy-subrc</code></td>
+<td><code class="nb">sy-subrc</code></td>
 <td>0이면 한 줄 이상 읽음, 4면 하나도 없음</td>
-<td>8장과 같아요</td>
+<td><code>SELECT SINGLE</code> 후 <code class="nb">4</code>면 없는 번호</td>
 </tr>
 <tr>
-<td><code>sy-dbcnt</code></td>
+<td><code class="nb">sy-dbcnt</code></td>
 <td>읽은(또는 바꾼) 줄 수</td>
-<td><code>SELECT</code> 후 <code>3</code>이면 세 줄</td>
+<td><code class="nb">SELECT</code> 후 <code class="nb">3</code>이면 세 줄</td>
 </tr>
 </tbody>
 </table></div>
-<div class="code"><button type="button" class="copy" data-code="SELECT * FROM yg##_book INTO TABLE gt_book WHERE genre = &#x27;N&#x27;.
-WRITE: / &#x27;소설&#x27;, sy-dbcnt, &#x27;권&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'N'</span>.
+<p>아래 두 줄도 눈으로만 봐요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'N'</span>.
 <span class="tk-kw">WRITE</span>: / <span class="tk-str">'소설'</span>, sy-dbcnt, <span class="tk-str">'권'</span>.</code></pre></div>
+<p>소설은 두 권이라 <code>소설 2 권</code>이 나와요(숫자 앞 빈칸은 줄여 적었어요).</p>
+<div class="box try short"><div class="box-t">직접 해 보기 · 디버거로 확인하기</div><p><code class="nb">YG<mark class="gno">##</mark>_129</code>를 열고, <code class="nb">SELECT</code> 바로 다음 줄인 <code>LOOP AT</code> 줄에 Breakpoint를 걸어 실행해요. 디버거가 멈추면 8-4에서 해 본 것처럼 <code class="nb">gt_book</code>을 더블클릭해서 표 모양으로 열어 봐요. 다섯 줄이 들어와 있어요. <code class="nb">sy-dbcnt</code>(5)와 <code class="nb">sy-subrc</code>(0)도 변수 목록에 올려 봐요. 다 봤으면 <kbd>F8</kbd>로 끝까지 실행하고 Breakpoint를 지워요.</p>
+<p>결과가 이상할 때 "<code class="nb">SELECT</code>가 못 읽은 것인지, 출력이 틀린 것인지"를 가르는 가장 빠른 방법이에요.</p></div>
 <div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
-<li><strong><code>INTO TABLE</code>의 <code>TABLE</code>을 빼먹으면</strong> <code>SELECT … ENDSELECT</code>라는 반복문 모양으로 읽혀서 <code>ENDSELECT</code>가 없다는 오류가 나요. 여러 줄은 <code>INTO TABLE</code>, 한 줄은 <code>SELECT SINGLE … INTO 워크에어리어</code>로 기억해요.</li>
-<li><code>SELECT</code> 바로 다음에 <code>sy-subrc</code>를 확인하지 않고 결과를 쓰면, 데이터가 없을 때 엉뚱한 값이 출력돼요.</li>
-<li><code>LOOP</code> 안에서 한 줄씩 <code>SELECT SINGLE</code>을 반복하면 DB를 너무 자주 불러서 느려져요. 가능하면 한 번에 <code>INTO TABLE</code>로 읽어 와요.</li>
+<li><strong><code>INTO TABLE</code>의 <code class="nb">TABLE</code>을 빼먹으면</strong> 문법 오류가 나요. <code class="nb">TABLE</code>이 없는 <code>SELECT … INTO</code>는 한 줄씩 읽는 옛 반복문(<code>SELECT … ENDSELECT</code>)의 시작으로 읽히거든요. 오류 문구에 <code class="nb">ENDSELECT</code>나 Work Area 이야기가 보이면 <code class="nb">INTO</code> 뒤에 <code class="nb">TABLE</code>이 있는지부터 봐요. 여러 줄은 <code>INTO TABLE</code>, 한 줄은 <code>SELECT SINGLE … INTO Work Area</code>로 기억해요.</li>
+<li><code>SELECT SINGLE</code> 다음에 <code class="nb">sy-subrc</code>를 확인하지 않고 <code class="nb">gs_book</code>을 쓰면, 책을 못 찾았을 때 <strong>그 전에 담겨 있던 값</strong>이 그대로 출력돼요. <code>INTO TABLE</code>은 못 읽으면 표가 비어서 <code class="nb">LOOP</code>가 한 바퀴도 돌지 않아요.</li>
+<li><code class="nb">LOOP</code> 안에서 한 줄씩 <code>SELECT SINGLE</code>을 반복하면 DB를 너무 자주 불러서 느려져요. 가능하면 한 번에 <code>INTO TABLE</code>로 읽어 와요.</li>
 </ul></div>
 <h2 id="s9-5">9-5. 범위로 입력받기: SELECT-OPTIONS</h2>
-<p>"가격이 15,000원부터 25,000원까지"처럼 <strong>범위</strong>로 조건을 받고 싶을 때는 <code>SELECT-OPTIONS</code>를 써요. 5장 <code>PARAMETERS</code>의 형님 같은 존재예요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_09_range.
+<p>"가격이 15,000원부터 25,000원까지"처럼 <strong>범위</strong>로 조건을 받고 싶을 때는 <code class="nb">SELECT-OPTIONS</code>를 써요. 5장 <code class="nb">PARAMETERS</code>의 형님 같은 존재예요. <code class="nb">PARAMETERS</code>가 값 <strong>하나</strong>를 받는다면 <code class="nb">SELECT-OPTIONS</code>는 <strong>"~부터 ~까지"</strong>를 받아요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_133</code></dd><dt>Title</dt><dd>[예제] 가격 범위로 도서 조회</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_133.
 
-DATA: gt_book TYPE TABLE OF yg##_book,
-      gs_book TYPE yg##_book.
+DATA: gt_book TYPE TABLE OF yta_g##_book,
+      gs_book TYPE yta_g##_book.
 
 SELECT-OPTIONS so_price FOR gs_book-price.       &quot; 가격 범위 입력
 
 START-OF-SELECTION.
-  SELECT * FROM yg##_book
+  SELECT * FROM yta_g##_book
     INTO TABLE gt_book
     WHERE price IN so_price.                     &quot; 범위 조건은 IN
 
   LOOP AT gt_book INTO gs_book.
     WRITE: / gs_book-book_id, gs_book-title(20), gs_book-price.
-  ENDLOOP.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_09_range.
+  ENDLOOP." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_133.
 
-<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yg<mark>##</mark>_book,
-      gs_book <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book.
+<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yta_g<mark class="gno">##</mark>_book,
+      gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book.
 
 <span class="tk-kw">SELECT-OPTIONS</span> so_price <span class="tk-kw">FOR</span> gs_book-price.       <span class="tk-cmt">" 가격 범위 입력</span>
 
 <span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
     <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book
     <span class="tk-kw">WHERE</span> price <span class="tk-kw">IN</span> so_price.                     <span class="tk-cmt">" 범위 조건은 IN</span>
 
   <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_book <span class="tk-kw">INTO</span> gs_book.
     <span class="tk-kw">WRITE</span>: / gs_book-book_id, gs_book-title(<span class="tk-num">20</span>), gs_book-price.
   <span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<p>코드를 활성화한 다음 Selection Text를 넣어요. 이번에도 글자를 직접 적지 않고, 9-3에서 한 것처럼 <strong>Dictionary Ref.</strong>에 체크해요.</p>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>Name</th>
+<th>Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="nb">SO_PRICE</code></td>
+<td>Dictionary Ref.에 체크 (<code class="nb">가격</code>이 들어와요)</td>
+</tr>
+</tbody>
+</table></div>
 <figure class="fig" id="fig-9-3"><div class="fig-body"><div class="pair">
 <div class="gui">
-  <div class="gui-head">가격 범위 조회</div>
+  <div class="gui-head">[예제] 가격 범위로 도서 조회</div>
   <div class="gui-apptool"><span class="gui-ico">⊕<i>Execute F8</i></span></div>
   <div class="gui-body">
     <div class="gui-row"><span class="gui-label" style="width:3.5rem">가격</span><span class="gui-field s">15000</span><span>to</span><span class="gui-field s">25000</span><span class="gui-ico">➜</span><span class="badge">1</span></div>
   </div>
 </div>
 <div class="gui">
-  <div class="gui-head"><code style="background:none;border:0;color:inherit">so_price</code> 안의 모습</div>
+  <div class="gui-head">so_price 안의 모습</div>
   <div class="gui-body">
     <table class="gui-grid">
       <tr><th>SIGN</th><th>OPTION</th><th>LOW</th><th>HIGH</th></tr>
@@ -204,86 +320,272 @@ START-OF-SELECTION.
     <div class="gui-hint">I = 포함(Include) · BT = 사이(BeTween)</div>
   </div>
 </div>
-</div></div><figcaption><b>그림 9-3.</b>SELECT-OPTIONS 입력 화면과 속에 담기는 값</figcaption></figure>
+</div></div><figcaption><b>그림 9-3.</b>SELECT-OPTIONS의 Selection Screen과 속에 담기는 값</figcaption></figure>
+<p>그림처럼 <code class="nb">15000</code>과 <code class="nb">25000</code>을 넣고 실행하면 세 권이 나와요. 양 끝 값(15,000원과 25,000원)도 포함이에요.</p>
+<div class="code"><pre><code class="lang-text">B0001 ABAP 첫걸음   25,000
+B0002 바다의 노래   15,000
+B0005 별을 세는 밤  17,000</code></pre></div>
 <ul>
-<li><code>SELECT-OPTIONS 이름 FOR 변수.</code> 형태예요. <strong><code>FOR</code> 뒤에는 Type을 빌려 올 변수</strong>를 써요. 그래서 <code>gs_book</code>을 먼저 만들었어요. 이름은 <code>PARAMETERS</code>처럼 8글자까지예요.</li>
-<li>입력하면 위 오른쪽처럼 <strong>SIGN · OPTION · LOW · HIGH</strong> 네 칸짜리 줄이 담긴 Internal Table이 돼요(8장의 Header Line 모양).</li>
+<li><code>SELECT-OPTIONS 이름 FOR 변수.</code> 형태예요. <strong><code class="nb">FOR</code> 뒤에는 Type을 빌려 올 변수</strong>를 써요. 그래서 <code class="nb">gs_book</code>을 먼저 만들었어요. 이름은 <code class="nb">PARAMETERS</code>처럼 8글자까지예요. 앞머리 <code class="nb">so_</code>는 <strong>S</strong>elect-<strong>O</strong>ptions예요.</li>
+<li>입력하면 위 오른쪽처럼 <strong>SIGN · OPTION · LOW · HIGH</strong> 네 칸짜리 줄이 담긴 Internal Table이 돼요(8-6에서 본 Header Line 모양).</li>
 <li><code>WHERE 칸 IN so_price</code>라고만 쓰면 SAP가 이 표를 보고 알아서 조건을 만들어 줘요.</li>
-<li><strong>아무것도 입력하지 않으면 조건이 없는 것</strong>으로 보고 모든 줄을 가져와요. <code>PARAMETERS</code>와 가장 크게 다른 점이에요.</li>
-<li><span class="badge">1</span> 화살표 버튼(Multiple Selection)을 누르면 "15000 하나만", "20000 이상", "이 값은 빼고" 같은 조건을 여러 개 넣을 수 있어요.</li>
+<li><strong>아무것도 입력하지 않으면 조건이 없는 것</strong>으로 보고 모든 줄을 가져와요. <code class="nb">PARAMETERS</code>와 가장 크게 다른 점이에요.</li>
+<li><strong>왼쪽 칸에만</strong> 값을 넣으면 "그 값 이상"이 아니라 "그 값과 <strong>같은</strong> 것만"이에요. <code class="nb">15000</code>만 넣으면 <code class="nb">B0002</code> 한 권만 나와요.</li>
+<li><span class="badge">1</span> 화살표 버튼(Multiple Selection)을 누르면 "20000 이상", "이 값은 빼고" 같은 조건을 여러 개 넣을 수 있어요.</li>
 </ul>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p><code>SELECT-OPTIONS</code>에 <code>WHERE price = so_price</code>처럼 <code>=</code>를 쓰면 안 돼요. 범위 조건은 꼭 <strong><code>IN</code></strong>이에요.</p></div>
-<h2 id="s9-6">9-6. DB Table 바꾸기: INSERT · UPDATE · MODIFY · DELETE</h2>
-<div class="table-wrap"><table>
+<p><code class="nb">PARAMETERS</code>처럼(5-3) 뒤에 말을 덧붙여 입력 칸을 꾸밀 수 있어요.</p>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
-<th>문장</th>
+<th>덧붙이는 말</th>
 <th>하는 일</th>
-<th>Key가 이미 있으면</th>
-<th>Key가 없으면</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>INSERT 테이블 FROM 워크에어리어.</code></td>
+<td><code class="nb">OBLIGATORY</code></td>
+<td>꼭 입력해야 하는 칸으로 만들어요</td>
+</tr>
+<tr>
+<td><code>NO INTERVALS</code></td>
+<td>오른쪽 칸(to)을 없애요</td>
+</tr>
+<tr>
+<td><code class="nb">NO-EXTENSION</code></td>
+<td>화살표 버튼(Multiple Selection)을 없애요</td>
+</tr>
+<tr>
+<td><code>DEFAULT 10000 TO 30000</code></td>
+<td>처음부터 범위가 들어가 있어요</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>SELECT-OPTIONS so_price FOR gs_book-price DEFAULT 10000 TO 30000.</code>처럼 써요. <code>NO INTERVALS</code>는 띄어 쓰고 <code class="nb">NO-EXTENSION</code>은 하이픈으로 이어요. 헷갈리기 쉬우니 표를 보고 그대로 적어요.</p>
+<p><code class="nb">OPTION</code> 칸에는 <code class="nb">BT</code>(사이) 말고도 <code class="nb">EQ</code>(같다), <code class="nb">GE</code>(이상), <code class="nb">LE</code>(이하), <code class="nb">CP</code>(<code class="nb">*</code>를 넣은 모양으로 찾기) 같은 값이 들어가요. 다음 과정에서 화면의 필터 조건이 바로 이 모양(SIGN · OPTION · LOW · HIGH)으로 넘어와요. 네 칸의 이름을 눈에 익혀 둬요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><p><code class="nb">SELECT-OPTIONS</code>에 <code>WHERE price = so_price</code>처럼 <code class="nb">=</code>를 쓰면 안 돼요. 범위 조건은 꼭 <strong><code class="nb">IN</code></strong>이에요.</p></div>
+<div class="box modern"><div class="box-t">이렇게도 써요</div><p>요즘 코드에서는 칸을 <strong>쉼표</strong>로 나누고, ABAP 변수 앞에 <strong><code class="nb">@</code></strong>를 붙이는 새 문법을 많이 써요. <code class="nb">INTO</code>는 맨 뒤에 써요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">SELECT</span> book_id, title, price
+  <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
+  <span class="tk-kw">WHERE</span> price <span class="tk-kw">IN</span> @so_price
+  <span class="tk-kw">ORDER</span> <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>
+  <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> @<span class="tk-kw">DATA</span>(lt_new).</code></pre></div>
+<p><code class="nb">@</code>는 "여기부터는 ABAP 변수예요"라는 표시예요. <code class="nb">@DATA(lt_new)</code>는 결과를 담을 Internal Table을 그 자리에서 만들어요(그 자리에서 만든 것이라 8-7에서처럼 이름이 <code class="nb">l</code>로 시작해요). 한 문장 안에서 <strong>옛 문법과 새 문법을 섞으면 오류</strong>가 나요. 하나라도 <code class="nb">@</code>를 쓰면 Field 목록은 쉼표로, 변수는 모두 <code class="nb">@</code>로 써야 해요.</p></div>
+<h2 id="s9-6">9-6. Table 두 개를 이어 읽기: INNER JOIN</h2>
+<p>7-8 미니 실습에서 대여 기록 Table <code class="nb">YTA_G<mark class="gno">##</mark>_RENT</code>를 만들었죠. 여기에는 누가 <strong>몇 번 책</strong>을 빌렸는지만 있고 책 <strong>제목</strong>은 없어요. 제목은 <code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code>에 있거든요. "누가 어떤 제목의 책을 빌렸는지" 보려면 두 Table을 <code class="nb">BOOK_ID</code>로 <strong>이어서</strong> 읽어야 해요. 이렇게 잇는 것을 <strong>JOIN</strong>이라고 해요.</p>
+<p>7-8 미니 실습을 건너뛰었다면 먼저 돌아가서 Table과 데이터 네 줄을 만들고 와요. 만들어 뒀다면 SE16N에서 <code class="nb">YTA_G<mark class="gno">##</mark>_RENT</code>를 조회해서 아래 그림의 왼쪽 표와 같은 네 줄인지 확인해요.</p>
+<p>그림의 제목 줄에 적은 <code class="nb">r</code>, <code class="nb">b</code>는 프로그램에서 두 Table을 부를 짧은 <strong>별명</strong>이에요.</p>
+<figure class="fig" id="fig-9-4"><div class="fig-body"><div class="pair">
+<div class="gui">
+  <div class="gui-head"><span>YTA_G<mark class="gno">##</mark>_RENT 대여 기록 (별명 r)</span></div>
+  <div class="gui-body">
+    <table class="gui-grid alv">
+      <tr><th>RENT_ID</th><th class="on">BOOK_ID</th><th>MEMBER_NAME</th><th>RENT_DATE</th></tr>
+      <tr><td>R0001</td><td class="on">B0001</td><td>홍길동</td><td>2026.11.03</td></tr>
+      <tr><td>R0002</td><td class="on">B0004</td><td>김하나</td><td>2026.11.05</td></tr>
+      <tr><td>R0003</td><td class="on">B0001</td><td>이두리</td><td>2026.11.10</td></tr>
+      <tr><td>R0004</td><td class="on">B0005</td><td>홍길동</td><td>2026.11.12</td></tr>
+    </table>
+    <div class="gui-hint">책 번호만 있고 제목은 없어요</div>
+  </div>
+</div>
+<div class="gui">
+  <div class="gui-head"><span>YTA_G<mark class="gno">##</mark>_BOOK 도서 목록 (별명 b)</span></div>
+  <div class="gui-body">
+    <table class="gui-grid alv">
+      <tr><th class="on">BOOK_ID</th><th>TITLE</th><th>…</th></tr>
+      <tr><td class="on">B0001</td><td>ABAP 첫걸음</td><td>…</td></tr>
+      <tr><td class="on dim">B0002</td><td class="dim">바다의 노래</td><td class="dim">…</td></tr>
+      <tr><td class="on dim">B0003</td><td class="dim">오늘의 산책</td><td class="dim">…</td></tr>
+      <tr><td class="on">B0004</td><td>SQL 한 그릇</td><td>…</td></tr>
+      <tr><td class="on">B0005</td><td>별을 세는 밤</td><td>…</td></tr>
+    </table>
+    <div class="gui-hint">흐린 두 권은 빌린 적이 없어서 짝이 없어요</div>
+  </div>
+</div>
+</div></div><figcaption><b>그림 9-4.</b>두 Table을 BOOK_ID로 잇기: 색칠한 칸의 값이 같은 줄끼리 짝이 돼요</figcaption></figure>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_134</code></dd><dt>Title</dt><dd>[예제] 대여 기록에 책 제목 붙여 읽기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_134.
+
+TYPES: BEGIN OF ty_rent,
+         rent_id     TYPE yde_g##_rent_id,
+         book_id     TYPE yde_g##_book_id,
+         title       TYPE yde_g##_title,       &quot; 이 칸만 도서 Table에서 와요
+         member_name TYPE yde_g##_member,
+         rent_date   TYPE yde_g##_rent_date,
+       END OF ty_rent.
+
+DATA: gt_rent TYPE TABLE OF ty_rent,
+      gs_rent TYPE ty_rent.
+
+START-OF-SELECTION.
+  SELECT r~rent_id r~book_id b~title r~member_name r~rent_date
+    FROM yta_g##_rent AS r
+    INNER JOIN yta_g##_book AS b
+      ON b~book_id = r~book_id
+    INTO CORRESPONDING FIELDS OF TABLE gt_rent.
+
+  SORT gt_rent BY rent_id.
+
+  LOOP AT gt_rent INTO gs_rent.
+    WRITE: / gs_rent-rent_id, gs_rent-book_id, gs_rent-title(20),
+             gs_rent-member_name(10), gs_rent-rent_date.
+  ENDLOOP." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_134.
+
+<span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_rent,
+         rent_id     <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_rent_id,
+         book_id     <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_book_id,
+         title       <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_title,       <span class="tk-cmt">" 이 칸만 도서 Table에서 와요</span>
+         member_name <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_member,
+         rent_date   <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_rent_date,
+       <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_rent.
+
+<span class="tk-kw">DATA</span>: gt_rent <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_rent,
+      gs_rent <span class="tk-kw">TYPE</span> ty_rent.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">SELECT</span> r~rent_id r~book_id b~title r~member_name r~rent_date
+    <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_rent <span class="tk-kw">AS</span> r
+    INNER JOIN yta_g<mark class="gno">##</mark>_book <span class="tk-kw">AS</span> b
+      <span class="tk-kw">ON</span> b~book_id = r~book_id
+    <span class="tk-kw">INTO</span> <span class="tk-kw">CORRESPONDING</span> <span class="tk-kw">FIELDS</span> <span class="tk-kw">OF</span> <span class="tk-kw">TABLE</span> gt_rent.
+
+  <span class="tk-kw">SORT</span> gt_rent <span class="tk-kw">BY</span> rent_id.
+
+  <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_rent <span class="tk-kw">INTO</span> gs_rent.
+    <span class="tk-kw">WRITE</span>: / gs_rent-rent_id, gs_rent-book_id, gs_rent-title(<span class="tk-num">20</span>),
+             gs_rent-member_name(<span class="tk-num">10</span>), gs_rent-rent_date.
+  <span class="tk-kw">ENDLOOP</span>.</code></pre></div>
+<p>대여 기록 네 줄에 책 제목이 붙어서 나와요. 날짜 모양은 사용자 설정에 따라 조금 달라요.</p>
+<div class="code"><pre><code class="lang-text">R0001 B0001 ABAP 첫걸음   홍길동  2026.11.03
+R0002 B0004 SQL 한 그릇   김하나  2026.11.05
+R0003 B0001 ABAP 첫걸음   이두리  2026.11.10
+R0004 B0005 별을 세는 밤  홍길동  2026.11.12</code></pre></div>
+<ul>
+<li><code>FROM yta_g<mark class="gno">##</mark>_rent AS r</code>: <code class="nb">AS</code> 뒤는 Table에 붙이는 <strong>별명</strong>이에요. 긴 이름 대신 <code class="nb">r</code>, <code class="nb">b</code>로 짧게 불러요.</li>
+<li><code class="nb">r~rent_id</code>, <code class="nb">b~title</code>: SQL 안에서 "<strong>이 Table의 이 칸</strong>"은 물결표(<code class="nb">~</code>)로 가리켜요. <code class="nb">gs_rent-title</code>의 하이픈(<code class="nb">-</code>)은 ABAP 변수의 칸, <code class="nb">b~title</code>의 물결표는 DB Table의 칸이에요. <code class="nb">book_id</code>처럼 두 Table에 다 있는 칸은 어느 쪽 것인지 꼭 적어야 해요.</li>
+<li><code>ON b~book_id = r~book_id</code>: <code class="nb">ON</code> 뒤가 <strong>짝을 맞추는 조건</strong>이에요. 대여 기록의 책 번호와 번호가 같은 책을 찾아서 한 줄로 붙여요.</li>
+<li><code class="nb">ty_rent</code>의 칸 이름은 Table의 Field 이름과 <strong>똑같이</strong> 지었어요. 그래야 <code>INTO CORRESPONDING FIELDS OF TABLE</code>이 이름으로 짝을 맞춰 채워 줘요.</li>
+<li>활성화할 때 <code class="nb">MEMBER_NAME</code>이나 <code class="nb">YDE_G<mark class="gno">##</mark>_MEMBER</code> 같은 이름을 모른다는 오류가 나면, SE11에서 내 Table의 Field 이름과 Data Element 이름이 7-8의 예시 답안과 같은지 봐요.</li>
+<li><code class="nb">B0001</code>은 두 번 빌려 가서 두 줄에 나와요. 대여 기록 한 줄마다 짝이 되는 책을 찾아 붙이기 때문이에요.</li>
+<li>결과의 순서는 약속되어 있지 않아서 <code class="nb">SORT</code>로 대여 번호 순서로 정렬했어요(8-6). 9-3처럼 <code class="nb">SELECT</code> 문장 끝에 <code>ORDER BY r~rent_id</code>를 써도 돼요.</li>
+</ul>
+<p><code class="nb">INNER</code>는 "<strong>양쪽에 다 있는 줄만</strong>"이라는 뜻이에요. 그래서 한 번도 빌리지 않은 <code class="nb">B0002</code>, <code class="nb">B0003</code>은 결과에 없어요. 책을 기준으로, 안 빌린 책까지 모두 보고 싶을 때는 <code>LEFT OUTER JOIN</code>을 써요. 그때는 <code class="nb">FROM</code> 뒤에 도서 Table을 먼저 적어요. 먼저 적은(왼쪽) Table의 줄은 짝이 없어도 모두 나오거든요. 지금은 이름만 알아 둬요.</p>
+<div class="box note"><div class="box-t">회사 옛 코드에서는 이렇게도 읽어요: FOR ALL ENTRIES</div><p>오래된 프로그램은 JOIN 대신 <strong>두 번에 나눠</strong> 읽는 모양이 많아요. 먼저 대여 기록을 <code class="nb">gt_rent</code>에 읽어 두고, 거기 나온 책 번호로 도서를 한 번 더 읽어요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">IF</span> gt_rent <span class="tk-kw">IS</span> <span class="tk-kw">NOT</span> <span class="tk-kw">INITIAL</span>.                 <span class="tk-cmt">" 이 IF가 없으면 큰일 나요</span>
+  <span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
+    <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> gt_book
+    <span class="tk-kw">FOR</span> ALL ENTRIES <span class="tk-kw">IN</span> gt_rent
+    <span class="tk-kw">WHERE</span> book_id = gt_rent-book_id.
+<span class="tk-kw">ENDIF</span>.</code></pre></div>
+<p><code>FOR ALL ENTRIES IN gt_rent</code>는 "<code class="nb">gt_rent</code>의 줄마다"라는 뜻이에요. <code class="nb">WHERE</code>의 <code class="nb">gt_rent-book_id</code>는 "그 줄의 <code class="nb">book_id</code>"예요. 8-6에서 본 Header Line과 생김새가 같지만, <code>FOR ALL ENTRIES</code>에서만 쓰는 약속된 모양이에요.</p>
+<p>조심할 것은 하나예요. 기준이 되는 표(<code class="nb">gt_rent</code>)가 <strong>비어 있으면</strong> <code class="nb">WHERE</code>가 통째로 무시되어 Table의 <strong>모든 줄</strong>을 읽어 와요. 그래서 앞에 꼭 <code>IF … IS NOT INITIAL.</code>을 둬요. 지금은 읽을 줄만 알면 돼요.</p></div>
+<p>다음 과정에서 배울 <strong>CDS View</strong>는 이런 JOIN을 이름 붙여 저장해 두고, 여러 프로그램이 같이 쓰게 하는 것이에요.</p>
+<h2 id="s9-7">9-7. DB Table 바꾸기: INSERT · UPDATE · MODIFY · DELETE</h2>
+<p>지금까지는 읽기만 했어요. 이제 DB Table에 줄을 넣고, 고치고, 지워 볼게요. 여기서 바꾼 것은 프로그램이 끝나도 <strong>DB에 그대로 남아요.</strong> 그래서 이 절 끝에서 처음 상태로 되돌리는 프로그램도 같이 만들어요.</p>
+<p>DB Table을 바꾸는 문장은 네 가지예요. <code class="nb">gs_book</code>은 Table과 모양이 같은 Work Area예요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">INSERT</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">FROM</span> gs_book.
+<span class="tk-kw">UPDATE</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">FROM</span> gs_book.
+<span class="tk-kw">MODIFY</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">FROM</span> gs_book.
+<span class="tk-kw">DELETE</span> <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">WHERE</span> stock = <span class="tk-num">0</span>.</code></pre></div>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>문장</th>
+<th>하는 일</th>
+<th>그런 줄이 이미 있으면</th>
+<th>없으면</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="nb">INSERT</code></td>
 <td>새 줄 넣기</td>
 <td>실패 (<code>sy-subrc = 4</code>)</td>
 <td>넣기</td>
 </tr>
 <tr>
-<td><code>UPDATE 테이블 FROM 워크에어리어.</code></td>
-<td>줄 고치기</td>
+<td><code class="nb">UPDATE</code></td>
+<td>줄 전체 고치기</td>
 <td>고치기</td>
 <td>실패 (<code>sy-subrc = 4</code>)</td>
 </tr>
 <tr>
-<td><code>MODIFY 테이블 FROM 워크에어리어.</code></td>
+<td><code class="nb">MODIFY</code></td>
 <td>있으면 고치고 없으면 넣기</td>
 <td>고치기</td>
 <td>넣기</td>
 </tr>
 <tr>
-<td><code>DELETE FROM 테이블 WHERE 조건.</code></td>
-<td>줄 지우기</td>
+<td><code class="nb">DELETE</code></td>
+<td>조건에 맞는 줄 모두 지우기</td>
 <td>지우기</td>
 <td>실패 (<code>sy-subrc = 4</code>)</td>
 </tr>
 </tbody>
 </table></div>
+<ul>
+<li>위의 세 문장(<code class="nb">INSERT</code>·<code class="nb">UPDATE</code>·<code class="nb">MODIFY</code>)은 Work Area와 <strong>Key가 같은 줄</strong>(여기서는 <code class="nb">book_id</code>가 같은 줄)이 있는지를 봐요. <code class="nb">DELETE</code>는 <code class="nb">WHERE</code> 조건에 맞는 줄이 있는지를 봐요.</li>
+<li><code>UPDATE … FROM</code>과 <code>MODIFY … FROM</code>은 Key를 뺀 <strong>모든 칸</strong>을 Work Area의 값으로 덮어써요. 한두 칸만 바꿀 때는 조금 뒤에 나오는 <code>UPDATE … SET</code>이 안전해요.</li>
+</ul>
+<div class="box note short"><div class="box-t">8장의 MODIFY·DELETE와 뭐가 달라요?</div><p>이름은 같지만 <strong>대상</strong>이 달라요. <code class="nb">gt_book</code>처럼 Internal Table 이름을 쓰면 메모리 속 표를, <code class="nb">yta_g<mark class="gno">##</mark>_book</code>처럼 DB Table 이름을 쓰면 데이터베이스를 바꿔요. <code>DELETE gt_book WHERE …</code>는 읽어 온 복사본만 지워요. SE16N으로 보면 DB에는 그대로 있어요.</p></div>
 <h3>예: 새 책 넣기</h3>
-<div class="code"><button type="button" class="copy" data-code="CLEAR gs_book.
-gs_book-book_id = &#x27;B0006&#x27;.
-gs_book-title   = &#x27;처음 만나는 SAP&#x27;.
-gs_book-author  = &#x27;최입문&#x27;.
-gs_book-genre   = &#x27;I&#x27;.
-gs_book-price   = 22000.
-gs_book-stock   = 4.
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_135</code></dd><dt>Title</dt><dd>[예제] 새 도서 등록</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_135.
 
-INSERT yg##_book FROM gs_book.
-IF sy-subrc = 0.
-  MESSAGE &#x27;새 책을 등록했어요&#x27; TYPE &#x27;S&#x27;.
-ELSE.
-  MESSAGE &#x27;이미 있는 도서 번호예요&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
-ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">CLEAR</span> gs_book.
-gs_book-book_id = <span class="tk-str">'B0006'</span>.
-gs_book-title   = <span class="tk-str">'처음 만나는 SAP'</span>.
-gs_book-author  = <span class="tk-str">'최입문'</span>.
-gs_book-genre   = <span class="tk-str">'I'</span>.
-gs_book-price   = <span class="tk-num">22000</span>.
-gs_book-stock   = <span class="tk-num">4</span>.
-
-<span class="tk-kw">INSERT</span> yg<mark>##</mark>_book <span class="tk-kw">FROM</span> gs_book.
-<span class="tk-kw">IF</span> sy-subrc = <span class="tk-num">0</span>.
-  <span class="tk-kw">MESSAGE</span> <span class="tk-str">'새 책을 등록했어요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span>.
-<span class="tk-kw">ELSE</span>.
-  <span class="tk-kw">MESSAGE</span> <span class="tk-str">'이미 있는 도서 번호예요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
-<span class="tk-kw">ENDIF</span>.</code></pre></div>
-<h3>예: 대여 처리(재고 1 줄이기)</h3>
-<p><code>UPDATE … SET</code>을 쓰면 Work Area 없이 <strong>특정 칸만</strong> 바꿀 수 있어요.</p>
-<div class="code"><button type="button" class="copy" data-code="PARAMETERS pa_id TYPE yg##_e_book_id OBLIGATORY.
+DATA gs_book TYPE yta_g##_book.
 
 START-OF-SELECTION.
-  UPDATE yg##_book
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0006&#x27;.
+  gs_book-title   = &#x27;처음 만나는 SAP&#x27;.
+  gs_book-author  = &#x27;최입문&#x27;.
+  gs_book-genre   = &#x27;I&#x27;.
+  gs_book-price   = 22000.
+  gs_book-stock   = 4.
+
+  INSERT yta_g##_book FROM gs_book.
+  IF sy-subrc = 0.
+    MESSAGE &#x27;새 책을 등록했어요&#x27; TYPE &#x27;S&#x27;.
+  ELSE.
+    MESSAGE &#x27;이미 있는 도서 번호예요&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
+  ENDIF." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_135.
+
+<span class="tk-kw">DATA</span> gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0006'</span>.
+  gs_book-title   = <span class="tk-str">'처음 만나는 SAP'</span>.
+  gs_book-author  = <span class="tk-str">'최입문'</span>.
+  gs_book-genre   = <span class="tk-str">'I'</span>.
+  gs_book-price   = <span class="tk-num">22000</span>.
+  gs_book-stock   = <span class="tk-num">4</span>.
+
+  <span class="tk-kw">INSERT</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">FROM</span> gs_book.
+  <span class="tk-kw">IF</span> sy-subrc = <span class="tk-num">0</span>.
+    <span class="tk-kw">MESSAGE</span> <span class="tk-str">'새 책을 등록했어요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span>.
+  <span class="tk-kw">ELSE</span>.
+    <span class="tk-kw">MESSAGE</span> <span class="tk-str">'이미 있는 도서 번호예요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+  <span class="tk-kw">ENDIF</span>.</code></pre></div>
+<p><code class="nb">MANDT</code>는 넣을 때도 채우지 않아요. SAP가 지금 로그인한 클라이언트로 넣어 줘요.</p>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li>실행해요. 결과 화면은 나오지 않고, 화면 맨 아래 <strong>상태 표시줄</strong>에 <code>새 책을 등록했어요</code>가 보여요.</li>
+<li><code class="nb">/oSE16N</code>으로 새 창을 열어 <code class="nb">YTA_G<mark class="gno">##</mark>_BOOK</code>을 조회해요. <code class="nb">B0006</code>이 생겨서 여섯 줄이면 성공이에요.</li>
+<li>프로그램을 <strong>한 번 더</strong> 실행해요. 이번에는 <code>이미 있는 도서 번호예요</code>가 나와요. Key가 같은 줄은 두 번 넣을 수 없어서 <code class="nb">sy-subrc</code>가 4가 된 거예요.</li>
+<li>한 걸음 더: 코드의 <code class="nb">INSERT</code>를 <code class="nb">MODIFY</code>로, 재고 <code class="nb">4</code>를 <code class="nb">9</code>로 바꿔서 활성화하고 실행해요. 이미 있는 번호인데도 이번에는 <code>새 책을 등록했어요</code>가 나와요. SE16N을 다시 조회하면 여섯 줄 그대로이고 <code class="nb">B0006</code>의 재고만 9예요. <code class="nb">MODIFY</code>가 "있으면 고치기"를 한 거예요. 확인했으면 코드를 원래대로 돌려놓아요.</li>
+</ol></div>
+<p>넣은 책을 지우는 문장은 이렇게 써요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DELETE</span> <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">WHERE</span> book_id = <span class="tk-str">'B0006'</span>.</code></pre></div>
+<p>조건에 맞는 줄을 <strong>모두</strong> 지워요. 여기서는 <code class="nb">B0006</code> 한 줄이에요. 지웠으면 <code class="nb">sy-subrc</code>가 0이고, 지울 줄이 없었으면 4예요. 지금은 눈으로만 봐요. <code class="nb">B0006</code>은 조금 뒤에 만들 되돌리기 프로그램이 지워 줘요.</p>
+<h3>예: 대여 처리(재고 1 줄이기)</h3>
+<p><code>UPDATE … SET</code>을 쓰면 Work Area 없이 <strong>특정 칸만</strong> 바꿀 수 있어요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_136</code></dd><dt>Title</dt><dd>[예제] 도서 대여 처리</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_136.
+
+PARAMETERS pa_id TYPE yde_g##_book_id OBLIGATORY.
+
+START-OF-SELECTION.
+  UPDATE yta_g##_book
     SET stock = stock - 1
     WHERE book_id = pa_id
       AND stock &gt; 0.                     &quot; 재고가 있을 때만
@@ -292,10 +594,12 @@ START-OF-SELECTION.
     MESSAGE &#x27;대여 처리했어요&#x27; TYPE &#x27;S&#x27;.
   ELSE.
     MESSAGE &#x27;재고가 없거나 없는 책이에요&#x27; TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
-  ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">PARAMETERS</span> pa_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_book_id <span class="tk-kw">OBLIGATORY</span>.
+  ENDIF." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_136.
+
+<span class="tk-kw">PARAMETERS</span> pa_id <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_book_id <span class="tk-kw">OBLIGATORY</span>.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">UPDATE</span> yg<mark>##</mark>_book
+  <span class="tk-kw">UPDATE</span> yta_g<mark class="gno">##</mark>_book
     <span class="tk-kw">SET</span> stock = stock - <span class="tk-num">1</span>
     <span class="tk-kw">WHERE</span> book_id = pa_id
       <span class="tk-kw">AND</span> stock &gt; <span class="tk-num">0</span>.                     <span class="tk-cmt">" 재고가 있을 때만</span>
@@ -305,102 +609,184 @@ START-OF-SELECTION.
   <span class="tk-kw">ELSE</span>.
     <span class="tk-kw">MESSAGE</span> <span class="tk-str">'재고가 없거나 없는 책이에요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
   <span class="tk-kw">ENDIF</span>.</code></pre></div>
-<div class="box note"><div class="box-t">바꾼 내용은 언제 저장돼요? COMMIT WORK</div><p><code>INSERT</code>·<code>UPDATE</code>·<code>DELETE</code>로 바꾼 내용은 프로그램이 <strong>정상적으로 끝나면</strong> SAP가 저장(Commit)해 줘요. 반대로 중간에 프로그램이 오류로 멈추면 바꾼 내용이 <strong>취소(Rollback)</strong>돼요. 이 시점을 직접 정하고 싶으면 <code>COMMIT WORK.</code>를 써요. 회사 프로그램에서는 언제 저장할지를 신중하게 설계해요.</p></div>
-
-<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
-<li><strong><code>DELETE</code>와 <code>UPDATE … SET</code>의 <code>WHERE</code>는 두 번 확인해요.</strong> 조건이 틀리면 원하지 않은 줄까지 한꺼번에 바뀌거나 지워져요. 먼저 같은 <code>WHERE</code>로 <code>SELECT</code>를 해서 몇 줄이 걸리는지(<code>sy-dbcnt</code>) 확인해 보는 것도 좋은 습관이에요.</li>
-<li>연습은 꼭 <strong>내 Table(<code>YG<mark>##</mark>_...</code>)</strong>에서만 해요. SAP 표준 Table을 직접 바꾸면 안 돼요.</li>
-</ul></div>
-
-<div class="box modern"><div class="box-t">이렇게도 써요</div><p>요즘 코드에서는 칸을 <strong>쉼표</strong>로 나누고, ABAP 변수 앞에 <strong><code>@</code></strong>를 붙이는 새 문법을 많이 써요. <code>INTO</code>는 맨 뒤로 가요.</p>
-<div class="code"><button type="button" class="copy" data-code="SELECT book_id, title, price
-  FROM yg##_book
-  WHERE price IN @so_price
-  ORDER BY price DESCENDING
-  INTO TABLE @DATA(gt_list).">복사</button><pre><code class="lang-abap"><span class="tk-kw">SELECT</span> book_id, <span class="tk-kw">title</span>, price
-  <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
-  <span class="tk-kw">WHERE</span> price <span class="tk-kw">IN</span> @so_price
-  <span class="tk-kw">ORDER</span> <span class="tk-kw">BY</span> price <span class="tk-kw">DESCENDING</span>
-  <span class="tk-kw">INTO</span> <span class="tk-kw">TABLE</span> @<span class="tk-kw">DATA</span>(gt_list).</code></pre></div>
-<p><code>@</code>는 "여기부터는 ABAP 변수예요"라는 표시예요. 한 문장 안에서 <strong>옛 문법과 새 문법을 섞으면 오류</strong>가 나요. 하나라도 <code>@</code>를 쓰면 칸 목록은 쉼표로, 변수는 모두 <code>@</code>로 써야 해요.</p></div>
-<h2 id="s9-7">9-7. 미니 실습: 도서 조회 프로그램</h2>
-<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_09_BOOK</code>을 만들어 보세요.</p>
-<ol>
-<li>입력: 장르(<code>SELECT-OPTIONS so_genre</code>), 가격(<code>SELECT-OPTIONS so_price</code>). Selection Text는 Dictionary Ref.를 체크해요.</li>
-<li>조건에 맞는 책을 <strong>필요한 칸만</strong>(번호, 제목, 저자, 가격, 재고) 가격이 비싼 순서로 읽어 와요.</li>
-<li>한 권도 없으면 <code>TEXT-e01</code>(조건에 맞는 책이 없어요) 메시지를 <code>S</code> + <code>DISPLAY LIKE 'E'</code>로 보여 주고 끝내요.</li>
-<li>있으면 한 줄씩 출력하고, 맨 아래에 <code>sy-dbcnt</code>로 권수를 출력해요.</li>
-<li>장르 <code>I</code>, 가격은 비워 두고 실행해 보세요. 그다음 가격 <code>15000</code>~<code>25000</code>도 넣어서 결과가 어떻게 바뀌는지 봐요.</li>
+<ul>
+<li><code>SET stock = stock - 1</code>의 <code class="nb">stock</code>은 양쪽 모두 ABAP 변수가 아니라 <strong>Table의 칸</strong>이에요. "지금 값에서 1을 뺀 값으로 바꿔 줘"라는 뜻이에요.</li>
+<li><code class="nb">WHERE</code>에 <code>AND stock &gt; 0</code>을 넣어서, 재고가 없는 책은 고칠 줄이 없게 했어요. 그때는 <code class="nb">sy-subrc</code>가 4예요.</li>
+</ul>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li><code class="nb">B0001</code>을 넣고 실행해요. <code>대여 처리했어요</code>가 나와요. SE16N을 <strong>다시 조회</strong>하면 재고가 3에서 2로 줄어 있어요.</li>
+<li>재고가 0인 <code class="nb">B0002</code>를 넣고 실행해요. <code>재고가 없거나 없는 책이에요</code>가 나오고 재고는 그대로예요.</li>
 </ol></div>
+<div class="box note short"><div class="box-t">바꾼 내용은 언제 저장돼요? COMMIT WORK</div><p><code class="nb">INSERT</code>·<code class="nb">UPDATE</code>·<code class="nb">MODIFY</code>·<code class="nb">DELETE</code>로 바꾼 내용은 프로그램이 <strong>정상적으로 끝나면</strong> SAP가 저장(Commit)해 줘요. 정확히는 끝날 때만이 아니라 화면이 한 번 바뀔 때마다 저장돼요. 반대로 저장되기 전에 프로그램이 덤프로 멈추면(6-8) 그때까지 바꾼 내용이 <strong>취소(Rollback)</strong>돼요. 이 시점을 직접 정하고 싶으면 <code>COMMIT WORK.</code>를 써요. 회사 프로그램에서는 언제 저장할지를 신중하게 설계해요.</p></div>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li><strong><code class="nb">DELETE</code>와 <code>UPDATE … SET</code>의 <code class="nb">WHERE</code>는 두 번 확인해요.</strong> 조건이 틀리거나 <code class="nb">WHERE</code>를 빼먹으면 원하지 않은 줄까지 한꺼번에 바뀌거나 지워져요. 먼저 같은 <code class="nb">WHERE</code>로 <code class="nb">SELECT</code>를 해서 몇 줄이 걸리는지(<code class="nb">sy-dbcnt</code>) 확인해 보는 것도 좋은 습관이에요.</li>
+<li>연습은 꼭 <strong>내 Table(<code class="nb">YTA_G<mark class="gno">##</mark>_…</code>)</strong>에서만 해요. SAP 표준 Table을 직접 바꾸면 안 돼요. 표준 데이터를 바꿔야 할 때는 SAP가 만들어 둔 Function Module(BAPI라고 불러요)을 불러요. Function Module은 10장에서 배워요.</li>
+</ul></div>
+<h3>처음 상태로 되돌리기</h3>
+<p>위의 두 예제가 한 일은 DB에 그대로 남아 있어요. <code class="nb">B0006</code>이 생겼고 <code class="nb">B0001</code>의 재고가 줄었어요. 이대로 두면 바로 다음 미니 실습부터 11장, 12장까지 결과가 교재와 달라져요. 아래 프로그램으로 7-7의 다섯 권으로 되돌려요. <strong>뒤에서도 결과가 교재와 다르면 이 프로그램부터 실행해요.</strong></p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_137</code></dd><dt>Title</dt><dd>[예제] 도서 데이터 처음 상태로 되돌리기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_137.
 
-<figure class="fig" id="fig-9-4"><div class="fig-body"><div class="gui">
-  <div class="gui-head">도서 조회</div>
-  <div class="gui-body list">
-<pre class="gui-list">B0004 SQL 한 그릇          김에이          28,000           2
-B0001 ABAP 첫걸음          김에이          25,000           3
-조회된 책:          2</pre>
-  </div>
-</div></div><figcaption><b>그림 9-4.</b>장르 I, 가격 조건 없이 실행한 결과</figcaption></figure>
-
-<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
-* 설명: SELECT-OPTIONS + SELECT(필드 목록, WHERE IN, ORDER BY) 연습
-* Text Symbol E01: 조건에 맞는 책이 없어요
-*&amp;---------------------------------------------------------------------*
-REPORT yg##_09_book.
-
-TYPES: BEGIN OF ty_list,
-         book_id TYPE yg##_e_book_id,
-         title   TYPE yg##_e_title,
-         author  TYPE yg##_e_author,
-         price   TYPE yg##_e_price,
-         stock   TYPE yg##_e_stock,
-       END OF ty_list.
-
-DATA: gs_book TYPE yg##_book,          &quot; SELECT-OPTIONS의 FOR용
-      gt_list TYPE TABLE OF ty_list,
-      gs_list TYPE ty_list,
-      gv_cnt  TYPE i.
-
-SELECT-OPTIONS: so_genre FOR gs_book-genre,
-                so_price FOR gs_book-price.
+DATA: gt_book TYPE TABLE OF yta_g##_book,
+      gs_book TYPE yta_g##_book.
 
 START-OF-SELECTION.
-  &quot; 1. 조건에 맞는 책 읽기
-  SELECT book_id title author price stock
-    FROM yg##_book
-    INTO CORRESPONDING FIELDS OF TABLE gt_list
-    WHERE genre IN so_genre
-      AND price IN so_price
-    ORDER BY price DESCENDING.
+  &quot; 1. 7-7의 다섯 권을 Internal Table에 담기 (8-3의 APPEND)
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0001&#x27;. gs_book-title = &#x27;ABAP 첫걸음&#x27;.
+  gs_book-author  = &#x27;김에이&#x27;. gs_book-genre = &#x27;I&#x27;.
+  gs_book-price   = 25000.   gs_book-stock = 3.
+  APPEND gs_book TO gt_book.
 
-  &quot; 2. 없으면 메시지 후 끝내기
-  IF sy-subrc &lt;&gt; 0.
-    MESSAGE TEXT-e01 TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
-    RETURN.
-  ENDIF.
-  gv_cnt = sy-dbcnt.                     &quot; 다른 문장이 바꾸기 전에 옮겨 두기
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0002&#x27;. gs_book-title = &#x27;바다의 노래&#x27;.
+  gs_book-author  = &#x27;박소설&#x27;. gs_book-genre = &#x27;N&#x27;.
+  gs_book-price   = 15000.   gs_book-stock = 0.
+  APPEND gs_book TO gt_book.
 
-  &quot; 3. 출력
-  LOOP AT gt_list INTO gs_list.
-    WRITE: / gs_list-book_id, gs_list-title(20), gs_list-author(15),
-             gs_list-price, gs_list-stock.
-  ENDLOOP.
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0003&#x27;. gs_book-title = &#x27;오늘의 산책&#x27;.
+  gs_book-author  = &#x27;이수필&#x27;. gs_book-genre = &#x27;E&#x27;.
+  gs_book-price   = 13000.   gs_book-stock = 5.
+  APPEND gs_book TO gt_book.
 
-  WRITE: / &#x27;조회된 책:&#x27;, gv_cnt.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
-<span class="tk-cmt">* 설명: SELECT-OPTIONS + SELECT(필드 목록, WHERE IN, ORDER BY) 연습</span>
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0004&#x27;. gs_book-title = &#x27;SQL 한 그릇&#x27;.
+  gs_book-author  = &#x27;김에이&#x27;. gs_book-genre = &#x27;I&#x27;.
+  gs_book-price   = 28000.   gs_book-stock = 2.
+  APPEND gs_book TO gt_book.
+
+  CLEAR gs_book.
+  gs_book-book_id = &#x27;B0005&#x27;. gs_book-title = &#x27;별을 세는 밤&#x27;.
+  gs_book-author  = &#x27;정하늘&#x27;. gs_book-genre = &#x27;N&#x27;.
+  gs_book-price   = 17000.   gs_book-stock = 7.
+  APPEND gs_book TO gt_book.
+
+  &quot; 2. 내 Table을 비우고, 다섯 줄을 한꺼번에 넣기
+  DELETE FROM yta_g##_book.                 &quot; WHERE가 없으면 모든 줄을 지워요
+  INSERT yta_g##_book FROM TABLE gt_book.   &quot; 표의 모든 줄을 한 번에 넣어요
+
+  WRITE: / &#x27;넣은 줄 수:&#x27;, sy-dbcnt." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_137.
+
+<span class="tk-kw">DATA</span>: gt_book <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> yta_g<mark class="gno">##</mark>_book,
+      gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-cmt">" 1. 7-7의 다섯 권을 Internal Table에 담기 (8-3의 APPEND)</span>
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0001'</span>. gs_book-title = <span class="tk-str">'ABAP 첫걸음'</span>.
+  gs_book-author  = <span class="tk-str">'김에이'</span>. gs_book-genre = <span class="tk-str">'I'</span>.
+  gs_book-price   = <span class="tk-num">25000</span>.   gs_book-stock = <span class="tk-num">3</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0002'</span>. gs_book-title = <span class="tk-str">'바다의 노래'</span>.
+  gs_book-author  = <span class="tk-str">'박소설'</span>. gs_book-genre = <span class="tk-str">'N'</span>.
+  gs_book-price   = <span class="tk-num">15000</span>.   gs_book-stock = <span class="tk-num">0</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0003'</span>. gs_book-title = <span class="tk-str">'오늘의 산책'</span>.
+  gs_book-author  = <span class="tk-str">'이수필'</span>. gs_book-genre = <span class="tk-str">'E'</span>.
+  gs_book-price   = <span class="tk-num">13000</span>.   gs_book-stock = <span class="tk-num">5</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0004'</span>. gs_book-title = <span class="tk-str">'SQL 한 그릇'</span>.
+  gs_book-author  = <span class="tk-str">'김에이'</span>. gs_book-genre = <span class="tk-str">'I'</span>.
+  gs_book-price   = <span class="tk-num">28000</span>.   gs_book-stock = <span class="tk-num">2</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-kw">CLEAR</span> gs_book.
+  gs_book-book_id = <span class="tk-str">'B0005'</span>. gs_book-title = <span class="tk-str">'별을 세는 밤'</span>.
+  gs_book-author  = <span class="tk-str">'정하늘'</span>. gs_book-genre = <span class="tk-str">'N'</span>.
+  gs_book-price   = <span class="tk-num">17000</span>.   gs_book-stock = <span class="tk-num">7</span>.
+  <span class="tk-kw">APPEND</span> gs_book <span class="tk-kw">TO</span> gt_book.
+
+  <span class="tk-cmt">" 2. 내 Table을 비우고, 다섯 줄을 한꺼번에 넣기</span>
+  <span class="tk-kw">DELETE</span> <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book.                 <span class="tk-cmt">" WHERE가 없으면 모든 줄을 지워요</span>
+  <span class="tk-kw">INSERT</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">FROM</span> <span class="tk-kw">TABLE</span> gt_book.   <span class="tk-cmt">" 표의 모든 줄을 한 번에 넣어요</span>
+
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'넣은 줄 수:'</span>, sy-dbcnt.</code></pre></div>
+<div class="code"><pre><code class="lang-text">넣은 줄 수: 5</code></pre></div>
+<ul>
+<li>줄 수를 줄이려고 한 줄에 문장을 두 개씩 적었어요. ABAP은 마침표로 문장을 나누니까 괜찮아요(2-5).</li>
+<li><code class="nb">DELETE</code>도 <code class="nb">SELECT</code>처럼 <strong>지금 로그인한 클라이언트의 줄만</strong> 다뤄요. <code class="nb">WHERE</code>가 없으니 그 안에서는 한 줄도 남기지 않아요.</li>
+<li><code>INSERT … FROM TABLE gt_book.</code>은 Internal Table의 모든 줄을 <strong>한꺼번에</strong> 넣어요. <code>SELECT … INTO TABLE</code>의 반대 방향이에요. 넣은 줄 수는 <code class="nb">sy-dbcnt</code>에 들어 있어요.</li>
+<li>먼저 다 지우고 넣으니까 몇 번을 실행해도 결과가 같아요. 실행한 뒤 SE16N에서 다섯 줄(재고 3, 0, 5, 2, 7)인지 확인해요.</li>
+<li>대여 기록 Table <code class="nb">YTA_G<mark class="gno">##</mark>_RENT</code>는 이 장의 예제가 바꾸지 않아서 되돌릴 필요가 없어요.</li>
+</ul>
+<div class="box warn short"><div class="box-t">조심해요</div><ul>
+<li><strong><code class="nb">WHERE</code> 없는 <code class="nb">DELETE</code>는 위험해요.</strong> 내 연습 Table이라서 쓴 거예요. 회사 Table에서 <code class="nb">WHERE</code>를 빼먹으면 모든 데이터가 사라져요.</li>
+<li><code class="nb">DELETE</code> 줄을 빼고 <code>INSERT … FROM TABLE</code>만 실행하면, 이미 있는 줄과 Key가 겹쳐서 덤프(<code class="nb">SAPSQL_ARRAY_INSERT_DUPREC</code>)로 멈춰요. 한 줄씩 넣는 <code class="nb">INSERT</code>는 <code class="nb">sy-subrc</code>가 4가 될 뿐이지만, 표를 통째로 넣을 때는 프로그램이 멈춰요. 덤프 읽는 법은 6-8에서 배웠어요.</li>
+<li>다섯 권을 손으로 치다가 <code class="nb">book_id</code>를 고치지 않아 같은 번호가 두 번 들어가도 같은 덤프가 나요. 그때는 앞의 <code class="nb">DELETE</code>도 함께 취소돼서 Table은 실행하기 전 그대로예요. 번호를 고치고 다시 실행하면 돼요.</li>
+</ul></div>
+<h2 id="s9-8">9-8. 미니 실습: 장르와 가격으로 도서 조회</h2>
+<p>이번에는 혼자 써 봐요. 이 실습의 그림은 7-7의 다섯 권 기준이에요. <strong>결과가 그림과 다르면 9-7의 <code class="nb">YG<mark class="gno">##</mark>_137</code>을 먼저 실행해요.</strong></p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_138</code></dd><dt>Title</dt><dd>[실습] 장르와 가격으로 도서 조회</dd></dl></div>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li>입력: 장르(<code>SELECT-OPTIONS so_genre</code>), 가격(<code>SELECT-OPTIONS so_price</code>). (힌트: <code class="nb">FOR</code> 뒤에 쓸 변수로 <code>gs_book TYPE yta_g<mark class="gno">##</mark>_book</code>을 하나 만들어요.)</li>
+<li>조건에 맞는 책을 <strong>필요한 칸만</strong>(번호, 제목, 저자, 가격, 재고) 가격이 비싼 순서로 읽어 와요. (힌트: <code class="nb">YG<mark class="gno">##</mark>_131</code>의 <code class="nb">ty_list</code>에 <code>author TYPE yde_g<mark class="gno">##</mark>_author</code>와 <code>stock TYPE yde_g<mark class="gno">##</mark>_stock</code>을 더해요. 조건 두 개는 <code class="nb">AND</code>로 이어요.)</li>
+<li>한 권도 없으면 <code class="nb">TEXT-e01</code> 메시지를 <code class="nb">S</code> + <code>DISPLAY LIKE 'E'</code>로 보여 주고 <code class="nb">RETURN.</code>으로 끝내요(5-5).</li>
+<li>있으면 그림 9-5처럼 한 줄씩 출력하고, 맨 아래에 <code>'조회된 책:'</code>과 <code class="nb">sy-dbcnt</code>(권수)를 출력해요.</li>
+<li>Selection Text와 Text Symbol을 아래 표대로 넣고 활성화해요.</li>
+<li>세 가지로 실행해서 결과를 견줘 보세요.<ul>
+<li>장르 <code class="nb">I</code>, 가격은 비움: 그림 9-5처럼 2권</li>
+<li>장르 <code class="nb">I</code>, 가격 <code class="nb">15000</code>~<code class="nb">25000</code>: <code class="nb">B0001</code> 1권</li>
+<li>장르 <code class="nb">E</code>, 가격 <code class="nb">20000</code>~<code class="nb">30000</code>: 결과 화면 없이 <code>조건에 맞는 책이 없어요</code></li>
+</ul>
+</li>
+</ol>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>탭</th>
+<th>이름</th>
+<th>Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selection Texts</td>
+<td><code class="nb">SO_GENRE</code></td>
+<td>Dictionary Ref.에 체크 (<code class="nb">장르</code>)</td>
+</tr>
+<tr>
+<td>Selection Texts</td>
+<td><code class="nb">SO_PRICE</code></td>
+<td>Dictionary Ref.에 체크 (<code class="nb">가격</code>)</td>
+</tr>
+<tr>
+<td>Text Symbols</td>
+<td><code class="nb">E01</code></td>
+<td>조건에 맞는 책이 없어요</td>
+</tr>
+</tbody>
+</table></div></div>
+<figure class="fig" id="fig-9-5"><div class="fig-body"><div class="gui">
+  <div class="gui-head">[실습] 장르와 가격으로 도서 조회</div>
+  <div class="gui-body list">
+<pre class="gui-list">B0004 SQL 한 그릇          김에이               28,000           2
+B0001 ABAP 첫걸음          김에이               25,000           3
+조회된 책:          2</pre>
+  </div>
+</div></div><figcaption><b>그림 9-5.</b>장르 I, 가격 조건 없이 실행한 결과 (칸 사이 빈칸 수는 달라도 괜찮아요)</figcaption></figure>
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code long is-abap"><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+<span class="tk-cmt">* 설명: SELECT-OPTIONS + SELECT(Field 목록, WHERE IN, ORDER BY) 연습</span>
 <span class="tk-cmt">* Text Symbol E01: 조건에 맞는 책이 없어요</span>
+<span class="tk-cmt">* Selection Text SO_GENRE, SO_PRICE: Dictionary Ref. 체크</span>
 <span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
-<span class="tk-kw">REPORT</span> yg<mark>##</mark>_09_book.
+<span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_138.
 
 <span class="tk-kw">TYPES</span>: <span class="tk-kw">BEGIN</span> <span class="tk-kw">OF</span> ty_list,
-         book_id <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_book_id,
-         <span class="tk-kw">title</span>   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_title,
-         author  <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_author,
-         price   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_price,
-         stock   <span class="tk-kw">TYPE</span> yg<mark>##</mark>_e_stock,
+         book_id <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_book_id,
+         title   <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_title,
+         author  <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_author,
+         price   <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_price,
+         stock   <span class="tk-kw">TYPE</span> yde_g<mark class="gno">##</mark>_stock,
        <span class="tk-kw">END</span> <span class="tk-kw">OF</span> ty_list.
 
-<span class="tk-kw">DATA</span>: gs_book <span class="tk-kw">TYPE</span> yg<mark>##</mark>_book,          <span class="tk-cmt">" SELECT-OPTIONS의 FOR용</span>
+<span class="tk-kw">DATA</span>: gs_book <span class="tk-kw">TYPE</span> yta_g<mark class="gno">##</mark>_book,       <span class="tk-cmt">" SELECT-OPTIONS의 FOR용</span>
       gt_list <span class="tk-kw">TYPE</span> <span class="tk-kw">TABLE</span> <span class="tk-kw">OF</span> ty_list,
       gs_list <span class="tk-kw">TYPE</span> ty_list,
       gv_cnt  <span class="tk-kw">TYPE</span> i.
@@ -410,8 +796,8 @@ START-OF-SELECTION.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-cmt">" 1. 조건에 맞는 책 읽기</span>
-  <span class="tk-kw">SELECT</span> book_id <span class="tk-kw">title</span> author price stock
-    <span class="tk-kw">FROM</span> yg<mark>##</mark>_book
+  <span class="tk-kw">SELECT</span> book_id title author price stock
+    <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book
     <span class="tk-kw">INTO</span> <span class="tk-kw">CORRESPONDING</span> <span class="tk-kw">FIELDS</span> <span class="tk-kw">OF</span> <span class="tk-kw">TABLE</span> gt_list
     <span class="tk-kw">WHERE</span> genre <span class="tk-kw">IN</span> so_genre
       <span class="tk-kw">AND</span> price <span class="tk-kw">IN</span> so_price
@@ -420,9 +806,9 @@ START-OF-SELECTION.
   <span class="tk-cmt">" 2. 없으면 메시지 후 끝내기</span>
   <span class="tk-kw">IF</span> sy-subrc &lt;&gt; <span class="tk-num">0</span>.
     <span class="tk-kw">MESSAGE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">e01</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
-    <span class="tk-kw">RETURN</span>.
+    <span class="tk-kw">RETURN</span>.                              <span class="tk-cmt">" START-OF-SELECTION을 여기서 끝내요</span>
   <span class="tk-kw">ENDIF</span>.
-  gv_cnt = sy-dbcnt.                     <span class="tk-cmt">" 다른 문장이 바꾸기 전에 옮겨 두기</span>
+  gv_cnt = sy-dbcnt.                     <span class="tk-cmt">" 다음 SQL 문장이 바꾸기 전에 옮겨 두기</span>
 
   <span class="tk-cmt">" 3. 출력</span>
   <span class="tk-kw">LOOP</span> <span class="tk-kw">AT</span> gt_list <span class="tk-kw">INTO</span> gs_list.
@@ -430,32 +816,34 @@ START-OF-SELECTION.
              gs_list-price, gs_list-stock.
   <span class="tk-kw">ENDLOOP</span>.
 
-  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'조회된 책:'</span>, gv_cnt.</code></pre></div></details>
-
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'조회된 책:'</span>, gv_cnt.</code></pre></div>
+<p><code class="nb">gv_cnt</code>에 옮겨 담지 않고 맨 아래 줄을 <code>WRITE: / '조회된 책:', sy-dbcnt.</code>로 써도 여기서는 결과가 같아요. <code class="nb">sy-dbcnt</code>는 다음 SQL 문장이 실행되면 바뀌니까, 미리 옮겨 두는 습관을 들이려고 이렇게 썼어요.</p></details>
 <div class="box quiz"><div class="box-t">확인 문제</div><ol>
-<li><code>SELECT * FROM yg<mark>##</mark>_book INTO TABLE gt_book.</code>에서 <code>MANDT</code> 조건을 따로 쓰지 않아도 되는 이유는 무엇일까요?</li>
-<li><code>SELECT-OPTIONS</code>를 비워 두고 실행하면 어떤 결과가 나올까요? <code>PARAMETERS</code>를 비워 두고 <code>WHERE genre = pa_genre</code>로 조회하면요?</li>
-<li><code>INSERT</code>했더니 <code>sy-subrc</code>가 4였어요. 무슨 뜻일까요?</li>
+<li><code>SELECT * FROM yta_g<mark class="gno">##</mark>_book INTO TABLE gt_book.</code>에서 <code class="nb">MANDT</code> 조건을 따로 쓰지 않아도 되는 이유는 무엇일까요?</li>
+<li><code class="nb">SELECT-OPTIONS</code>를 비워 두고 실행하면 어떤 결과가 나올까요? <code class="nb">PARAMETERS</code>를 비워 두고 <code>WHERE genre = pa_genre</code>로 조회하면요?</li>
+<li><code class="nb">INSERT</code>했더니 <code class="nb">sy-subrc</code>가 4였어요. 무슨 뜻일까요?</li>
 <li>아래 코드는 무엇이 문제일까요?
-   <div class="code"><button type="button" class="copy" data-code="SELECT * FROM yg##_book INTO gt_book WHERE genre = &#x27;N&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yg<mark>##</mark>_book <span class="tk-kw">INTO</span> gt_book <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'N'</span>.</code></pre></div></li>
-<li><code>UPDATE … SET</code>이나 <code>DELETE</code>를 실행하기 전에 꼭 확인해야 하는 것은 무엇일까요?</li>
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">SELECT</span> * <span class="tk-kw">FROM</span> yta_g<mark class="gno">##</mark>_book <span class="tk-kw">INTO</span> gt_book <span class="tk-kw">WHERE</span> genre = <span class="tk-str">'N'</span>.</code></pre></div></li>
+<li><code>UPDATE … SET</code>이나 <code class="nb">DELETE</code>를 실행하기 전에 꼭 확인해야 하는 것은 무엇일까요?</li>
+<li><code>SELECT SINGLE</code> 다음 줄에서 <code class="nb">sy-subrc</code>를 확인하지 않고 <code class="nb">gs_book-title</code>을 출력했어요. 없는 도서 번호를 넣으면 무엇이 출력될까요?</li>
+<li>대여 기록과 도서를 <code>INNER JOIN</code>으로 이어 읽었더니 <code class="nb">B0002</code>, <code class="nb">B0003</code>이 결과에 없어요. 왜 그럴까요? 그리고 <code class="nb">b~title</code>의 <code class="nb">~</code>는 무슨 뜻일까요?</li>
 </ol></div>
-
-<details class="answer solo"><summary>정답 보기</summary><ol>
+<details class="answer"><summary>정답 보기</summary><ol>
 <li>SAP가 <strong>로그인한 클라이언트의 데이터만</strong> 자동으로 골라 주기 때문이에요(클라이언트 자동 처리).</li>
-<li><code>SELECT-OPTIONS</code>는 비우면 <strong>조건이 없는 것</strong>이라 모든 줄이 나와요. <code>PARAMETERS</code>를 비우면 <code>genre = ' '</code>(공백)인 줄만 찾으니 보통 <strong>한 줄도 안 나와요.</strong></li>
+<li><code class="nb">SELECT-OPTIONS</code>는 비우면 <strong>조건이 없는 것</strong>이라 모든 줄이 나와요. <code class="nb">PARAMETERS</code>를 비우면 <code class="nb">genre</code>가 빈칸인 줄만 찾으니 보통 <strong>한 줄도 안 나와요.</strong></li>
 <li>같은 <strong>Key가 이미 있어서</strong> 넣지 못했다는 뜻이에요.</li>
-<li>여러 줄을 담는데 <strong><code>INTO TABLE</code>이 아니라 <code>INTO</code></strong>라서 <code>SELECT … ENDSELECT</code> 반복문으로 읽혀요. <code>ENDSELECT</code>가 없다는 오류가 나요. <code>INTO TABLE gt_book</code>으로 고쳐요.</li>
-<li><strong><code>WHERE</code> 조건</strong>이에요. 조건이 틀리면 원하지 않는 줄까지 바뀌거나 지워져요.</li>
+<li>여러 줄을 담는데 <strong><code>INTO TABLE</code>이 아니라 <code class="nb">INTO</code></strong>라서 문법 오류가 나요. <code class="nb">TABLE</code>이 없으면 한 줄씩 읽는 옛 반복문(<code>SELECT … ENDSELECT</code>)으로 읽히는데, <code class="nb">gt_book</code>은 한 줄을 담는 Work Area가 아니에요. <code>INTO TABLE gt_book</code>으로 고쳐요.</li>
+<li><strong><code class="nb">WHERE</code> 조건</strong>이에요. 조건이 틀리거나 빠지면 원하지 않는 줄까지 바뀌거나 지워져요.</li>
+<li>못 찾으면 <code class="nb">gs_book</code>은 바뀌지 않아요. 그래서 <strong>그 전에 들어 있던 값</strong>(처음이라면 빈칸)이 그대로 출력돼요. <code>IF sy-subrc = 0.</code>으로 확인한 뒤에 써야 해요.</li>
+<li><code>INNER JOIN</code>은 <strong>양쪽 Table에 다 있는 줄만</strong> 가져와요. 두 책은 대여 기록에 한 번도 없어서 짝이 없어요. <code class="nb">b~title</code>은 "별명이 <code class="nb">b</code>인 Table의 <code class="nb">title</code> 칸"이라는 뜻이에요.</li>
 </ol></details>
-
 <div class="box summary"><div class="box-t">정리</div><ul>
-<li>여러 줄은 <code>SELECT … FROM … INTO TABLE …</code>, 한 줄은 <code>SELECT SINGLE … INTO 워크에어리어</code>로 읽어요.</li>
-<li><code>WHERE</code>로 줄을, 필드 목록과 <code>INTO CORRESPONDING FIELDS OF TABLE</code>로 칸을 골라요. <code>ORDER BY</code>로 정렬해서 가져올 수 있어요.</li>
-<li>결과는 <code>sy-subrc</code>(0 성공, 4 없음)와 <code>sy-dbcnt</code>(줄 수)로 확인해요.</li>
+<li>여러 줄은 <code>SELECT … FROM … INTO TABLE …</code>, 한 줄은 <code>SELECT SINGLE … INTO Work Area</code>로 읽어요.</li>
+<li><code class="nb">WHERE</code>로 줄을, Field 목록과 <code>INTO CORRESPONDING FIELDS OF TABLE</code>로 칸을 골라요. <code>ORDER BY</code>로 정렬해서 가져올 수 있어요.</li>
+<li>결과는 <code class="nb">sy-subrc</code>(0 성공, 4 없음)와 <code class="nb">sy-dbcnt</code>(줄 수)로 확인해요.</li>
 <li>범위 조건은 <code>SELECT-OPTIONS … FOR …</code>로 받고 <code>WHERE 칸 IN 이름</code>으로 써요. 비우면 전체예요.</li>
-<li><code>INSERT</code>·<code>UPDATE</code>·<code>MODIFY</code>·<code>DELETE</code>로 DB를 바꾸고, <code>WHERE</code>는 두 번 확인해요.</li>
+<li>Table 두 개는 <code>INNER JOIN … ON …</code>으로 이어 읽어요. SQL 안에서 Table의 칸은 <code class="nb">별명~칸</code>으로 가리키고, 양쪽에 다 있는 줄만 나와요.</li>
+<li><code class="nb">INSERT</code>·<code class="nb">UPDATE</code>·<code class="nb">MODIFY</code>·<code class="nb">DELETE</code>로 DB를 바꾸고, <code class="nb">WHERE</code>는 두 번 확인해요.</li>
+<li>실습 데이터가 교재와 달라졌으면 <code class="nb">YG<mark class="gno">##</mark>_137</code>로 처음 다섯 권으로 되돌려요.</li>
 </ul></div>
-
-<div class="box next"><div class="box-t">다음 장 예고</div><p>프로그램이 점점 길어지고 있어요. 10장에서는 긴 코드를 <strong>FORM, Function Module, Method</strong>로 나눠서 읽기 쉽고 다시 쓰기 좋게 만드는 방법을 배워요.</p></div>
-</section>
+<div class="box next short"><div class="box-t">다음 장 예고</div><p>프로그램이 점점 길어지고 있어요. 10장에서는 긴 코드를 <strong>FORM, Function Module, Method</strong>로 나눠서 읽기 쉽고 다시 쓰기 좋게 만드는 방법을 배워요.</p></div></section>

@@ -1,10 +1,9 @@
-<section class="chapter" id="ch03"><div class="ch-eyebrow">3장</div><h1 class="ch-title">데이터와 Type</h1>
-<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<section class="chapter" id="ch03"><div class="ch-eyebrow">3장</div><h1 class="ch-title">데이터와 Type</h1><div class="box goal short"><div class="box-t">이번 장 목표</div><ul>
 <li>변수가 무엇인지, 왜 Type이 필요한지 설명할 수 있어요.</li>
-<li><code>DATA</code>로 변수를 만들고 값을 넣고 출력할 수 있어요.</li>
+<li><code class="nb">DATA</code>로 변수를 만들고 값을 넣고 출력할 수 있어요.</li>
 <li>ABAP의 기본 Type(<code>c n i p d t string</code>)을 구분해서 쓸 수 있어요.</li>
-<li>계산, 문자열 이어 붙이기, 날짜 계산을 해 봐요.</li>
-<li>바뀌지 않는 값은 <code>CONSTANTS</code>로 만들어요.</li>
+<li>계산하고, 문자열을 이어 붙이거나 일부만 꺼내고, 날짜를 계산해 봐요.</li>
+<li>바뀌지 않는 값은 <code class="nb">CONSTANTS</code>로 만들어요.</li>
 </ul></div>
 <h2 id="s3-1">3-1. 변수는 이름표 붙은 상자예요</h2>
 <p>2장에서는 <code>'Hello ABAP'</code>처럼 정해진 글자만 출력했어요. 하지만 실제 프로그램은 사용자가 넣은 값, 계산한 결과처럼 <strong>그때그때 바뀌는 값</strong>을 다뤄요. 이런 값을 잠깐 담아 두는 곳이 <strong>변수</strong>예요.</p>
@@ -17,20 +16,19 @@
 </div></div><figcaption><b>그림 3-1.</b>변수 = 이름 + Type + 값</figcaption></figure>
 <p>Type이 정해져 있으면 좋은 점이 있어요. 숫자 상자에 글자를 넣으려 하거나, 10칸짜리 상자에 20글자를 넣으려 할 때 SAP가 미리 알려 주거나 정해진 규칙대로 처리해 줘요.</p>
 <h2 id="s3-2">3-2. DATA로 변수 만들기</h2>
-<p>변수는 <code>DATA</code> 키워드로 만들어요. 이걸 <strong>선언</strong>이라고 해요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA gv_age  TYPE i.                 &quot; 정수를 담는 변수
-DATA gv_name TYPE c LENGTH 10.       &quot; 글자 10칸을 담는 변수">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_age  <span class="tk-kw">TYPE</span> i.                 <span class="tk-cmt">" 정수를 담는 변수</span>
+<p>변수는 <code class="nb">DATA</code> 키워드로 만들어요. 이걸 <strong>선언</strong>이라고 해요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_age  <span class="tk-kw">TYPE</span> i.                 <span class="tk-cmt">" 정수를 담는 변수</span>
 <span class="tk-kw">DATA</span> gv_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>.       <span class="tk-cmt">" 글자 10칸을 담는 변수</span></code></pre></div>
-<p><code>DATA 이름 TYPE 타입.</code> 순서예요. 이름 앞의 <code>gv_</code>는 0장에서 정한 규칙대로 <strong>G</strong>lobal <strong>V</strong>ariable(전역 변수)이라는 표시예요.</p>
+<p><code>DATA 이름 TYPE 타입.</code> 순서예요. JavaScript의 <code>let age;</code>와 비슷하지만, ABAP은 <strong>Type을 꼭 같이</strong> 적어요. 이름 앞의 <code class="nb">gv_</code>는 0장에서 정한 규칙대로 <strong>G</strong>lobal <strong>V</strong>ariable(전역 변수)이라는 표시예요.</p>
 <p>변수를 여러 개 만들 땐 2장에서 배운 <strong>체인 문장</strong>이 딱이에요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA: gv_age   TYPE i,
-      gv_name  TYPE c LENGTH 10,
-      gv_price TYPE p LENGTH 8 DECIMALS 2.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_age   <span class="tk-kw">TYPE</span> i,
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_age   <span class="tk-kw">TYPE</span> i,
       gv_name  <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>,
       gv_price <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>.</code></pre></div>
 <h3>값 넣고 출력하기</h3>
-<p><code>=</code> 왼쪽은 상자, 오른쪽은 넣을 값이에요. "오른쪽 값을 왼쪽 상자에 넣어라"로 읽으면 돼요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_03_data.
+<p><code class="nb">=</code> 왼쪽은 상자, 오른쪽은 넣을 값이에요. "오른쪽 값을 왼쪽 상자에 넣어라"로 읽으면 돼요.</p>
+<p>직접 해 볼게요. 아래 <strong>새로 만들기 카드</strong>대로 프로그램을 새로 만들고, 코드를 따라 쳐서 실행해 보세요. 만드는 순서는 2-2와 같아요. Title 칸에는 카드에 적힌 글자를 그대로 넣어요. 이 장에서 카드가 붙은 코드는 모두 이렇게 해요. 카드 없이 나오는 짧은 코드는 모양만 눈에 익히면 돼요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_103</code></dd><dt>Title</dt><dd>[예제] 변수 선언과 출력</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_103.
 
 DATA: gv_age  TYPE i,
       gv_name TYPE c LENGTH 10.
@@ -40,7 +38,7 @@ START-OF-SELECTION.
   gv_age  = 25.
 
   WRITE: / &#x27;이름:&#x27;, gv_name,
-         / &#x27;나이:&#x27;, gv_age.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_03_data.
+         / &#x27;나이:&#x27;, gv_age." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_103.
 
 <span class="tk-kw">DATA</span>: gv_age  <span class="tk-kw">TYPE</span> i,
       gv_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>.
@@ -52,19 +50,26 @@ START-OF-SELECTION.
   <span class="tk-kw">WRITE</span>: / <span class="tk-str">'이름:'</span>, gv_name,
          / <span class="tk-str">'나이:'</span>, gv_age.</code></pre></div>
 <figure class="fig" id="fig-3-2"><div class="fig-body"><div class="gui">
-  <div class="gui-head">변수 연습</div>
+  <div class="gui-head">[예제] 변수 선언과 출력</div>
   <div class="gui-body list">
 <pre class="gui-list">이름: 홍길동
-나이:          25</pre>
+나이:         25</pre>
   </div>
 </div></div><figcaption><b>그림 3-2.</b>실행 결과</figcaption></figure>
-<p>나이 앞에 공백이 많이 생겼죠? <code>WRITE</code>는 숫자를 <strong>오른쪽에 붙여서</strong> 출력하기 때문이에요. 틀린 게 아니니 걱정하지 않아도 돼요.</p>
-<div class="box note"><div class="box-t">처음부터 값을 넣어 두기: VALUE</div><p>선언할 때 <code>VALUE</code>를 붙이면 처음 값을 정해 둘 수 있어요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA gv_count TYPE i VALUE 10.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_count <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">10</span>.</code></pre></div>
-<p>반대로 <code>CLEAR gv_count.</code>라고 쓰면 상자가 처음 상태(초기값)로 비워져요. 숫자면 <code>0</code>, 글자면 공백이 돼요.</p></div>
+<p><code class="nb">25</code> 앞에 공백이 많이 생겼죠? <code class="nb">WRITE</code>는 숫자를 <strong>오른쪽에 붙여서</strong> 출력하기 때문이에요. 틀린 게 아니니 걱정하지 않아도 돼요.</p>
+<ul>
+<li><code class="nb">DATA</code>는 <code class="nb">REPORT</code> 줄 아래, <code class="nb">START-OF-SELECTION</code> 위에 모아 써요. 상자를 먼저 만들어 둬야 그 아래에서 쓸 수 있어요.</li>
+<li>글자 값은 <code class="nb">'홍길동'</code>처럼 작은따옴표로 감싸고, 숫자는 <code class="nb">25</code>처럼 그대로 써요.</li>
+<li>쉼표로 이은 값은 같은 줄에 <strong>한 칸 띄고</strong> 이어서 나와요. <code class="nb">/</code>가 붙은 값부터 새 줄이에요.</li>
+<li>내 화면 맨 위에는 그림 2-7처럼 Title이 적힌 제목 줄과 가로선이 더 있어요. 교재는 앞으로 이 두 줄을 빼고 결과만 보여 줘요.</li>
+</ul>
+<div class="box note"><div class="box-t">처음부터 값을 넣어 두기: VALUE</div><p>선언할 때 <code class="nb">VALUE</code>를 붙이면 처음 값을 정해 둘 수 있어요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DATA</span> gv_count <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">10</span>.</code></pre></div>
+<p>반대로 <code>CLEAR gv_count.</code>라고 쓰면 상자가 비워져요. <code class="nb">VALUE</code>로 넣어 둔 <code class="nb">10</code>으로 돌아가는 게 아니라 <strong>Type의 초기값</strong>이 돼요. 숫자면 <code class="nb">0</code>, 글자면 공백이에요.</p>
+<p><code class="nb">VALUE</code> 없이 만든 변수에도 처음부터 이 초기값이 들어 있어요. JavaScript의 <code class="nb">undefined</code> 같은 것은 없어요.</p></div>
 <h2 id="s3-3">3-3. 꼭 알아야 할 기본 Type</h2>
 <p>ABAP에는 Type이 많지만, 입문 단계에서는 아래 일곱 가지면 충분해요.</p>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>Type</th>
@@ -76,53 +81,53 @@ START-OF-SELECTION.
 </thead>
 <tbody>
 <tr>
-<td><code>c</code></td>
+<td><code class="nb">c</code></td>
 <td>글자(길이 고정)</td>
 <td><code>TYPE c LENGTH 10</code></td>
 <td>공백</td>
-<td><code>'홍길동'</code></td>
+<td><code class="nb">'홍길동'</code></td>
 </tr>
 <tr>
-<td><code>string</code></td>
+<td><code class="nb">string</code></td>
 <td>글자(길이 자유)</td>
 <td><code>TYPE string</code></td>
 <td>빈 문자열</td>
 <td><code>'아무리 길어도 OK'</code></td>
 </tr>
 <tr>
-<td><code>n</code></td>
+<td><code class="nb">n</code></td>
 <td>숫자로만 된 글자</td>
 <td><code>TYPE n LENGTH 5</code></td>
-<td><code>'00000'</code></td>
-<td><code>'00123'</code> (우편번호, 사번)</td>
+<td><code class="nb">'00000'</code></td>
+<td><code class="nb">'00123'</code> (우편번호, 사번)</td>
 </tr>
 <tr>
-<td><code>i</code></td>
+<td><code class="nb">i</code></td>
 <td>정수</td>
 <td><code>TYPE i</code></td>
-<td><code>0</code></td>
-<td><code>25</code>, <code>-3</code></td>
+<td><code class="nb">0</code></td>
+<td><code class="nb">25</code>, <code class="nb">-3</code></td>
 </tr>
 <tr>
-<td><code>p</code></td>
+<td><code class="nb">p</code></td>
 <td>소수(자릿수 고정)</td>
 <td><code>TYPE p LENGTH 8 DECIMALS 2</code></td>
-<td><code>0</code></td>
-<td><code>25000.50</code> (금액)</td>
+<td><code class="nb">0</code></td>
+<td><code class="nb">25000.50</code> (금액)</td>
 </tr>
 <tr>
-<td><code>d</code></td>
-<td>날짜 <code>YYYYMMDD</code></td>
+<td><code class="nb">d</code></td>
+<td>날짜 <code class="nb">YYYYMMDD</code></td>
 <td><code>TYPE d</code></td>
-<td><code>'00000000'</code></td>
-<td><code>'20261117'</code></td>
+<td><code class="nb">'00000000'</code></td>
+<td><code class="nb">'20261117'</code></td>
 </tr>
 <tr>
-<td><code>t</code></td>
-<td>시간 <code>HHMMSS</code></td>
+<td><code class="nb">t</code></td>
+<td>시간 <code class="nb">HHMMSS</code></td>
 <td><code>TYPE t</code></td>
-<td><code>'000000'</code></td>
-<td><code>'153000'</code></td>
+<td><code class="nb">'000000'</code></td>
+<td><code class="nb">'153000'</code></td>
 </tr>
 </tbody>
 </table></div>
@@ -131,16 +136,17 @@ START-OF-SELECTION.
   <div class="tc-row"><code>gv_n TYPE n LENGTH 5</code><span class="tc-arrow">← '123'</span><span class="tc-cells"><i class="z">0</i><i class="z">0</i><i>1</i><i>2</i><i>3</i></span><small>오른쪽부터 채우고 앞은 0</small></div>
   <div class="tc-row"><code>gv_i TYPE i</code><span class="tc-arrow">← '123'</span><span class="tc-cells wide"><i>123</i></span><small>계산할 수 있는 진짜 숫자</small></div>
 </div></div><figcaption><b>그림 3-3.</b>같은 값도 Type에 따라 다르게 담겨요</figcaption></figure>
-
-<div class="box note"><div class="box-t">어떤 Type을 고를까요?</div><ul>
-<li><strong>계산할 숫자</strong>면 <code>i</code>(정수) 또는 <code>p</code>(소수, 금액)를 써요.</li>
-<li>우편번호, 사번처럼 <strong>숫자로 생겼지만 계산하지 않는 값</strong>은 <code>n</code>을 써요. 앞자리 0이 사라지지 않아요.</li>
-<li><strong>이름, 메시지</strong> 같은 글자는 <code>c</code> 또는 <code>string</code>을 써요. 길이가 정해져 있으면 <code>c</code>, 들쭉날쭉하면 <code>string</code>이 편해요.</li>
+<div class="box note short"><div class="box-t">어떤 Type을 고를까요?</div><ul>
+<li><strong>계산할 숫자</strong>면 <code class="nb">i</code>(정수) 또는 <code class="nb">p</code>(소수, 금액)를 써요.</li>
+<li>우편번호, 사번처럼 <strong>숫자로 생겼지만 계산하지 않는 값</strong>은 <code class="nb">n</code>을 써요. 앞자리 0이 사라지지 않아요.</li>
+<li><strong>이름, 메시지</strong> 같은 글자는 <code class="nb">c</code> 또는 <code class="nb">string</code>을 써요. 길이가 정해져 있으면 <code class="nb">c</code>, 들쭉날쭉하면 <code class="nb">string</code>이 편해요.</li>
 </ul></div>
-
-<div class="box note"><div class="box-t">p Type의 LENGTH와 DECIMALS</div><p><code>TYPE p LENGTH 8 DECIMALS 2</code>에서 <code>DECIMALS 2</code>는 <strong>소수점 아래 두 자리</strong>라는 뜻이에요. <code>LENGTH 8</code>은 숫자 칸의 크기(바이트)인데, 숫자 자릿수로는 대략 <code>2 × 8 − 1 = 15</code>자리가 들어가요. 금액이라면 <code>LENGTH 8 DECIMALS 2</code>면 넉넉해요.</p></div>
+<div class="box warn short"><div class="box-t">LENGTH를 빼먹으면 1칸이에요</div><p><code>DATA gv_name TYPE c.</code>처럼 <code class="nb">LENGTH</code>를 빼먹으면 <strong>1칸짜리</strong> 상자가 돼요. 여기에 <code class="nb">'홍길동'</code>을 넣으면 <code class="nb">홍</code> 한 글자만 남아요. 오류가 나지 않아서 더 찾기 어려워요. <code class="nb">c</code>와 <code class="nb">n</code>에는 <code class="nb">LENGTH</code>를 꼭 적어요.</p></div>
+<div class="box note short"><div class="box-t">p Type의 LENGTH와 DECIMALS</div><p><code>TYPE p LENGTH 8 DECIMALS 2</code>에서 <code>DECIMALS 2</code>는 <strong>소수점 아래 두 자리</strong>라는 뜻이에요. <code>LENGTH 8</code>은 숫자 칸의 크기(바이트)인데, 숫자 자릿수로는 소수 자리까지 합쳐 <code>2 × 8 − 1 = 15</code>자리가 들어가요. 금액이라면 <code>LENGTH 8 DECIMALS 2</code>면 넉넉해요.</p>
+<p>소수가 있는 값을 넣을 때는 <code>gv_price = '25000.50'.</code>처럼 <strong>작은따옴표로 감싸요.</strong> 따옴표 없이 <code class="nb">25000.50</code>이라고 쓰면 문법 오류가 나요. ABAP에서 마침표는 문장의 끝이니까요.</p></div>
 <h2 id="s3-4">3-4. 계산하기</h2>
-<div class="table-wrap"><table>
+<p>숫자를 담은 변수로는 계산을 할 수 있어요. 연산자는 수학에서 보던 것과 거의 같아요.</p>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>연산자</th>
@@ -151,40 +157,45 @@ START-OF-SELECTION.
 </thead>
 <tbody>
 <tr>
-<td><code>+</code> <code>-</code> <code>*</code></td>
+<td><code class="nb">+</code> <code class="nb">-</code> <code class="nb">*</code></td>
 <td>더하기, 빼기, 곱하기</td>
 <td><code>3 * 4</code></td>
-<td><code>12</code></td>
+<td><code class="nb">12</code></td>
 </tr>
 <tr>
-<td><code>/</code></td>
+<td><code class="nb">/</code></td>
 <td>나누기</td>
 <td><code>7 / 2</code></td>
 <td>결과 Type에 따라 다름 (아래 참고)</td>
 </tr>
 <tr>
-<td><code>DIV</code></td>
+<td><code class="nb">DIV</code></td>
 <td>몫</td>
 <td><code>7 DIV 2</code></td>
-<td><code>3</code></td>
+<td><code class="nb">3</code></td>
 </tr>
 <tr>
-<td><code>MOD</code></td>
+<td><code class="nb">MOD</code></td>
 <td>나머지</td>
 <td><code>7 MOD 2</code></td>
-<td><code>1</code></td>
+<td><code class="nb">1</code></td>
 </tr>
 <tr>
-<td><code>**</code></td>
+<td><code class="nb">**</code></td>
 <td>거듭제곱</td>
 <td><code>2 ** 3</code></td>
-<td><code>8</code></td>
+<td><code class="nb">8</code></td>
 </tr>
 </tbody>
 </table></div>
-<div class="code"><button type="button" class="copy" data-code="DATA: gv_a      TYPE i VALUE 7,
+<p>프로그램으로 하나씩 확인해 봐요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_104</code></dd><dt>Title</dt><dd>[예제] 계산하기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_104.
+
+DATA: gv_a      TYPE i VALUE 7,
       gv_b      TYPE i VALUE 2,
-      gv_result TYPE i.
+      gv_result TYPE i,
+      gv_dec    TYPE p LENGTH 8 DECIMALS 2.
 
 START-OF-SELECTION.
   gv_result = gv_a + gv_b.           &quot; 9
@@ -197,9 +208,15 @@ START-OF-SELECTION.
   WRITE: / &#x27;나머지:&#x27;, gv_result.
 
   gv_result = gv_a / gv_b.           &quot; 4 (3.5가 반올림돼요!)
-  WRITE: / &#x27;나누기:&#x27;, gv_result.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_a      <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">7</span>,
+  WRITE: / &#x27;나누기:&#x27;, gv_result.
+
+  gv_dec = gv_a / gv_b.              &quot; 3.50 (소수를 담는 상자라 그대로)
+  WRITE: / &#x27;소수로:&#x27;, gv_dec." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_104.
+
+<span class="tk-kw">DATA</span>: gv_a      <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">7</span>,
       gv_b      <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">2</span>,
-      gv_result <span class="tk-kw">TYPE</span> i.
+      gv_result <span class="tk-kw">TYPE</span> i,
+      gv_dec    <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   gv_result = gv_a + gv_b.           <span class="tk-cmt">" 9</span>
@@ -212,20 +229,38 @@ START-OF-SELECTION.
   <span class="tk-kw">WRITE</span>: / <span class="tk-str">'나머지:'</span>, gv_result.
 
   gv_result = gv_a / gv_b.           <span class="tk-cmt">" 4 (3.5가 반올림돼요!)</span>
-  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'나누기:'</span>, gv_result.</code></pre></div>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
-<li><strong>연산자 앞뒤는 꼭 띄어 써요.</strong> <code>gv_a+1</code>처럼 붙여 쓰면 ABAP은 "더하기"가 아니라 <strong>"글자 자르기"</strong>(앞에서 1칸 건너뛴 곳부터 읽기)로 받아들여요. 숫자 변수면 문법 오류가 나고, 글자 변수면 엉뚱한 결과가 나와요. 항상 <code>gv_a + 1</code>처럼 써요.</li>
-<li><strong><code>i</code>끼리 나누면 반올림돼요.</strong> <code>7 / 2</code>를 <code>i</code> 변수에 넣으면 <code>3.5</code>가 반올림되어 <code>4</code>가 돼요. 몫이 필요하면 <code>DIV</code>, 소수가 필요하면 결과 변수를 <code>p</code> Type으로 만들어요.</li>
-</ul></div>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'나누기:'</span>, gv_result.
 
-<div class="box modern"><div class="box-t">이렇게도 써요</div><p>요즘 코드에서는 "자기 자신에 더하기"를 이렇게 짧게 써요. 1주차 과제에서 써 본 친구들도 있었죠.</p>
-<div class="code"><button type="button" class="copy" data-code="gv_sum = gv_sum + gv_num.   &quot; 원래 쓰던 방식
-gv_sum += gv_num.           &quot; 같은 뜻, 짧은 방식">복사</button><pre><code class="lang-abap">gv_sum = gv_sum + gv_num.   <span class="tk-cmt">" 원래 쓰던 방식</span>
+  gv_dec = gv_a / gv_b.              <span class="tk-cmt">" 3.50 (소수를 담는 상자라 그대로)</span>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'소수로:'</span>, gv_dec.</code></pre></div>
+<p>실행하면 이렇게 나와요. 숫자 앞의 긴 공백은 3-2에서 본 그대로예요. 칸 수는 조금 달라도 괜찮아요.</p>
+<div class="code"><pre><code class="lang-text">더하기:          9
+몫:          3
+나머지:          1
+나누기:          4
+소수로:             3.50</code></pre></div>
+<ul>
+<li>계산한 결과는 <code class="nb">=</code> 왼쪽 상자에 담겨요. 같은 상자에 새 값을 넣으면 <strong>앞의 값은 지워져요.</strong> 그래서 계산할 때마다 바로 출력했어요.</li>
+<li><code>7 / 2</code>는 <code class="nb">3.5</code>예요. 정수 상자 <code class="nb">gv_result</code>에는 반올림한 <code class="nb">4</code>가 들어가고, 소수까지 담는 <code class="nb">gv_dec</code>에는 <code class="nb">3.50</code>이 그대로 들어가요.</li>
+<li><code>gv_result = gv_b - gv_a.</code>처럼 결과가 음수면 <code class="nb">5-</code>처럼 <strong>부호가 숫자 뒤에</strong> 붙어서 나와요. 틀린 게 아니라 SAP가 음수를 보여 주는 방식이에요.</li>
+<li><code class="nb">3.50</code>이 <code class="nb">3,50</code>처럼 보여도 틀린 게 아니에요. 숫자의 점과 쉼표 모양은 사용자 설정에 따라 달라요. 코드에 값을 쓸 때는 설정과 상관없이 늘 <code class="nb">'3.50'</code>처럼 점을 써요.</li>
+</ul>
+<p><code>VALUE 7</code>을 <code class="nb">9</code>로, <code>VALUE 2</code>를 <code class="nb">4</code>로 바꾸면 어떻게 될까요? 먼저 예상해 보고 실행해서 확인해요. 차례로 <code class="nb">13</code>, <code class="nb">2</code>, <code class="nb">1</code>, <code class="nb">2</code>, <code class="nb">2.25</code>가 나와요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li><strong>연산자 앞뒤는 꼭 띄어 써요.</strong> <code class="nb">gv_a+1</code>처럼 붙여 쓰면 ABAP은 "더하기"가 아니라 <strong>"글자 일부만 꺼내기"</strong>(앞에서 1칸 건너뛴 곳부터 읽기)로 받아들여요. 숫자 변수면 문법 오류가 나고, 글자 변수면 엉뚱한 결과가 나와요. 항상 <code>gv_a + 1</code>처럼 써요. 일부만 꺼내기는 3-6에서 배워요.</li>
+<li><strong>나눈 결과를 정수 상자에 담으면 반올림돼요.</strong> <code>7 / 2</code>를 <code class="nb">i</code> 변수에 넣으면 <code class="nb">3.5</code>가 반올림되어 <code class="nb">4</code>가 돼요. 몫이 필요하면 <code class="nb">DIV</code>, 소수가 필요하면 결과 변수를 <code class="nb">p</code> Type으로 만들어요.</li>
+<li><strong>괄호도 안쪽을 한 칸씩 띄어 써요.</strong> <code>( gv_a + gv_b ) * 2</code>처럼요. 곱하기와 나누기를 더하기와 빼기보다 먼저 계산하는 것은 수학과 같아요.</li>
+</ul></div>
+<div class="box modern"><div class="box-t">이렇게도 써요</div><p>요즘 코드에서는 "자기 자신에 더하기"를 이렇게 짧게 써요(ABAP 7.54부터 돼요). 1주차 과제에서 써 본 친구들도 있었죠.</p>
+<div class="code is-abap"><pre><code class="lang-abap">gv_sum = gv_sum + gv_num.   <span class="tk-cmt">" 원래 쓰던 방식</span>
 gv_sum += gv_num.           <span class="tk-cmt">" 같은 뜻, 짧은 방식</span></code></pre></div>
-<p><code>-=</code>, <code>*=</code>, <code>/=</code>도 같은 식이에요.</p></div>
+<p><code class="nb">-=</code>, <code class="nb">*=</code>, <code class="nb">/=</code>도 같은 식이에요.</p></div>
 <h2 id="s3-5">3-5. 문자열 이어 붙이기</h2>
-<p>이름과 인사말을 합쳐서 <code>홍길동님 안녕하세요</code> 같은 문장을 만들고 싶을 때가 많아요. 가장 기본적인 방법은 <code>CONCATENATE</code>예요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA: gv_name TYPE c LENGTH 10 VALUE &#x27;홍길동&#x27;,
+<p>이름과 인사말을 합쳐서 <code>홍길동님 안녕하세요</code> 같은 문장을 만들고 싶을 때가 많아요. JavaScript에서는 <code class="nb">+</code>로 이어 붙였지만, ABAP의 <code class="nb">+</code>는 숫자 계산에만 써요. 글자를 이어 붙이는 가장 기본적인 방법은 <code class="nb">CONCATENATE</code>예요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_105</code></dd><dt>Title</dt><dd>[예제] 문자열 이어 붙이기</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_105.
+
+DATA: gv_name TYPE c LENGTH 10 VALUE &#x27;홍길동&#x27;,
       gv_msg  TYPE string.
 
 START-OF-SELECTION.
@@ -233,7 +268,9 @@ START-OF-SELECTION.
   WRITE / gv_msg.                                  &quot; 홍길동님 안녕하세요
 
   CONCATENATE &#x27;반갑습니다&#x27; gv_name INTO gv_msg SEPARATED BY space.
-  WRITE / gv_msg.                                  &quot; 반갑습니다 홍길동">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'홍길동'</span>,
+  WRITE / gv_msg.                                  &quot; 반갑습니다 홍길동" title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_105.
+
+<span class="tk-kw">DATA</span>: gv_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'홍길동'</span>,
       gv_msg  <span class="tk-kw">TYPE</span> string.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
@@ -242,19 +279,149 @@ START-OF-SELECTION.
 
   <span class="tk-kw">CONCATENATE</span> <span class="tk-str">'반갑습니다'</span> gv_name <span class="tk-kw">INTO</span> gv_msg <span class="tk-kw">SEPARATED</span> <span class="tk-kw">BY</span> <span class="tk-kw">space</span>.
   <span class="tk-kw">WRITE</span> / gv_msg.                                  <span class="tk-cmt">" 반갑습니다 홍길동</span></code></pre></div>
+<div class="code"><pre><code class="lang-text">홍길동님 안녕하세요
+반갑습니다 홍길동</code></pre></div>
 <ul>
 <li><code>CONCATENATE 값1 값2 … INTO 결과.</code> 순서예요.</li>
 <li><code>SEPARATED BY space</code>를 붙이면 사이에 공백 한 칸을 넣어 줘요.</li>
-<li><code>gv_name</code>은 10칸짜리라 뒤에 공백 7칸이 남아 있지만, <code>CONCATENATE</code>는 <code>c</code> Type 뒤쪽 공백을 알아서 빼고 붙여 줘요.</li>
+<li><code class="nb">gv_name</code>은 10칸짜리라 뒤에 공백 7칸이 남아 있지만, <code class="nb">CONCATENATE</code>는 <code class="nb">c</code> Type 뒤쪽 공백을 알아서 빼고 붙여 줘요.</li>
+<li><code class="nb">CONCATENATE</code>에는 <strong>글자만</strong> 넣을 수 있어요. 숫자 변수(<code class="nb">i</code>, <code class="nb">p</code>)를 바로 넣으면 문법 오류가 나요. 숫자는 글자 변수에 먼저 옮긴 다음 이어 붙여요. 방법은 3-6에서 <code class="nb">CONDENSE</code>와 함께 볼게요.</li>
 </ul>
-<div class="box modern"><div class="box-t">이렇게도 써요</div><p><code>&amp;&amp;</code> 연산자나 <strong>문자열 템플릿</strong> <code>|…|</code>으로 더 짧게 쓸 수도 있어요. 템플릿 안에서 변수는 <code>{ }</code>로 감싸고, 괄호 안쪽은 꼭 한 칸씩 띄워요.</p>
-<div class="code"><button type="button" class="copy" data-code="gv_msg = gv_name &amp;&amp; &#x27;님 안녕하세요&#x27;.
-gv_msg = |{ gv_name }님 안녕하세요|.">복사</button><pre><code class="lang-abap">gv_msg = gv_name &amp;&amp; <span class="tk-str">'님 안녕하세요'</span>.
+<div class="box modern"><div class="box-t">이렇게도 써요</div><p><code class="nb">&amp;&amp;</code> 연산자나 <strong>문자열 템플릿</strong> <code class="nb">|…|</code>으로 더 짧게 쓸 수도 있어요. 템플릿 안에서 변수는 <code>{ }</code>로 감싸고, 괄호 안쪽은 꼭 한 칸씩 띄워요.</p>
+<div class="code is-abap"><pre><code class="lang-abap">gv_msg = gv_name &amp;&amp; <span class="tk-str">'님 안녕하세요'</span>.
 gv_msg = <span class="tk-str">|{ gv_name }님 안녕하세요|</span>.</code></pre></div></div>
-<h2 id="s3-6">3-6. 날짜와 시스템 필드</h2>
-<h3>시스템 필드 <code>sy-</code></h3>
-<p>SAP는 프로그램이 실행될 때 자주 쓰는 정보를 <code>sy-</code>로 시작하는 <strong>시스템 필드</strong>에 미리 넣어 둬요. 따로 만들지 않아도 바로 쓸 수 있어요.</p>
-<div class="table-wrap"><table>
+<h2 id="s3-6">3-6. 문자열 다루기</h2>
+<p>글자로 하는 일이 이어 붙이기만 있는 건 아니에요. 일부만 꺼내고, 길이를 세고, 다듬는 일도 자주 해요. 가장 많이 쓰는 네 가지만 먼저 익혀요.</p>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>하고 싶은 일</th>
+<th>쓰는 법</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>일부만 꺼내기</td>
+<td><code class="nb">변수+시작(길이)</code></td>
+<td><code class="nb">20261103</code>에서 <code class="nb">gv_date+4(2)</code> → <code class="nb">11</code></td>
+</tr>
+<tr>
+<td>길이 세기</td>
+<td><code>strlen( 변수 )</code></td>
+<td><code class="nb">abap</code> → <code class="nb">4</code></td>
+</tr>
+<tr>
+<td>대문자로 바꾸기</td>
+<td><code>TRANSLATE 변수 TO UPPER CASE.</code></td>
+<td><code class="nb">abap</code> → <code class="nb">ABAP</code></td>
+</tr>
+<tr>
+<td>공백 정리하기</td>
+<td><code>CONDENSE 변수.</code></td>
+<td>앞뒤 공백은 없애고, 사이 공백은 한 칸으로</td>
+</tr>
+</tbody>
+</table></div>
+<p>이 가운데 <strong>일부만 꺼내기</strong>가 가장 헷갈려요. <code class="nb">+</code> 뒤의 숫자는 <strong>앞에서 건너뛸 칸 수</strong>(시작), 괄호 안의 숫자는 <strong>꺼낼 칸 수</strong>(길이)예요. 변수 이름, <code class="nb">+</code>, 괄호를 <strong>띄우지 않고 붙여</strong> 써요. <code class="nb">gv_date(4)</code>처럼 <code class="nb">+</code>를 빼면 맨 앞부터 꺼내요.</p>
+<div class="code"><pre><code class="lang-text">gv_date        2 0 2 6 1 1 0 3
+gv_date(4)     2 0 2 6            앞에서 4칸
+gv_date+4(2)           1 1        4칸 건너뛰고 2칸
+gv_date+6(2)               0 3    6칸 건너뛰고 2칸</code></pre></div>
+<p>3-4에서 <code class="nb">gv_a+1</code>처럼 붙여 쓰지 말라고 했죠? 붙여 쓴 <code class="nb">+</code>는 더하기가 아니라 바로 이 "건너뛸 칸 수"로 읽히기 때문이에요. 그리고 8칸짜리 <code class="nb">gv_date</code>에 <code class="nb">gv_date+6(4)</code>처럼 길이를 넘겨서 꺼내려고 하면 문법 오류가 나요.</p>
+<p>네 가지를 프로그램 하나로 해 볼게요. 조금 길지만 한 번에 다 치지 않아도 돼요. 코드의 주석에 1번부터 4번까지 번호를 달아 뒀어요. 먼저 <strong>1번</strong>의 <code class="nb">WRITE</code>까지만 치고 실행해 봐요. 세 줄이 나오면 2번, 3번, 4번을 하나씩 덧붙이면서 실행해요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_106</code></dd><dt>Title</dt><dd>[예제] 문자열 다루기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_106.
+
+DATA: gv_date  TYPE d VALUE &#x27;20261103&#x27;,
+      gv_year  TYPE c LENGTH 4,
+      gv_month TYPE c LENGTH 2,
+      gv_id    TYPE c LENGTH 5 VALUE &#x27;B0001&#x27;,
+      gv_no    TYPE c LENGTH 4,
+      gv_word  TYPE c LENGTH 10 VALUE &#x27;abap&#x27;,
+      gv_len   TYPE i,
+      gv_text  TYPE c LENGTH 10.
+
+START-OF-SELECTION.
+  &quot; 1. 일부만 꺼내기
+  gv_year  = gv_date(4).             &quot; 앞에서 4칸       → 2026
+  gv_month = gv_date+4(2).           &quot; 4칸 건너뛰고 2칸 → 11
+  gv_no    = gv_id+1(4).             &quot; 1칸 건너뛰고 4칸 → 0001
+  WRITE: / &#x27;연도:&#x27;, gv_year,
+         / &#x27;월:&#x27;, gv_month,
+         / &#x27;번호:&#x27;, gv_no.
+
+  &quot; 2. 길이 세기
+  gv_len = strlen( gv_word ).        &quot; 4 (뒤쪽 공백은 세지 않아요)
+  WRITE: / &#x27;길이:&#x27;, gv_len.
+
+  &quot; 3. 대문자로 바꾸기
+  TRANSLATE gv_word TO UPPER CASE.   &quot; abap → ABAP
+  WRITE: / &#x27;대문자:&#x27;, gv_word.
+
+  &quot; 4. 공백 정리하기
+  gv_text = gv_len.                  &quot; 숫자를 글자 변수로 옮겨요
+  WRITE: / &#x27;정리 전:&#x27;, gv_text.
+  CONDENSE gv_text.
+  WRITE: / &#x27;정리 후:&#x27;, gv_text." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_106.
+
+<span class="tk-kw">DATA</span>: gv_date  <span class="tk-kw">TYPE</span> d <span class="tk-kw">VALUE</span> <span class="tk-str">'20261103'</span>,
+      gv_year  <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">4</span>,
+      gv_month <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">2</span>,
+      gv_id    <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">5</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'B0001'</span>,
+      gv_no    <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">4</span>,
+      gv_word  <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'abap'</span>,
+      gv_len   <span class="tk-kw">TYPE</span> i,
+      gv_text  <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-cmt">" 1. 일부만 꺼내기</span>
+  gv_year  = gv_date(<span class="tk-num">4</span>).             <span class="tk-cmt">" 앞에서 4칸       → 2026</span>
+  gv_month = gv_date+<span class="tk-num">4</span>(<span class="tk-num">2</span>).           <span class="tk-cmt">" 4칸 건너뛰고 2칸 → 11</span>
+  gv_no    = gv_id+<span class="tk-num">1</span>(<span class="tk-num">4</span>).             <span class="tk-cmt">" 1칸 건너뛰고 4칸 → 0001</span>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'연도:'</span>, gv_year,
+         / <span class="tk-str">'월:'</span>, gv_month,
+         / <span class="tk-str">'번호:'</span>, gv_no.
+
+  <span class="tk-cmt">" 2. 길이 세기</span>
+  gv_len = strlen( gv_word ).        <span class="tk-cmt">" 4 (뒤쪽 공백은 세지 않아요)</span>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'길이:'</span>, gv_len.
+
+  <span class="tk-cmt">" 3. 대문자로 바꾸기</span>
+  <span class="tk-kw">TRANSLATE</span> gv_word <span class="tk-kw">TO</span> <span class="tk-kw">UPPER</span> <span class="tk-kw">CASE</span>.   <span class="tk-cmt">" abap → ABAP</span>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'대문자:'</span>, gv_word.
+
+  <span class="tk-cmt">" 4. 공백 정리하기</span>
+  gv_text = gv_len.                  <span class="tk-cmt">" 숫자를 글자 변수로 옮겨요</span>
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'정리 전:'</span>, gv_text.
+  <span class="tk-kw">CONDENSE</span> gv_text.
+  <span class="tk-kw">WRITE</span>: / <span class="tk-str">'정리 후:'</span>, gv_text.</code></pre></div>
+<div class="code"><pre><code class="lang-text">연도: 2026
+월: 11
+번호: 0001
+길이:          4
+대문자: ABAP
+정리 전:         4
+정리 후: 4</code></pre></div>
+<ul>
+<li><strong>1번.</strong> 날짜에서 연도와 월을 꺼내는 <code class="nb">gv_date(4)</code>, <code class="nb">gv_date+4(2)</code>는 회사 코드에서 정말 자주 만나요. 도서 번호 <code class="nb">B0001</code>에서 숫자 부분 <code class="nb">0001</code>만 꺼낸 것도 같은 방법이에요.</li>
+<li><strong>2번.</strong> <code>strlen( gv_word )</code>는 괄호 안쪽을 한 칸씩 띄어 써요. <code class="nb">c</code> Type은 뒤쪽 공백을 세지 않아서, 10칸짜리 <code class="nb">gv_word</code>도 <code class="nb">4</code>가 나와요.</li>
+<li><strong>3번.</strong> <code class="nb">TRANSLATE</code>는 변수에 든 값을 그 자리에서 바꿔요. <code class="nb">CONDENSE</code>도 그래요. 바꾸기 전 값은 남지 않아요.</li>
+<li><strong>4번.</strong> 숫자를 글자 변수에 옮기면(<code>gv_text = gv_len.</code>) 오른쪽에 붙어서 앞에 공백이 생겨요. <code class="nb">CONDENSE</code>가 이 공백을 없애 줘요. 이제 <code class="nb">gv_text</code>는 글자라서, 3-5에서처럼 <code>CONCATENATE '길이:' gv_text INTO gv_msg.</code>로 이어 붙일 수 있어요. 결과는 <code class="nb">길이:4</code>예요.</li>
+</ul>
+<div class="box note short"><div class="box-t">더 알아 두면 좋아요</div><p>지금은 이런 것이 있다는 것만 알아 둬요.</p>
+<ul>
+<li><strong>글자 나누기</strong>: <code>SPLIT gv_line AT ',' INTO gv_first gv_second.</code> 쉼표를 기준으로 나눠서 두 변수에 담아요.</li>
+<li><strong>글자 바꾸기</strong>: <code>REPLACE ALL OCCURRENCES OF '-' IN gv_tel WITH '.'.</code> <code class="nb">gv_tel</code> 안의 <code class="nb">-</code>를 모두 <code class="nb">.</code>으로 바꿔요.</li>
+</ul></div>
+<div class="box modern"><div class="box-t">이렇게도 써요</div><p>요즘 코드는 같은 일을 <strong>함수</strong> 모양으로 써요. 3-5의 문자열 템플릿에는 숫자도 바로 넣을 수 있어서, 글자 변수에 옮기고 <code class="nb">CONDENSE</code> 하는 수고가 없어요. <code class="nb">gv_msg</code>는 3-5에서 만든 <code>TYPE string</code> 변수예요.</p>
+<div class="code is-abap"><pre><code class="lang-abap">gv_word = to_upper( gv_word ).       <span class="tk-cmt">" TRANSLATE … TO UPPER CASE와 같아요</span>
+gv_text = <span class="tk-kw">condense</span>( gv_text ).       <span class="tk-cmt">" CONDENSE와 같아요</span>
+gv_msg  = <span class="tk-str">|길이: { gv_len }|</span>.        <span class="tk-cmt">" 길이: 4</span></code></pre></div></div>
+<h2 id="s3-7">3-7. 날짜와 시스템 필드</h2>
+<h3>시스템 필드 <code class="nb">sy-</code></h3>
+<p>SAP는 프로그램이 실행될 때 자주 쓰는 정보를 <code class="nb">sy-</code>로 시작하는 <strong>시스템 필드</strong>에 미리 넣어 둬요. 따로 만들지 않아도 바로 쓸 수 있어요.</p>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>시스템 필드</th>
@@ -264,40 +431,45 @@ gv_msg = <span class="tk-str">|{ gv_name }님 안녕하세요|</span>.</code></p
 </thead>
 <tbody>
 <tr>
-<td><code>sy-datum</code></td>
+<td><code class="nb">sy-datum</code></td>
 <td>오늘 날짜</td>
-<td><code>20261117</code></td>
+<td><code class="nb">20261117</code></td>
 </tr>
 <tr>
-<td><code>sy-uzeit</code></td>
+<td><code class="nb">sy-uzeit</code></td>
 <td>지금 시각</td>
-<td><code>153000</code></td>
+<td><code class="nb">153000</code></td>
 </tr>
 <tr>
-<td><code>sy-uname</code></td>
+<td><code class="nb">sy-uname</code></td>
 <td>로그인한 사용자 ID</td>
-<td><code>CODE05</code></td>
+<td><code class="nb">CODE05</code></td>
 </tr>
 <tr>
-<td><code>sy-index</code></td>
+<td><code class="nb">sy-index</code></td>
 <td>반복문의 몇 번째 바퀴인지</td>
 <td>4장에서</td>
 </tr>
 <tr>
-<td><code>sy-subrc</code></td>
+<td><code class="nb">sy-subrc</code></td>
 <td>방금 한 일이 성공했는지(0이면 성공)</td>
 <td>8~9장에서</td>
 </tr>
 </tbody>
 </table></div>
+<p>자주 쓰는 시스템 필드는 부록 B에 모아 뒀어요.</p>
 <h3>날짜 계산</h3>
-<p><code>d</code> Type은 <strong>날짜끼리 빼면 날 수</strong>, <strong>날짜에 숫자를 더하면 그만큼 지난 날짜</strong>가 나와요. 달마다 날 수가 다른 것도 SAP가 알아서 계산해 줘요.</p>
+<p><code class="nb">d</code> Type은 <strong>날짜끼리 빼면 날수</strong>, <strong>날짜에 숫자를 더하면 그만큼 지난 날짜</strong>가 나와요. 달마다 날수가 다른 것도 SAP가 알아서 계산해 줘요.</p>
 <figure class="fig" id="fig-3-4"><div class="fig-body"><div class="datecalc">
   <div class="dc-row"><span class="dc-v">20261117</span><span class="dc-op">+ 30</span><span class="dc-eq">=</span><span class="dc-v">20261217</span><small>날짜 + 숫자 = 날짜</small></div>
-  <div class="dc-row"><span class="dc-v">20261231</span><span class="dc-op">− 20261117</span><span class="dc-eq">=</span><span class="dc-v num">44</span><small>날짜 − 날짜 = 날 수</small></div>
+  <div class="dc-row"><span class="dc-v">20261231</span><span class="dc-op">− 20261117</span><span class="dc-eq">=</span><span class="dc-v num">44</span><small>날짜 − 날짜 = 날수</small></div>
 </div></div><figcaption><b>그림 3-4.</b>날짜 계산의 두 가지 모양</figcaption></figure>
-<div class="code"><button type="button" class="copy" data-code="DATA: gv_due  TYPE d,
-      gv_end  TYPE d VALUE &#x27;20261231&#x27;,
+<p>오늘 날짜로 직접 계산해 봐요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_107</code></dd><dt>Title</dt><dd>[예제] 날짜 계산</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_107.
+
+DATA: gv_due  TYPE sy-datum,
+      gv_end  TYPE sy-datum VALUE &#x27;20261231&#x27;,
       gv_days TYPE i.
 
 START-OF-SELECTION.
@@ -306,8 +478,10 @@ START-OF-SELECTION.
 
   WRITE: / &#x27;오늘:&#x27;,       sy-datum,
          / &#x27;반납 기한:&#x27;,  gv_due,
-         / &#x27;올해 남은 날:&#x27;, gv_days.">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>: gv_due  <span class="tk-kw">TYPE</span> d,
-      gv_end  <span class="tk-kw">TYPE</span> d <span class="tk-kw">VALUE</span> <span class="tk-str">'20261231'</span>,
+         / &#x27;올해 남은 날:&#x27;, gv_days." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_107.
+
+<span class="tk-kw">DATA</span>: gv_due  <span class="tk-kw">TYPE</span> sy-datum,
+      gv_end  <span class="tk-kw">TYPE</span> sy-datum <span class="tk-kw">VALUE</span> <span class="tk-str">'20261231'</span>,
       gv_days <span class="tk-kw">TYPE</span> i.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
@@ -317,93 +491,65 @@ START-OF-SELECTION.
   <span class="tk-kw">WRITE</span>: / <span class="tk-str">'오늘:'</span>,       sy-datum,
          / <span class="tk-str">'반납 기한:'</span>,  gv_due,
          / <span class="tk-str">'올해 남은 날:'</span>, gv_days.</code></pre></div>
-<div class="box note"><div class="box-t">날짜가 2026.11.17처럼 보여요</div><p>변수 안에는 <code>20261117</code>로 들어 있지만, <code>WRITE</code>는 <strong>사용자 설정에 맞춰</strong> 보기 좋게 바꿔서 출력해요. 그래서 사람마다 <code>2026.11.17</code>, <code>11/17/2026</code>처럼 다르게 보일 수 있어요.</p></div>
-<h2 id="s3-7">3-7. 바뀌지 않는 값: CONSTANTS</h2>
-<p>배송비, 세율처럼 <strong>프로그램 안에서 절대 바뀌면 안 되는 값</strong>은 <code>CONSTANTS</code>로 만들어요. 이름은 <code>gc_</code>(<strong>G</strong>lobal <strong>C</strong>onstant)로 시작해요.</p>
-<div class="code"><button type="button" class="copy" data-code="CONSTANTS: gc_delivery TYPE p LENGTH 8 DECIMALS 2 VALUE &#x27;3000.00&#x27;,
-           gc_max_qty  TYPE i VALUE 10.">복사</button><pre><code class="lang-abap"><span class="tk-kw">CONSTANTS</span>: gc_delivery <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'3000.00'</span>,
+<p>2026년 11월 17일에 실행하면 이렇게 나와요. 실행한 날에 따라 값이 달라져요. 2027년 이후에 실행한다면 <code class="nb">'20261231'</code>을 그해의 마지막 날로 바꿔요. 안 바꾸면 남은 날이 음수로 나와요.</p>
+<div class="code"><pre><code class="lang-text">오늘: 2026.11.17
+반납 기한: 2026.12.17
+올해 남은 날:         44</code></pre></div>
+<ul>
+<li><code class="nb">gv_due</code>와 <code class="nb">gv_end</code>는 <code>TYPE d</code>가 아니라 <strong><code>TYPE sy-datum</code></strong>으로 선언했어요. "<code class="nb">sy-datum</code>과 똑같은 Type으로 만들어 줘요"라는 뜻이에요. 담기는 값은 <code class="nb">d</code>와 똑같이 <code class="nb">YYYYMMDD</code> 8칸이에요. 왜 이렇게 했는지는 아래의 "화면에 출력할 날짜 변수는 TYPE sy-datum으로" 상자에서 알려 줄게요.</li>
+<li>날짜 값을 직접 쓸 때는 <code class="nb">'20261231'</code>처럼 <strong>작은따옴표 안에 숫자 8개</strong>를 붙여 써요. <code class="nb">'2026.12.31'</code>처럼 점을 넣으면 안 돼요.</li>
+<li>3-6에서 배운 대로 <code class="nb">sy-datum(4)</code>라고 쓰면 올해 연도 <code class="nb">2026</code>만 꺼낼 수 있어요.</li>
+</ul>
+<div class="box note short"><div class="box-t">날짜가 2026.11.17처럼 보여요</div><p>변수 안에는 <code class="nb">20261117</code>로 들어 있지만, <code class="nb">WRITE</code>는 <strong>사용자 설정에 맞춰</strong> 보기 좋게 바꿔서 출력해요. 그래서 사람마다 <code class="nb">2026.11.17</code>, <code class="nb">11/17/2026</code>처럼 다르게 보일 수 있어요.</p></div>
+<div class="box warn short"><div class="box-t">화면에 출력할 날짜 변수는 TYPE sy-datum으로</div><p><code>TYPE d</code>로 만든 변수는 출력할 때 <strong>8칸</strong>만 써요. 구분 기호가 들어갈 자리가 없어서 <code class="nb">20261217</code>처럼 숫자만 붙어서 나와요(날짜 표시 설정에 따라 숫자 순서는 다를 수 있어요). <code class="nb">sy-datum</code>은 <strong>10칸</strong>을 쓰기 때문에 <code class="nb">2026.12.17</code>처럼 나와요. 그래서 이 교재는 화면에 출력할 날짜 변수를 <code>TYPE sy-datum</code>으로 만들어요. 날짜를 계산하는 방법은 둘 다 똑같아요.</p></div>
+<h2 id="s3-8">3-8. 바뀌지 않는 값: CONSTANTS</h2>
+<p>배송비, 세율처럼 <strong>프로그램 안에서 절대 바뀌면 안 되는 값</strong>은 <code class="nb">CONSTANTS</code>로 만들어요. 이름은 <code class="nb">gc_</code>(<strong>G</strong>lobal <strong>C</strong>onstant)로 시작해요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">CONSTANTS</span>: gc_delivery <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'3000.00'</span>,
            gc_max_qty  <span class="tk-kw">TYPE</span> i <span class="tk-kw">VALUE</span> <span class="tk-num">10</span>.</code></pre></div>
 <ul>
-<li><code>CONSTANTS</code>는 <strong><code>VALUE</code>가 꼭 있어야</strong> 해요.</li>
+<li><code class="nb">CONSTANTS</code>는 <strong><code class="nb">VALUE</code>가 꼭 있어야</strong> 해요.</li>
 <li>나중에 <code>gc_delivery = 5000.</code>처럼 바꾸려고 하면 문법 오류가 나요. 실수로 값을 바꾸는 걸 막아 주는 거예요.</li>
-<li>소수가 있는 값은 <code>'3000.00'</code>처럼 <strong>작은따옴표로 감싸서</strong> 써요.</li>
+<li>소수가 있는 값은 3-3에서 본 대로 <code class="nb">'3000.00'</code>처럼 <strong>작은따옴표로 감싸서</strong> 써요.</li>
+<li><code class="nb">CONSTANTS</code>도 <code class="nb">DATA</code>처럼 <code class="nb">REPORT</code> 줄 아래, <code class="nb">START-OF-SELECTION</code> 위에 써요.</li>
 </ul>
-<div class="box note"><div class="box-t">나만의 Type 이름: TYPES</div><p>같은 모양의 변수를 여러 번 만들 때는 <code>TYPES</code>로 Type에 이름을 붙여 두면 편해요. <code>TYPES</code>는 상자가 아니라 <strong>상자의 설계도</strong>라서 값을 담을 수 없어요.</p>
-<div class="code"><button type="button" class="copy" data-code="TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2.     &quot; 설계도
-
-DATA: gv_price TYPE ty_amount,                   &quot; 설계도로 만든 상자
-      gv_total TYPE ty_amount.">복사</button><pre><code class="lang-abap"><span class="tk-kw">TYPES</span> ty_amount <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>.     <span class="tk-cmt">" 설계도</span>
+<div class="box note"><div class="box-t">나만의 Type 이름: TYPES</div><p>같은 모양의 변수를 여러 번 만들 때는 <code class="nb">TYPES</code>로 Type에 이름을 붙여 두면 편해요. 이름은 <code class="nb">ty_</code>로 시작해요(0-3). <code class="nb">TYPES</code>는 상자가 아니라 <strong>상자의 설계도</strong>라서 값을 담을 수 없어요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">TYPES</span> ty_amount <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>.     <span class="tk-cmt">" 설계도</span>
 
 <span class="tk-kw">DATA</span>: gv_price <span class="tk-kw">TYPE</span> ty_amount,                   <span class="tk-cmt">" 설계도로 만든 상자</span>
       gv_total <span class="tk-kw">TYPE</span> ty_amount.</code></pre></div>
-<p><code>TYPES</code>는 8장에서 여러 칸짜리 Structure를 만들 때 본격적으로 써요.</p></div>
-
+<p><code class="nb">TYPES</code>는 8장에서 여러 칸짜리 Structure를 만들 때 본격적으로 써요.</p></div>
 <div class="box modern"><div class="box-t">이렇게도 써요</div><p>값을 넣는 그 자리에서 변수를 바로 만드는 <strong>인라인 선언</strong>도 있어요. Type은 오른쪽 값을 보고 SAP가 정해요.</p>
-<div class="code"><button type="button" class="copy" data-code="DATA(gv_count) = 10.            &quot; TYPE i 변수가 만들어져요
-DATA(gv_text)  = `Hello`.       &quot; TYPE string 변수가 만들어져요">복사</button><pre><code class="lang-abap"><span class="tk-kw">DATA</span>(gv_count) = <span class="tk-num">10</span>.            <span class="tk-cmt">" TYPE i 변수가 만들어져요</span>
-<span class="tk-kw">DATA</span>(gv_text)  = <span class="tk-str">`Hello`</span>.       <span class="tk-cmt">" TYPE string 변수가 만들어져요</span></code></pre></div>
-<p>편하지만 Type이 눈에 보이지 않아서, 처음에는 <code>DATA … TYPE …</code>로 직접 선언하는 연습을 충분히 하는 게 좋아요.</p></div>
-<h2 id="s3-8">3-8. 미니 실습: 장바구니 계산</h2>
-<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_03_CART</code>를 만들어서 아래처럼 출력해 보세요.</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">DATA</span>(lv_count) = <span class="tk-num">10</span>.            <span class="tk-cmt">" TYPE i 변수가 만들어져요</span>
+<span class="tk-kw">DATA</span>(lv_text)  = <span class="tk-str">`Hello`</span>.       <span class="tk-cmt">" TYPE string 변수가 만들어져요</span></code></pre></div>
+<p>그 자리에서 만든 변수는 이름을 <code class="nb">gv_</code>가 아니라 <code class="nb">lv_</code>로 시작해요(부록 F). 작은따옴표 대신 백틱(<code class="nb">`</code>)으로 감싼 글자는 <code class="nb">string</code>이에요. 인라인 선언은 편하지만 Type이 눈에 보이지 않아서, 처음에는 <code>DATA … TYPE …</code>로 직접 선언하는 연습을 충분히 하는 게 좋아요.</p></div>
+<h2 id="s3-9">3-9. 미니 실습: 장바구니 계산</h2>
+<p>이 장에서 배운 변수, 계산, <code class="nb">CONSTANTS</code>, 날짜 계산을 한 프로그램에 모아 볼게요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_108</code></dd><dt>Title</dt><dd>[실습] 장바구니 계산</dd><dt>Text Symbol</dt><dd>001 = 장바구니 계산</dd></dl></div>
+<div class="box try short"><div class="box-t">직접 해 보기</div><p>위 카드대로 프로그램을 만들어서 아래 그림처럼 출력해 보세요. 값은 그림에 보이는 대로 넣어요.</p>
 <ul>
-<li>상품 이름(<code>c LENGTH 20</code>), 단가(<code>p LENGTH 8 DECIMALS 2</code>), 수량(<code>i</code>) 변수를 만들어요.</li>
-<li>배송비 <code>3000</code>은 <code>CONSTANTS</code>로 만들어요.</li>
-<li>합계 = 단가 × 수량 + 배송비 로 계산해요.</li>
-<li>도착 예정일은 오늘(<code>sy-datum</code>)부터 3일 뒤예요.</li>
-<li>첫 줄의 <code>장바구니 계산</code>은 Text Symbol <code>001</code>로 출력해요(2장 2-7).</li>
+<li>상품 이름(<code>c LENGTH 20</code>), 단가(<code>p LENGTH 8 DECIMALS 2</code>), 수량(<code class="nb">i</code>) 변수를 만들어요.</li>
+<li>배송비 <code class="nb">3000</code>은 <code class="nb">CONSTANTS</code>로 만들어요. Type은 단가와 같게 해요.</li>
+<li>합계 = 단가 × 수량 + 배송비 로 계산해요. 합계를 담을 변수도 단가와 같은 Type으로 만들어요.</li>
+<li>도착 예정일은 오늘(<code class="nb">sy-datum</code>)부터 3일 뒤예요. 날짜 변수는 <code>TYPE sy-datum</code>으로 만들어요(3-7).</li>
+<li>첫 줄의 <code>장바구니 계산</code>은 Text Symbol <code class="nb">001</code>로 출력해요(2-7). Text Symbol도 활성화해야 글자가 나와요.</li>
 </ul></div>
-
 <figure class="fig" id="fig-3-5"><div class="fig-body"><div class="gui">
-  <div class="gui-head">장바구니</div>
+  <div class="gui-head">[실습] 장바구니 계산</div>
   <div class="gui-body list">
 <pre class="gui-list">장바구니 계산
 상품: ABAP 입문서
-단가:            25,000.00
-수량:           2
-배송비:           3,000.00
-합계:            53,000.00
+단가:        25,000.00
+수량:          2
+배송비:         3,000.00
+합계:        53,000.00
 도착 예정일: 2026.11.20</pre>
   </div>
-</div></div><figcaption><b>그림 3-5.</b>미니 실습의 예상 결과 (숫자 앞 공백 칸 수, 날짜 모양은 조금 달라도 괜찮아요)</figcaption></figure>
-
-<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
-* 작성자: 홍길동   작성일: 2026-11-17
-* 설명  : 변수, 계산, CONSTANTS, 날짜 계산 연습
-*&amp;---------------------------------------------------------------------*
-REPORT yg##_03_cart.
-
-&quot; 바뀌지 않는 값
-CONSTANTS gc_delivery TYPE p LENGTH 8 DECIMALS 2 VALUE &#x27;3000.00&#x27;.
-
-&quot; 변수
-DATA: gv_item  TYPE c LENGTH 20,
-      gv_price TYPE p LENGTH 8 DECIMALS 2,
-      gv_qty   TYPE i,
-      gv_total TYPE p LENGTH 8 DECIMALS 2,
-      gv_date  TYPE d.
-
-START-OF-SELECTION.
-  &quot; 1. 값 넣기
-  gv_item  = &#x27;ABAP 입문서&#x27;.
-  gv_price = &#x27;25000.00&#x27;.
-  gv_qty   = 2.
-
-  &quot; 2. 계산하기
-  gv_total = gv_price * gv_qty + gc_delivery.
-  gv_date  = sy-datum + 3.
-
-  &quot; 3. 출력하기
-  WRITE: / TEXT-001,                 &quot; 장바구니 계산
-         / &#x27;상품:&#x27;, gv_item,
-         / &#x27;단가:&#x27;, gv_price,
-         / &#x27;수량:&#x27;, gv_qty,
-         / &#x27;배송비:&#x27;, gc_delivery,
-         / &#x27;합계:&#x27;, gv_total,
-         / &#x27;도착 예정일:&#x27;, gv_date.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+</div></div><figcaption><b>그림 3-5.</b>미니 실습의 예상 결과 (2026년 11월 17일에 실행했을 때예요. 숫자 앞 공백 칸 수와 점·쉼표 모양은 조금 달라도 괜찮아요)</figcaption></figure>
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code long is-abap"><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
 <span class="tk-cmt">* 작성자: 홍길동   작성일: 2026-11-17</span>
 <span class="tk-cmt">* 설명  : 변수, 계산, CONSTANTS, 날짜 계산 연습</span>
 <span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
-<span class="tk-kw">REPORT</span> yg<mark>##</mark>_03_cart.
+<span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_108.
 
 <span class="tk-cmt">" 바뀌지 않는 값</span>
 <span class="tk-kw">CONSTANTS</span> gc_delivery <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span> <span class="tk-kw">VALUE</span> <span class="tk-str">'3000.00'</span>.
@@ -413,7 +559,7 @@ START-OF-SELECTION.
       gv_price <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>,
       gv_qty   <span class="tk-kw">TYPE</span> i,
       gv_total <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">8</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>,
-      gv_date  <span class="tk-kw">TYPE</span> d.
+      gv_date  <span class="tk-kw">TYPE</span> sy-datum.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-cmt">" 1. 값 넣기</span>
@@ -433,37 +579,33 @@ START-OF-SELECTION.
          / <span class="tk-str">'배송비:'</span>, gc_delivery,
          / <span class="tk-str">'합계:'</span>, gv_total,
          / <span class="tk-str">'도착 예정일:'</span>, gv_date.</code></pre></div></details>
-
 <div class="box quiz"><div class="box-t">확인 문제</div><ol>
-<li>우편번호 <code>01234</code>를 담으려고 해요. <code>i</code>와 <code>n</code> 중 어떤 Type이 좋을까요? 이유도 말해 보세요.</li>
-<li>아래 코드를 실행하면 <code>gv_r</code>에는 각각 무엇이 들어갈까요? (<code>gv_r</code>은 <code>TYPE i</code>)
-   <div class="code"><button type="button" class="copy" data-code="gv_r = 10 DIV 3.
-gv_r = 10 MOD 3.
-gv_r = 10 / 4.">복사</button><pre><code class="lang-abap">gv_r = <span class="tk-num">10</span> <span class="tk-kw">DIV</span> <span class="tk-num">3</span>.
+<li>우편번호 <code class="nb">01234</code>를 담으려고 해요. <code class="nb">i</code>와 <code class="nb">n</code> 중 어떤 Type이 좋을까요? 이유도 말해 보세요.</li>
+<li>아래 코드를 실행하면 <code class="nb">gv_r</code>에는 각각 무엇이 들어갈까요? (<code class="nb">gv_r</code>은 <code>TYPE i</code>)
+   <div class="code is-abap"><pre><code class="lang-abap">gv_r = <span class="tk-num">10</span> <span class="tk-kw">DIV</span> <span class="tk-num">3</span>.
 gv_r = <span class="tk-num">10</span> <span class="tk-kw">MOD</span> <span class="tk-num">3</span>.
 gv_r = <span class="tk-num">10</span> / <span class="tk-num">4</span>.</code></pre></div></li>
 <li>아래 코드에서 잘못된 곳은 어디일까요?
-   <div class="code"><button type="button" class="copy" data-code="CONSTANTS gc_rate TYPE p LENGTH 3 DECIMALS 2.
-gv_total = gv_price*gv_qty.">복사</button><pre><code class="lang-abap"><span class="tk-kw">CONSTANTS</span> gc_rate <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">3</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>.
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">CONSTANTS</span> gc_rate <span class="tk-kw">TYPE</span> p <span class="tk-kw">LENGTH</span> <span class="tk-num">3</span> <span class="tk-kw">DECIMALS</span> <span class="tk-num">2</span>.
 gv_total = gv_price*gv_qty.</code></pre></div></li>
 <li>오늘이 2026년 11월 17일이에요. <code>sy-datum + 14</code>는 어떤 날짜일까요?</li>
+<li><code class="nb">gv_id</code>(<code>TYPE c LENGTH 5</code>)에 <code class="nb">'B0004'</code>가 들어 있어요. <code class="nb">gv_id(1)</code>과 <code class="nb">gv_id+1(4)</code>는 각각 무엇일까요?</li>
+<li><code class="nb">gv_d1</code>은 <code>TYPE d</code>, <code class="nb">gv_d2</code>는 <code>TYPE sy-datum</code>이에요. 둘 다 <code class="nb">'20261224'</code>를 넣고 <code class="nb">WRITE</code>로 출력하면 화면에 어떻게 다르게 보일까요?</li>
 </ol></div>
-
-<details class="answer solo"><summary>정답 보기</summary><ol>
-<li><strong><code>n</code></strong>이 좋아요. <code>i</code>에 넣으면 숫자 <code>1234</code>가 되어 앞자리 0이 사라져요. 우편번호는 계산할 일이 없는 "숫자로 된 글자"라서 <code>n</code>이 맞아요.</li>
-<li><code>3</code>, <code>1</code>, <code>3</code>이에요. <code>10 / 4</code>는 <code>2.5</code>인데 <code>i</code>에 넣으면서 반올림되어 <code>3</code>이 돼요.</li>
-<li>① <code>CONSTANTS</code>에 <strong><code>VALUE</code>가 없어요.</strong> <code>VALUE '0.10'</code>처럼 값을 꼭 넣어야 해요. ② <code>gv_price*gv_qty</code>는 <strong>연산자 앞뒤에 공백이 없어요.</strong> <code>gv_price * gv_qty</code>로 띄어 써요.</li>
-<li><strong>2026년 12월 1일</strong>(<code>20261201</code>)이에요. 11월은 30일까지라서 SAP가 달을 넘겨 계산해 줘요.</li>
+<details class="answer"><summary>정답 보기</summary><ol>
+<li><strong><code class="nb">n</code></strong>이 좋아요. <code class="nb">i</code>에 넣으면 숫자 <code class="nb">1234</code>가 되어 앞자리 0이 사라져요. 우편번호는 계산할 일이 없는 "숫자로 된 글자"라서 <code class="nb">n</code>이 맞아요.</li>
+<li><code class="nb">3</code>, <code class="nb">1</code>, <code class="nb">3</code>이에요. <code>10 / 4</code>는 <code class="nb">2.5</code>인데 <code class="nb">i</code>에 넣으면서 반올림되어 <code class="nb">3</code>이 돼요.</li>
+<li>① <code class="nb">CONSTANTS</code>에 <strong><code class="nb">VALUE</code>가 없어요.</strong> <code>VALUE '0.10'</code>처럼 값을 꼭 넣어야 해요. ② <code class="nb">gv_price*gv_qty</code>는 <strong>연산자 앞뒤에 공백이 없어요.</strong> <code>gv_price * gv_qty</code>로 띄어 써요.</li>
+<li><strong>2026년 12월 1일</strong>(<code class="nb">20261201</code>)이에요. 11월은 30일까지라서 SAP가 달을 넘겨 계산해 줘요.</li>
+<li><code class="nb">B</code>와 <code class="nb">0004</code>예요. <code class="nb">gv_id(1)</code>은 맨 앞에서 1칸, <code class="nb">gv_id+1(4)</code>는 1칸 건너뛰고 4칸이에요.</li>
+<li><code class="nb">gv_d1</code>은 <code class="nb">20261224</code>처럼 숫자만 붙어서 나오고, <code class="nb">gv_d2</code>는 <code class="nb">2026.12.24</code>처럼 구분 기호가 들어가요(모양은 사용자 설정에 따라 달라요). <code>TYPE d</code>는 8칸, <code class="nb">sy-datum</code>은 10칸으로 출력하기 때문이에요.</li>
 </ol></details>
-
-<div class="box summary"><div class="box-t">정리</div><ul>
-<li>변수는 <code>DATA 이름 TYPE 타입.</code>으로 만들고, <code>=</code>로 값을 넣어요.</li>
-<li>계산은 <code>i</code>·<code>p</code>, 계산하지 않는 숫자 글자는 <code>n</code>, 글자는 <code>c</code>·<code>string</code>, 날짜·시간은 <code>d</code>·<code>t</code>예요.</li>
-<li>연산자 앞뒤는 꼭 띄어 쓰고, <code>i</code>끼리 나누면 반올림된다는 걸 기억해요.</li>
-<li>글자는 <code>CONCATENATE … INTO …</code>로 이어 붙여요.</li>
-<li><code>sy-datum</code> 같은 시스템 필드는 만들지 않아도 바로 쓸 수 있어요. 날짜는 더하고 뺄 수 있어요.</li>
-<li>바뀌면 안 되는 값은 <code>CONSTANTS</code>로, Type 설계도는 <code>TYPES</code>로 만들어요.</li>
+<div class="box summary short"><div class="box-t">정리</div><ul>
+<li>변수는 <code>DATA 이름 TYPE 타입.</code>으로 만들고, <code class="nb">=</code>로 값을 넣어요.</li>
+<li>계산은 <code class="nb">i</code>·<code class="nb">p</code>, 계산하지 않는 숫자 글자는 <code class="nb">n</code>, 글자는 <code class="nb">c</code>·<code class="nb">string</code>, 날짜·시간은 <code class="nb">d</code>·<code class="nb">t</code>예요. <code class="nb">c</code>와 <code class="nb">n</code>에는 <code class="nb">LENGTH</code>를 꼭 적어요.</li>
+<li>연산자 앞뒤는 꼭 띄어 쓰고, 나눈 결과를 <code class="nb">i</code>에 담으면 반올림된다는 걸 기억해요.</li>
+<li>글자는 <code>CONCATENATE … INTO …</code>로 이어 붙이고, <code class="nb">변수+시작(길이)</code>로 일부만 꺼내요. <code class="nb">strlen</code>, <code class="nb">TRANSLATE</code>, <code class="nb">CONDENSE</code>로 세고 다듬어요.</li>
+<li><code class="nb">sy-datum</code> 같은 시스템 필드는 만들지 않아도 바로 쓸 수 있어요. 날짜는 더하고 뺄 수 있어요. 화면에 출력할 날짜 변수는 <code>TYPE sy-datum</code>으로 만들어요.</li>
+<li>바뀌면 안 되는 값은 <code class="nb">CONSTANTS</code>로, Type 설계도는 <code class="nb">TYPES</code>로 만들어요.</li>
 </ul></div>
-
-<div class="box next"><div class="box-t">다음 장 예고</div><p>지금까지 프로그램은 위에서 아래로 한 줄씩만 실행됐어요. 4장에서는 <strong>조건에 따라 다른 일을 하고(<code>IF</code>), 같은 일을 여러 번 반복하는(<code>DO</code>)</strong> 방법을 배워요.</p></div>
-</section>
+<div class="box next short"><div class="box-t">다음 장 예고</div><p>지금까지 프로그램은 위에서 아래로 한 줄씩만 실행됐어요. 4장에서는 <strong>조건에 따라 다른 일을 하고(<code class="nb">IF</code>), 같은 일을 여러 번 반복하는(<code class="nb">DO</code>)</strong> 방법을 배워요.</p></div></section>

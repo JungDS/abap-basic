@@ -1,15 +1,16 @@
-<section class="chapter" id="ch02"><div class="ch-eyebrow">2장</div><h1 class="ch-title">첫 프로그램 만들기</h1>
-<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
+<section class="chapter" id="ch02"><div class="ch-eyebrow">2장</div><h1 class="ch-title">첫 프로그램 만들기</h1><div class="box goal short"><div class="box-t">이번 장 목표</div><ul>
 <li>SE38에서 프로그램을 만들고, 저장하고, 실행하는 순서를 처음부터 끝까지 해 봐요.</li>
+<li><strong>새로 만들기 카드</strong>만 보고도 프로그램을 만들 수 있어요.</li>
 <li><strong>저장</strong>과 <strong>활성화</strong>가 어떻게 다른지 알아요.</li>
 <li>ABAP 문장의 기본 규칙(마침표, 주석, 체인 문장)을 익혀요.</li>
 <li>문법 오류가 났을 때 메시지를 읽고 고칠 수 있어요.</li>
+<li>만든 프로그램을 다시 열 수 있고, 복사하고 지우는 방법을 알아요.</li>
 </ul></div>
 <h2 id="s2-1">2-1. 전체 순서 미리 보기</h2>
 <p>처음엔 단계가 많아 보이지만, 앞으로 만들 모든 프로그램이 이 순서를 그대로 따라요. 몇 번 하다 보면 손이 먼저 움직일 거예요.</p>
 <figure class="fig" id="fig-2-1"><div class="fig-body"><div class="steps7">
   <div><span>1</span><b>SE38</b><small>이름 입력 → Create</small></div>
-  <div><span>2</span><b>속성</b><small>제목 · Executable program</small></div>
+  <div><span>2</span><b>속성</b><small>Title · Executable program</small></div>
   <div><span>3</span><b>저장 위치</b><small>Local Object</small></div>
   <div><span>4</span><b>코드 작성</b><small>저장 <kbd>Ctrl</kbd>+<kbd>S</kbd></small></div>
   <div><span>5</span><b>문법 검사</b><small><kbd>Ctrl</kbd>+<kbd>F2</kbd></small></div>
@@ -17,19 +18,21 @@
   <div><span>7</span><b>실행</b><small><kbd>F8</kbd></small></div>
 </div></div><figcaption><b>그림 2-1.</b>프로그램 하나가 실행되기까지</figcaption></figure>
 <h2 id="s2-2">2-2. 따라 하기: Hello ABAP</h2>
+<p>화면에 글자 두 줄을 출력하는 프로그램을 만들어 볼게요. <strong>이번에 만들 것</strong>은 아래 카드와 같아요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_101</code></dd><dt>Title</dt><dd>[예제] 나의 첫 ABAP 프로그램</dd></dl></div>
+<p>이 <strong>새로 만들기 카드</strong>(0-2)는 "<code class="nb">SE38</code>에서 Program을 하나 만들어요. 이름은 <code class="nb">YG<mark class="gno">##</mark>_101</code>이고, Title은 적힌 글자 그대로예요"라는 뜻이에요. 카드의 값을 어느 화면에 넣는지 일곱 단계로 따라가 봐요.</p>
 <h3>단계 1. SE38에서 이름 정하기</h3>
-<div class="box try"><div class="box-t">직접 해 보기</div><ol>
-<li>명령 필드에 <code>/nSE38</code>을 입력하고 <kbd>Enter</kbd>를 눌러요.</li>
-<li><strong>Program</strong> 칸에 <code>YG<mark>##</mark>_02_HELLO</code>를 입력해요. <mark>##</mark> 자리는 내 번호예요. <span class="badge">1</span></li>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li>명령 필드에 <code class="nb">/nSE38</code>을 입력하고 <kbd>Enter</kbd>를 눌러요.</li>
+<li><strong>Program</strong> 칸에 카드의 이름 <code class="nb">YG<mark class="gno">##</mark>_101</code>을 입력해요. <code class="nb">G</code> 뒤의 두 자리는 <strong>내 번호</strong>예요(0-2). 5번 학생이면 <code class="nb">YG05_101</code>이에요. <span class="badge">1</span></li>
 <li><strong>Create</strong> 버튼을 눌러요. <span class="badge">2</span></li>
 </ol></div>
-
 <figure class="fig" id="fig-2-2"><div class="fig-body"><div class="gui">
   <div class="gui-bar">ABAP Editor: Initial Screen</div>
   <div class="gui-tool"><span class="gui-ico">✓</span><span class="gui-cmd">/nSE38</span></div>
   <div class="gui-head">ABAP Editor: Initial Screen</div>
   <div class="gui-body">
-    <div class="gui-row"><span class="gui-label">Program</span><span class="gui-field">YG<mark>##</mark>_02_HELLO</span><span class="badge">1</span></div>
+    <div class="gui-row"><span class="gui-label">Program</span><span class="gui-field">YG<mark class="gno">##</mark>_101</span><span class="badge">1</span></div>
     <div class="gui-group">
       <div class="gui-group-t">Subobjects</div>
       <div class="gui-radio on">Source Code</div>
@@ -41,39 +44,36 @@
     <div class="gui-btnrow"><span class="gui-btn ghost">Display</span><span class="gui-btn ghost">Change</span><span class="gui-btn">Create</span><span class="badge">2</span></div>
   </div>
 </div></div><figcaption><b>그림 2-2.</b>ABAP Editor 첫 화면 (SE38)</figcaption></figure>
-
-<div class="box note"><div class="box-t">이미 있는 프로그램이라면?</div><p>같은 이름의 프로그램이 이미 있으면 <strong>Create</strong> 대신 <strong>Change</strong>(고치기)나 <strong>Display</strong>(보기만)를 눌러요.</p></div>
+<div class="box note short"><div class="box-t">이미 있는 프로그램이라면?</div><p>같은 이름의 프로그램이 이미 있으면 <strong>Create</strong> 대신 <strong>Change</strong>(고치기)나 <strong>Display</strong>(보기만)를 눌러요. 만든 프로그램을 다시 여는 방법은 2-8에서 자세히 봐요.</p></div>
 <h3>단계 2. 프로그램 속성 정하기</h3>
 <p><strong>Program Attributes</strong> 창이 떠요. 프로그램의 이름표를 붙이는 단계예요.</p>
-<div class="box try"><div class="box-t">직접 해 보기</div><ol>
-<li><strong>Title</strong>에 <code>나의 첫 ABAP 프로그램</code>처럼 이 프로그램이 무엇인지 적어요. <span class="badge">1</span></li>
-<li><strong>Type</strong>이 <strong>Executable program</strong>인지 확인해요. <span class="badge">2</span> 바로 실행할 수 있는 프로그램이라는 뜻이에요.</li>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li><strong>Title</strong>에 카드의 Title <code>[예제] 나의 첫 ABAP 프로그램</code>을 <strong>글자 그대로</strong> 입력해요. 대괄호와 띄어쓰기까지 똑같이요. <span class="badge">1</span></li>
+<li><strong>Type</strong>이 <strong>Executable program</strong>인지 확인해요. 비어 있거나 다른 값이면 목록에서 골라요. 바로 실행할 수 있는 프로그램이라는 뜻이에요. <span class="badge">2</span></li>
 <li>나머지는 그대로 두고 <strong>Save</strong>를 눌러요. <span class="badge">3</span></li>
 </ol></div>
-
 <figure class="fig" id="fig-2-3"><div class="fig-body"><div class="gui popup">
-  <div class="gui-bar">ABAP: Program Attributes YG##_02_HELLO Change</div>
+  <div class="gui-bar">ABAP: Program Attributes YG<mark class="gno">##</mark>_101 Change</div>
   <div class="gui-body">
-    <div class="gui-row"><span class="gui-label">Title</span><span class="gui-field wide">나의 첫 ABAP 프로그램</span><span class="badge">1</span></div>
+    <div class="gui-row"><span class="gui-label">Title</span><span class="gui-field wide">[예제] 나의 첫 ABAP 프로그램</span><span class="badge">1</span></div>
     <div class="gui-group">
       <div class="gui-group-t">Attributes</div>
       <div class="gui-row"><span class="gui-label">Type</span><span class="gui-field">Executable program ▾</span><span class="badge">2</span></div>
       <div class="gui-row"><span class="gui-label">Status</span><span class="gui-field dim"></span></div>
       <div class="gui-row"><span class="gui-label">Application</span><span class="gui-field dim"></span></div>
-      <div class="gui-check on">Unicode Checks Active</div>
       <div class="gui-check on">Fixed point arithmetic</div>
     </div>
     <div class="gui-btnrow"><span class="gui-btn">Save</span><span class="badge">3</span><span class="gui-btn ghost">Cancel</span></div>
   </div>
 </div></div><figcaption><b>그림 2-3.</b>Program Attributes 창</figcaption></figure>
-
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p><strong>Fixed point arithmetic</strong>의 체크는 <strong>풀지 마세요.</strong> 이 체크가 풀리면 소수점이 있는 계산 결과가 엉뚱하게 나와요. 처음 상태(체크됨) 그대로 두면 돼요.</p></div>
+<p><strong>Title</strong>은 프로그램의 제목이에요. 실행 결과 화면 맨 위에 나오고(그림 2-7), 나중에 내 프로그램 목록에서 찾을 때도 이름 옆에 보여요(2-8). 이름이 번호뿐이라서 Title이 이름표 노릇을 해요. 그래서 카드에 적힌 글자 그대로 넣어요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><p><strong>Fixed point arithmetic</strong>의 체크는 <strong>풀지 마세요.</strong> 이 체크가 풀리면 소수점이 있는 계산 결과가 엉뚱하게 나와요. 처음 상태(체크됨) 그대로 두면 돼요.</p></div>
 <h3>단계 3. 저장 위치 정하기: Local Object</h3>
-<p>이어서 <strong>Create Object Directory Entry</strong> 창이 떠요. "어느 Package에 넣을까요?"라고 묻는 창이에요(1장 1-6). 연습용이니 <strong>Local Object</strong> 버튼을 눌러요. <span class="badge">1</span></p>
+<p>이어서 <strong>Create Object Directory Entry</strong> 창이 떠요. "어느 Package에 넣을까요?"라고 묻는 창이에요(1-6). 연습용이니 Package 칸은 비워 둔 채로 <strong>Local Object</strong> 버튼을 눌러요. <span class="badge">1</span></p>
 <figure class="fig" id="fig-2-4"><div class="fig-body"><div class="gui popup">
   <div class="gui-bar">Create Object Directory Entry</div>
   <div class="gui-body">
-    <div class="gui-row"><span class="gui-label">Object</span><span class="gui-field s">R3TR</span><span class="gui-field s">PROG</span><span class="gui-field">YG##_02_HELLO</span></div>
+    <div class="gui-row"><span class="gui-label">Object</span><span class="gui-field s">R3TR</span><span class="gui-field s">PROG</span><span class="gui-field">YG<mark class="gno">##</mark>_101</span></div>
     <div class="gui-group">
       <div class="gui-group-t">Attributes</div>
       <div class="gui-row"><span class="gui-label">Package</span><span class="gui-field"></span></div>
@@ -83,39 +83,44 @@
   </div>
 </div></div><figcaption><b>그림 2-4.</b>Create Object Directory Entry 창</figcaption></figure>
 <h3>단계 4. 코드 쓰고 저장하기</h3>
-<p>드디어 <strong>ABAP Editor</strong> 화면이에요. 맨 위에 <code>REPORT yg<mark>##</mark>_02_hello.</code> 한 줄과 설명 주석 몇 줄이 이미 들어 있을 거예요. 그 아래에 코드를 이어서 써요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_02_hello.
+<p>드디어 <strong>ABAP Editor</strong> 화면이에요. 편집기에는 <code class="nb">*</code>로 시작하는 설명 줄 몇 개와 <code>REPORT yg<mark class="gno">##</mark>_101.</code> 한 줄이 이미 들어 있어요. SAP가 넣어 준 줄이에요. <code class="nb">REPORT</code> 줄은 다시 쓰지 말고, 그 <strong>아래</strong>에 나머지를 이어서 써요. 다 쓴 모습이 아래와 같으면 돼요.</p>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_101.
 
 START-OF-SELECTION.
   WRITE &#x27;Hello ABAP&#x27;.
-  WRITE / &#x27;안녕하세요, ABAP!&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_02_hello.
+  WRITE / &#x27;안녕하세요, ABAP!&#x27;." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_101.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">WRITE</span> <span class="tk-str">'Hello ABAP'</span>.
   <span class="tk-kw">WRITE</span> / <span class="tk-str">'안녕하세요, ABAP!'</span>.</code></pre></div>
 <p>다 썼으면 <kbd>Ctrl</kbd>+<kbd>S</kbd>로 저장해요.</p>
+<div class="box note short"><div class="box-t">이미 들어 있는 줄은 어떻게 해요?</div><ul>
+<li><code class="nb">*</code>로 시작하는 줄은 사람이 읽는 메모예요(2-5에서 배워요). 그대로 둬도 돼요. 교재의 코드와 그림은 이 줄들을 빼고 <code class="nb">REPORT</code> 줄부터 보여 줘요. 그래서 내 화면의 줄 번호가 교재보다 몇 줄 커도 괜찮아요.</li>
+<li><code class="nb">REPORT</code> 뒤의 이름이 대문자로 들어 있어도 괜찮아요. 같은 뜻이에요.</li>
+<li>웹 교재의 <strong>복사</strong> 버튼으로 코드를 가져올 때는 편집기 내용을 전부 고르고(<kbd>Ctrl</kbd>+<kbd>A</kbd>) 그 위에 붙여 넣어요(<kbd>Ctrl</kbd>+<kbd>V</kbd>). <code class="nb">REPORT</code> 줄이 두 번 들어가면 오류가 나요. 그래도 첫 프로그램은 손으로 직접 쳐 보세요.</li>
+</ul></div>
 <figure class="fig" id="fig-2-5"><div class="fig-body"><div class="gui">
-  <div class="gui-bar">ABAP Editor: Change Report YG##_02_HELLO</div>
+  <div class="gui-bar">ABAP Editor: Change Report YG<mark class="gno">##</mark>_101</div>
   <div class="gui-tool"><span class="gui-ico">✓</span><span class="gui-cmd"></span><span class="gui-sep"></span><span class="gui-ico">▣<i>저장 Ctrl+S</i></span><span class="gui-ico">◀<i>Back F3</i></span></div>
-  <div class="gui-head">ABAP Editor: Change Report YG##_02_HELLO</div>
+  <div class="gui-head"><span>ABAP Editor: Change Report YG<mark class="gno">##</mark>_101</span></div>
   <div class="gui-apptool">
     <span class="gui-ico">✎<i>표시↔변경 Ctrl+F1</i></span>
     <span class="gui-ico hl">⚖<i>검사 Ctrl+F2</i></span><span class="badge">1</span>
-    <span class="gui-ico hl">⚡<i>활성화 Ctrl+F3</i></span><span class="badge">2</span>
+    <span class="gui-ico hl">✦<i>활성화 Ctrl+F3</i></span><span class="badge">2</span>
     <span class="gui-ico hl">▶<i>실행 F8</i></span><span class="badge">3</span>
     <span class="gui-ico">≡<i>Pretty Printer Shift+F1</i></span><span class="badge">4</span>
   </div>
   <div class="gui-body editor">
-<div class="gui-objline">Report <b>YG##_02_HELLO</b> <span class="inact">Inactive</span></div>
-<pre class="gui-code"><span class="ln">1</span><span class="kw">REPORT</span> yg<mark>##</mark>_02_hello.
+<div class="gui-objline">Report <b>YG<mark class="gno">##</mark>_101</b> <span class="inact">Inactive</span></div>
+<pre class="gui-code"><span class="ln">1</span><span class="kw">REPORT</span> yg<mark class="gno">##</mark>_101.
 <span class="ln">2</span>
 <span class="ln">3</span><span class="kw">START-OF-SELECTION</span>.
 <span class="ln">4</span>  <span class="kw">WRITE</span> <span class="str">'Hello ABAP'</span>.
 <span class="ln">5</span>  <span class="kw">WRITE</span> / <span class="str">'안녕하세요, ABAP!'</span>.</pre>
   </div>
-  <div class="gui-status"><span>Program YG##_02_HELLO saved</span></div>
+  <div class="gui-status"><span>Program YG<mark class="gno">##</mark>_101 saved</span></div>
 </div></div><figcaption><b>그림 2-5.</b>ABAP Editor와 꼭 알아야 할 버튼</figcaption></figure>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>번호</th>
@@ -152,49 +157,80 @@ START-OF-SELECTION.
 </tbody>
 </table></div>
 <h3>단계 5. 문법 검사하기</h3>
-<p><kbd>Ctrl</kbd>+<kbd>F2</kbd>를 눌러요. 상태 표시줄에 문법이 맞다는 초록색 메시지가 나오면 통과예요. 빨간 오류가 나오면 2-6절을 보고 고쳐요.</p>
+<p><kbd>Ctrl</kbd>+<kbd>F2</kbd>를 눌러요. 상태 표시줄에 문법이 맞다는 초록색 메시지가 나오면 통과예요. 빨간 오류가 나오면 2-6을 보고 고쳐요.</p>
 <figure class="fig" id="fig-2-6"><div class="fig-body"><div class="gui slim">
-  <div class="gui-status ok"><span>✔ Program YG##_02_HELLO is syntactically correct</span></div>
+  <div class="gui-status ok"><span>✔ Program YG<mark class="gno">##</mark>_101 is syntactically correct</span></div>
 </div></div><figcaption><b>그림 2-6.</b>검사를 통과했을 때의 상태 표시줄</figcaption></figure>
 <h3>단계 6. 활성화하기</h3>
-<p><kbd>Ctrl</kbd>+<kbd>F3</kbd>를 눌러요. 활성화할 객체 목록 창이 뜨면 내 프로그램이 체크되어 있는지 보고 <kbd>Enter</kbd>(✓)를 눌러요. 코드 위쪽 프로그램 이름 옆의 <strong>Inactive</strong> 글자가 <strong>Active</strong>로 바뀌면 끝이에요.</p>
+<p><kbd>Ctrl</kbd>+<kbd>F3</kbd>을 눌러요. 활성화할 객체 목록 창이 뜨면 내 프로그램이 선택되어 있는지 보고 <kbd>Enter</kbd>(✓)를 눌러요. 코드 위쪽 프로그램 이름 옆의 <strong>Inactive</strong> 글자가 <strong>Active</strong>로 바뀌면 끝이에요.</p>
 <h3>단계 7. 실행하기</h3>
 <p><kbd>F8</kbd>을 누르면 결과 화면이 나와요. 이렇게 나오면 첫 프로그램 완성이에요!</p>
 <figure class="fig" id="fig-2-7"><div class="fig-body"><div class="gui">
-  <div class="gui-bar">나의 첫 ABAP 프로그램</div>
+  <div class="gui-bar">[예제] 나의 첫 ABAP 프로그램</div>
   <div class="gui-tool"><span class="gui-ico">✓</span><span class="gui-cmd"></span><span class="gui-sep"></span><span class="gui-ico">◀<i>Back F3</i></span></div>
-  <div class="gui-head">나의 첫 ABAP 프로그램</div>
+  <div class="gui-head">[예제] 나의 첫 ABAP 프로그램</div>
   <div class="gui-body list">
-<pre class="gui-list"><span class="list-head">나의 첫 ABAP 프로그램                          1</span>
+<pre class="gui-list"><span class="list-head">[예제] 나의 첫 ABAP 프로그램                   1</span>
 <span class="list-rule"></span>Hello ABAP
 안녕하세요, ABAP!</pre>
   </div>
 </div></div><figcaption><b>그림 2-7.</b>실행 결과</figcaption></figure>
 <p>결과 화면 맨 위의 제목 줄과 가로선은 SAP가 자동으로 붙여 줘요. 단계 2에서 적은 <strong>Title</strong>이 여기에 나오고, 오른쪽 숫자는 쪽 번호예요. <kbd>F3</kbd>을 누르면 코드 화면으로 돌아가요.</p>
+<h3>앞으로는 카드만 보고 만들어요</h3>
+<p>여기까지가 프로그램 하나를 만드는 순서예요. 앞으로 새 프로그램이 나올 때는 화면 그림 없이 <strong>새로 만들기 카드만</strong> 보여 줄게요. 만드는 방법은 늘 같아요.</p>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>순서</th>
+<th>할 일</th>
+<th>카드에서 볼 곳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code class="nb">/nSE38</code> → <strong>Program</strong> 칸에 이름 → <strong>Create</strong></td>
+<td>맨 윗줄의 <code class="nb">SE38</code>, <strong>Program</strong> 줄</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Title</strong> 입력, <strong>Type</strong>은 Executable program → <strong>Save</strong></td>
+<td><strong>Title</strong> 줄 (글자 그대로)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Local Object</strong></td>
+<td>카드에 없어요 (늘 같아요)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>코드 쓰기(이미 있는 <code class="nb">REPORT</code> 줄은 다시 쓰지 않아요) → 저장 → 검사 → 활성화 → 실행</td>
+<td>카드 바로 아래의 코드</td>
+</tr>
+</tbody>
+</table></div>
+<p>Type(Executable program)과 저장 위치(Local Object)는 늘 같아서 카드에 적지 않아요. 카드에 줄이 더 붙을 때도 있어요. 그런 카드는 2-9에서 처음 만나요.</p>
 <h2 id="s2-3">2-3. 저장과 활성화는 달라요</h2>
 <p>여기가 처음 배울 때 가장 많이 헷갈리는 부분이에요. 저장은 <strong>"초안 저장"</strong>, 활성화는 <strong>"정식 발행"</strong>이라고 생각하면 쉬워요.</p>
 <figure class="fig" id="fig-2-8"><div class="fig-body"><div class="versions">
-  <div class="ver inactive"><b>저장만 한 상태</b><span>Inactive 버전</span><small>내 화면에서만 보이는 초안이에요.<br>다른 사람이 실행하면 옛 버전이 돌아요.</small></div>
+  <div class="ver inactive"><b>저장만 한 상태</b><span>Inactive 버전</span><small>아직 정식이 아닌 초안이에요.<br>다른 사람이 실행하면 옛 버전이 돌아요.</small></div>
   <div class="ver-arrow"><kbd>Ctrl</kbd>+<kbd>F3</kbd><br>활성화 →</div>
   <div class="ver active"><b>활성화한 상태</b><span>Active 버전</span><small>모두가 실행하는 정식 버전이에요.<br>과제는 이 상태로 제출해요.</small></div>
 </div></div><figcaption><b>그림 2-8.</b>저장(Inactive)과 활성화(Active)</figcaption></figure>
-
-<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
+<p>지금 어느 쪽인지는 편집기에서 바로 보여요. 코드 바로 위, 프로그램 이름 옆에 <strong>Inactive</strong>라고 적혀 있으면 아직 초안이에요. <strong>Active</strong>면 정식 버전이에요(그림 2-5).</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
 <li>코드를 고치고 <strong>저장만 하고 활성화를 잊는</strong> 경우가 정말 많아요. 고친 뒤엔 습관처럼 <kbd>Ctrl</kbd>+<kbd>F3</kbd>까지 눌러 주세요.</li>
-<li>활성화는 문법 오류가 하나라도 있으면 실패해요. 활성화가 안 되면 먼저 <kbd>Ctrl</kbd>+<kbd>F2</kbd>로 오류를 찾아요.</li>
+<li>편집기에서 내가 직접 <kbd>F8</kbd>을 누르면 활성화하지 않은 초안도 실행돼요. 그래서 "잘 되네" 하고 넘어가기 쉬워요. 다른 사람이 실행할 때는 활성화된 버전만 돌아요.</li>
+<li>문법 오류가 남은 채로 활성화하면 오류를 보여 주면서 그래도 활성화할지 묻는 창이 떠요. 그대로 활성화하지 말고 취소한 다음, <kbd>Ctrl</kbd>+<kbd>F2</kbd>로 오류를 찾아 먼저 고쳐요.</li>
 </ul></div>
 <h2 id="s2-4">2-4. 첫 코드 뜯어보기</h2>
 <p>방금 쓴 코드를 한 줄씩 볼게요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_02_hello.          &quot; ① 프로그램 이름표
-
-START-OF-SELECTION.            &quot; ② 실행하면 여기서부터 시작
-  WRITE &#x27;Hello ABAP&#x27;.          &quot; ③ 화면에 글자 출력
-  WRITE / &#x27;안녕하세요, ABAP!&#x27;.  &quot; ④ 줄을 바꾸고 출력">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_02_hello.          <span class="tk-cmt">" ① 프로그램 이름표</span>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_101.               <span class="tk-cmt">" ① 프로그램의 첫 문장</span>
 
 <span class="tk-kw">START-OF-SELECTION</span>.            <span class="tk-cmt">" ② 실행하면 여기서부터 시작</span>
   <span class="tk-kw">WRITE</span> <span class="tk-str">'Hello ABAP'</span>.          <span class="tk-cmt">" ③ 화면에 글자 출력</span>
   <span class="tk-kw">WRITE</span> / <span class="tk-str">'안녕하세요, ABAP!'</span>.  <span class="tk-cmt">" ④ 줄을 바꾸고 출력</span></code></pre></div>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>번호</th>
@@ -206,11 +242,11 @@ START-OF-SELECTION.            &quot; ② 실행하면 여기서부터 시작
 <tr>
 <td>①</td>
 <td><code>REPORT 이름.</code></td>
-<td>"이건 실행할 수 있는 프로그램이에요"라는 첫 줄이에요. 프로그램을 만들면 자동으로 들어가요.</td>
+<td>"이건 실행할 수 있는 프로그램이에요"라고 알리는 첫 문장이에요. <code class="nb">*</code> 메모 줄을 빼면 맨 앞에 와요. 프로그램을 만들면 자동으로 들어가요.</td>
 </tr>
 <tr>
 <td>②</td>
-<td><code>START-OF-SELECTION.</code></td>
+<td><code class="nb">START-OF-SELECTION.</code></td>
 <td><kbd>F8</kbd>을 누르면 이 줄 아래부터 실행돼요. 왜 이런 줄이 필요한지는 5장에서 자세히 알아봐요. 지금은 "시작 표시"라고만 기억해요.</td>
 </tr>
 <tr>
@@ -221,27 +257,33 @@ START-OF-SELECTION.            &quot; ② 실행하면 여기서부터 시작
 <tr>
 <td>④</td>
 <td><code>WRITE / '글자'.</code></td>
-<td><code>/</code>는 <strong>줄 바꿈</strong>이에요. 새 줄로 내려가서 출력해요.</td>
+<td><code class="nb">/</code>는 <strong>줄 바꿈</strong>이에요. 새 줄로 내려가서 출력해요.</td>
 </tr>
 </tbody>
 </table></div>
-<div class="box note"><div class="box-t">들여쓰기는 왜 해요?</div><p><code>WRITE</code> 앞의 공백 두 칸은 없어도 실행돼요. 하지만 "이 줄들은 <code>START-OF-SELECTION</code> 아래에 속해요"라는 것이 한눈에 보이도록 들여 써요. 직접 맞추기 귀찮으면 <kbd>Shift</kbd>+<kbd>F1</kbd>(Pretty Printer)을 누르면 알아서 정리해 줘요.</p></div>
+<div class="box note short"><div class="box-t">들여쓰기는 왜 해요?</div><p><code class="nb">WRITE</code> 앞의 공백 두 칸은 없어도 실행돼요. 하지만 "이 줄들은 <code class="nb">START-OF-SELECTION</code> 아래에 속해요"라는 것이 한눈에 보이도록 들여 써요. 직접 맞추기 귀찮을 때는 <kbd>Shift</kbd>+<kbd>F1</kbd>(Pretty Printer)을 눌러요. 알아서 정리해 줘요.</p></div>
+<div class="box try"><div class="box-t">직접 해 보기 · Pretty Printer 한 번 설정해 두기</div><ol>
+<li>ABAP Editor 메뉴에서 <strong>Utilities → Settings</strong>로 들어가요.</li>
+<li><strong>ABAP Editor</strong> 탭 안에 있는 <strong>Pretty Printer</strong> 탭을 눌러요.</li>
+<li><strong>Indent</strong>와 <strong>Convert Uppercase/Lowercase</strong>를 체크하고, 그 아래에서 <strong>Keyword Uppercase</strong>를 골라요. "들여쓰기를 맞추고, <code class="nb">WRITE</code> 같은 키워드(ABAP이 미리 정해 둔 낱말)는 대문자로, 나머지는 소문자로 바꿔 줘요"라는 뜻이에요.</li>
+<li><kbd>Enter</kbd>(✓)를 눌러 창을 닫아요.</li>
+<li>코드의 <code class="nb">WRITE</code> 하나를 소문자 <code class="nb">write</code>로 바꿔요(소문자로 써도 오류는 아니에요. 2-5에서 배워요). 그다음 <kbd>Shift</kbd>+<kbd>F1</kbd>을 눌러요. 다시 <code class="nb">WRITE</code>로 바뀌면 설정이 된 거예요. 코드를 건드렸으니 저장하고 활성화해 둬요.</li>
+</ol>
+<p>이 설정은 내 계정에 저장돼요. 한 번만 하면 돼요. 안 해 두면 <kbd>Shift</kbd>+<kbd>F1</kbd>을 눌러도 교재처럼 대문자로 바뀌지 않을 수 있어요.</p></div>
 <h2 id="s2-5">2-5. ABAP 문장의 다섯 가지 규칙</h2>
-<h3>규칙 1. 문장은 마침표(<code>.</code>)로 끝나요</h3>
+<h3>규칙 1. 문장은 마침표(<code class="nb">.</code>)로 끝나요</h3>
 <p>ABAP은 줄이 아니라 <strong>마침표</strong>로 문장을 나눠요. 그래서 한 문장을 여러 줄에 걸쳐 써도 되고, 마침표를 빠뜨리면 오류가 나요.</p>
-<div class="code"><button type="button" class="copy" data-code="WRITE
-  &#x27;Hello ABAP&#x27;.      &quot; 두 줄이지만 마침표가 하나니까 한 문장이에요">복사</button><pre><code class="lang-abap"><span class="tk-kw">WRITE</span>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">WRITE</span>
   <span class="tk-str">'Hello ABAP'</span>.      <span class="tk-cmt">" 두 줄이지만 마침표가 하나니까 한 문장이에요</span></code></pre></div>
 <h3>규칙 2. 대소문자를 구분하지 않아요</h3>
-<p><code>WRITE</code>, <code>write</code>, <code>Write</code>는 모두 같아요. 단, <strong>작은따옴표 안의 글자는 쓴 그대로</strong> 출력돼요. 보통 명령어(키워드)는 대문자, 이름은 소문자로 써서 구분하기 쉽게 해요. Pretty Printer가 이렇게 맞춰 줘요.</p>
+<p><code class="nb">WRITE</code>, <code class="nb">write</code>, <code class="nb">Write</code>는 모두 같아요. 단, <strong>작은따옴표 안의 글자는 쓴 그대로</strong> 출력돼요. 보통 키워드는 대문자, 이름은 소문자로 써서 구분하기 쉽게 해요. 2-4에서 설정해 둔 Pretty Printer가 이렇게 맞춰 줘요.</p>
 <h3>규칙 3. 단어 사이는 한 칸 이상 띄워요</h3>
-<p><code>WRITE'Hello'.</code>처럼 붙여 쓰지 말고, 키워드와 값 사이는 꼭 한 칸 이상 띄어 써요. 붙여 쓰면 읽기 어렵고, 나중에 배울 괄호 같은 곳에서는 바로 오류가 나요.</p>
-<h3>규칙 4. 주석은 <code>*</code>와 <code>"</code> 두 가지예요</h3>
+<p><code class="nb">WRITE'Hello'.</code>처럼 붙여 쓰지 말고, 키워드와 값 사이는 꼭 한 칸 이상 띄어 써요. 붙여 쓰면 읽기 어렵고, 나중에 배울 괄호 같은 곳에서는 바로 오류가 나요.</p>
+<h3>규칙 4. 주석은 <code class="nb">*</code>와 <code class="nb">"</code> 두 가지예요</h3>
 <p><strong>주석</strong>은 프로그램이 무시하는, 사람을 위한 메모예요. 1주차 과제에서도 강조했듯이 주석은 "나중의 나"와 "코드를 읽는 동료"를 위한 친절이에요.</p>
-<div class="code"><button type="button" class="copy" data-code="* 줄 맨 앞(첫 칸)에 별표를 쓰면 그 줄 전체가 주석이에요
-WRITE &#x27;Hello ABAP&#x27;.   &quot; 큰따옴표부터 줄 끝까지가 주석이에요">복사</button><pre><code class="lang-abap"><span class="tk-cmt">* 줄 맨 앞(첫 칸)에 별표를 쓰면 그 줄 전체가 주석이에요</span>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-cmt">* 줄 맨 앞(첫 칸)에 별표를 쓰면 그 줄 전체가 주석이에요</span>
 <span class="tk-kw">WRITE</span> <span class="tk-str">'Hello ABAP'</span>.   <span class="tk-cmt">" 큰따옴표부터 줄 끝까지가 주석이에요</span></code></pre></div>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>기호</th>
@@ -251,54 +293,48 @@ WRITE &#x27;Hello ABAP&#x27;.   &quot; 큰따옴표부터 줄 끝까지가 주�
 </thead>
 <tbody>
 <tr>
-<td><code>*</code></td>
+<td><code class="nb">*</code></td>
 <td>줄의 <strong>맨 첫 칸</strong></td>
 <td>그 줄 전체</td>
 </tr>
 <tr>
-<td><code>"</code></td>
+<td><code class="nb">"</code></td>
 <td>줄 어디든</td>
 <td>그 자리부터 줄 끝까지</td>
 </tr>
 </tbody>
 </table></div>
-<div class="box note"><div class="box-t">단축키로 주석 달기</div><p>여러 줄을 선택하고 <kbd>Ctrl</kbd>+<kbd>,</kbd>(또는 <kbd>Ctrl</kbd>+<kbd>&lt;</kbd>)를 누르면 한꺼번에 주석이 되고, <kbd>Ctrl</kbd>+<kbd>.</kbd>(또는 <kbd>Ctrl</kbd>+<kbd>&gt;</kbd>)를 누르면 주석이 풀려요. 코드를 잠깐 꺼 두고 싶을 때 편해요.</p></div>
-<h3>규칙 5. 같은 명령어가 반복되면 체인 문장으로 묶어요</h3>
-<p>같은 키워드로 시작하는 문장이 여러 개면, 키워드 뒤에 <strong>콜론(<code>:</code>)</strong>을 붙이고 나머지를 <strong>쉼표(<code>,</code>)</strong>로 이어 쓸 수 있어요. 마지막에만 마침표를 찍어요.</p>
-<div class="compare"><div class="code"><button type="button" class="copy" data-code="&quot; 따로 쓴 경우
-WRITE &#x27;Hello ABAP&#x27;.
-WRITE / &#x27;안녕하세요&#x27;.
-WRITE / &#x27;반가워요&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">" 따로 쓴 경우</span>
+<p>단계 4에서 본, 편집기에 처음부터 들어 있던 <code class="nb">*</code> 줄들이 바로 주석이에요.</p>
+<div class="box note short"><div class="box-t">단축키로 주석 달기</div><p>여러 줄을 선택하고 <kbd>Ctrl</kbd>+<kbd>,</kbd>(또는 <kbd>Ctrl</kbd>+<kbd>&lt;</kbd>)를 누르면 한꺼번에 주석이 되고, <kbd>Ctrl</kbd>+<kbd>.</kbd>(또는 <kbd>Ctrl</kbd>+<kbd>&gt;</kbd>)를 누르면 주석이 풀려요. 코드를 잠깐 꺼 두고 싶을 때 편해요.</p></div>
+<h3>규칙 5. 같은 키워드가 반복되면 체인 문장으로 묶어요</h3>
+<p>같은 키워드로 시작하는 문장이 여러 개면, 키워드 뒤에 <strong>콜론(<code class="nb">:</code>)</strong>을 붙이고 나머지를 <strong>쉼표(<code class="nb">,</code>)</strong>로 이어 쓸 수 있어요. 마지막에만 마침표를 찍어요.</p>
+<div class="compare"><div class="code is-abap"><pre><code class="lang-abap"><span class="tk-cmt">" 따로 쓴 경우</span>
 <span class="tk-kw">WRITE</span> <span class="tk-str">'Hello ABAP'</span>.
 <span class="tk-kw">WRITE</span> / <span class="tk-str">'안녕하세요'</span>.
-<span class="tk-kw">WRITE</span> / <span class="tk-str">'반가워요'</span>.</code></pre></div><div class="code"><button type="button" class="copy" data-code="&quot; 체인 문장으로 묶은 경우
-WRITE: &#x27;Hello ABAP&#x27;,
-       / &#x27;안녕하세요&#x27;,
-       / &#x27;반가워요&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">" 체인 문장으로 묶은 경우</span>
+<span class="tk-kw">WRITE</span> / <span class="tk-str">'반가워요'</span>.</code></pre></div><div class="code is-abap"><pre><code class="lang-abap"><span class="tk-cmt">" 체인 문장으로 묶은 경우</span>
 <span class="tk-kw">WRITE</span>: <span class="tk-str">'Hello ABAP'</span>,
        / <span class="tk-str">'안녕하세요'</span>,
        / <span class="tk-str">'반가워요'</span>.</code></pre></div></div>
 <p>두 코드의 결과는 똑같아요. 체인 문장은 앞으로 변수를 여러 개 만들 때(3장) 아주 자주 쓰니 지금 눈에 익혀 두세요.</p>
 <h2 id="s2-6">2-6. 오류를 일부러 만나 보기</h2>
-<p>오류 메시지는 무서운 게 아니라 <strong>"여기를 고치세요"라는 안내문</strong>이에요. 일부러 한 번 틀려 볼게요.</p>
-<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<p>오류 메시지는 무서운 게 아니라 <strong>"여기를 고치세요"라는 안내문</strong>이에요. <code class="nb">YG<mark class="gno">##</mark>_101</code>에서 일부러 한 번 틀려 볼게요.</p>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
 <li>코드 마지막 줄 <code>WRITE / '안녕하세요, ABAP!'.</code>의 <strong>마침표를 지워요.</strong></li>
 <li><kbd>Ctrl</kbd>+<kbd>F2</kbd>로 검사해요.</li>
-<li>아래처럼 오류 목록이 나와요. <strong>줄 번호</strong>와 <strong>메시지</strong>를 확인해요.</li>
-<li>오류 줄을 두 번 클릭하면 해당 줄로 커서가 이동해요. 마침표를 다시 넣고 검사해서 통과하는지 확인해요.</li>
+<li>화면 아래쪽에 오류 목록이 나와요. <strong>줄 번호</strong>와 <strong>메시지</strong>를 확인해요. 줄 번호는 내 코드의 마지막 줄 번호예요. 그림의 숫자와 달라도 괜찮아요.</li>
+<li>오류 줄을 더블클릭하면 그 줄로 커서가 이동해요. 마침표를 다시 넣고 검사해서 통과하는지 확인해요. 통과하면 저장하고 활성화해 둬요.</li>
 </ol></div>
-
 <figure class="fig" id="fig-2-9"><div class="fig-body"><div class="gui">
   <div class="gui-head err">Syntax check: errors found</div>
   <div class="gui-body">
     <table class="gui-grid">
       <tr><th></th><th>Include</th><th>Line</th><th>Message</th></tr>
-      <tr class="sel"><td class="err-dot">●</td><td>YG##_02_HELLO</td><td>5</td><td>The last statement is not complete (period missing).</td></tr>
+      <tr class="sel"><td class="err-dot">●</td><td>YG<mark class="gno">##</mark>_101</td><td>5</td><td>The last statement is not complete (period missing).</td></tr>
     </table>
   </div>
 </div></div><figcaption><b>그림 2-9.</b>문법 오류 목록</figcaption></figure>
-<p>메시지를 우리말로 옮기면 "마지막 문장이 끝나지 않았어요(마침표가 없어요)"예요. 영어 메시지라도 <strong>Line(줄 번호)</strong>과 핵심 단어(<code>period</code>, <code>unknown</code>, <code>expected</code>)만 봐도 대부분 원인을 찾을 수 있어요.</p>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><div class="table-wrap"><table>
+<p>메시지를 우리말로 옮기면 "마지막 문장이 끝나지 않았어요(마침표가 없어요)"예요. 영어 메시지라도 <strong>Line(줄 번호)</strong>과 핵심 단어(<code class="nb">period</code>, <code class="nb">unknown</code>, <code class="nb">expected</code>)만 봐도 대부분 원인을 찾을 수 있어요.</p>
+<div class="box warn"><div class="box-t">자주 하는 실수</div><div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>증상</th>
@@ -315,34 +351,43 @@ WRITE: &#x27;Hello ABAP&#x27;,
 <tr>
 <td>글자가 이상하게 이어짐, 따옴표 오류</td>
 <td>작은따옴표 짝이 안 맞음</td>
-<td><code>'...'</code> 짝 확인</td>
+<td><code class="nb">'...'</code> 짝 확인</td>
 </tr>
 <tr>
-<td>이름을 만들 때 등록 키를 물어봄</td>
-<td>이름이 Z나 Y로 시작하지 않음</td>
-<td>연습용은 <code>YG<mark>##</mark>_...</code>으로 바꾸기</td>
+<td><code>WRITE "Hello".</code>처럼 썼더니 오류</td>
+<td>글자를 큰따옴표로 쌈 (ABAP에서 <code class="nb">"</code>는 주석의 시작이에요)</td>
+<td>작은따옴표 <code class="nb">'Hello'</code>로 바꾸기</td>
 </tr>
 <tr>
-<td>고쳤는데 결과가 그대로</td>
+<td>코드를 붙여 넣은 뒤 <code class="nb">REPORT</code> 줄에서 오류</td>
+<td><code class="nb">REPORT</code> 줄이 두 번 들어감 (2-2)</td>
+<td>한 줄만 남기기</td>
+</tr>
+<tr>
+<td>Create를 눌렀더니 등록 키(Access Key)를 묻거나 권한이 없다고 막힘</td>
+<td>이름이 Y나 Z로 시작하지 않음</td>
+<td>취소하고 <code class="nb">YG<mark class="gno">##</mark>_101</code>처럼 Y로 시작하는 이름으로 다시</td>
+</tr>
+<tr>
+<td>고쳤는데 다른 사람이 실행하면 그대로</td>
 <td>저장만 하고 활성화 안 함</td>
 <td><kbd>Ctrl</kbd>+<kbd>F3</kbd></td>
 </tr>
 <tr>
-<td><code><mark>##</mark></code>이 그대로 남은 이름</td>
-<td>내 번호로 안 바꿈</td>
-<td><code>G<mark>##</mark></code> → <code>G05</code>처럼 바꾸기</td>
+<td>이름에 <code class="nb">##</code>가 글자 그대로 들어감</td>
+<td>내 번호로 바꾸지 않고 만듦</td>
+<td>2-8의 <strong>Rename</strong>으로 <code class="nb">YG05_101</code>처럼 고치기</td>
 </tr>
 </tbody>
 </table></div></div>
 <h2 id="s2-7">2-7. 한 걸음 더: Text Symbol</h2>
-<p>지금까지는 출력할 글자를 코드 안에 직접 썼어요. 그런데 회사 프로그램은 같은 프로그램을 한국어, 영어로 함께 쓰는 경우가 많아서, 글자를 코드 밖 <strong>Text Symbol</strong>에 따로 모아 두는 습관을 들여요. 1주차 과제에서 써 본 <code>TEXT-001</code>이 바로 이거예요.</p>
-<div class="box try"><div class="box-t">직접 해 보기</div><ol>
-<li>ABAP Editor 메뉴에서 <strong>Goto → Text Elements</strong>로 들어가요.</li>
-<li><strong>Text Symbols</strong> 탭에서 <strong>Sym</strong> 칸에 <code>001</code>, <strong>Text</strong> 칸에 <code>Hello ABAP</code>을 입력해요.</li>
+<p>지금까지는 출력할 글자를 코드 안에 직접 썼어요. 그런데 회사에서는 같은 프로그램을 한국어와 영어로 함께 쓰는 경우가 많아요. 그래서 글자를 코드 밖 <strong>Text Symbol</strong>에 따로 모아 두는 습관을 들여요. 1주차 과제에서 써 본 <code class="nb">TEXT-001</code>이 바로 이거예요. 방금 만든 <code class="nb">YG<mark class="gno">##</mark>_101</code>에 이어서 해 봐요.</p>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li>ABAP Editor 메뉴에서 <strong>Goto → Text Elements</strong>로 들어가요. 아래에 메뉴가 더 나오면 <strong>Text Symbols</strong>를 골라요.</li>
+<li><strong>Text Symbols</strong> 탭에서 <strong>Sym</strong> 칸에 <code class="nb">001</code>, <strong>Text</strong> 칸에 <code>Hello ABAP</code>을 입력해요.</li>
 <li>이 화면에서도 <strong>저장 후 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>)</strong>를 해요. <kbd>F3</kbd>으로 코드 화면에 돌아와요.</li>
-<li>코드를 아래처럼 바꾸고 실행해서 결과가 같은지 확인해요.</li>
+<li>첫 번째 <code class="nb">WRITE</code> 줄의 <code>'Hello ABAP'</code>을 <code class="nb">TEXT-001</code>로 바꿔요(아래 코드). <code class="nb">TEXT-</code> 뒤에 Sym 칸의 번호를 붙여 쓰고, 따옴표는 붙이지 않아요. 활성화한 뒤 실행해서 결과가 그림 2-7과 같은지 확인해요.</li>
 </ol></div>
-
 <figure class="fig" id="fig-2-10"><div class="fig-body"><div class="gui">
   <div class="gui-head">ABAP Text Elements: Change Text Symbols Language Korean</div>
   <div class="gui-tabs"><span class="on">Text Symbols</span><span>Selection Texts</span><span>List Headings</span></div>
@@ -354,96 +399,155 @@ WRITE: &#x27;Hello ABAP&#x27;,
     </table>
   </div>
 </div></div><figcaption><b>그림 2-10.</b>Text Symbols 탭</figcaption></figure>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_02_hello.
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_101.
 
 START-OF-SELECTION.
   WRITE TEXT-001.               &quot; Text Symbol 001의 글자를 출력해요
-  WRITE / &#x27;안녕하세요, ABAP!&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_02_hello.
+  WRITE / &#x27;안녕하세요, ABAP!&#x27;." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_101.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">WRITE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">001</span>.               <span class="tk-cmt">" Text Symbol 001의 글자를 출력해요</span>
   <span class="tk-kw">WRITE</span> / <span class="tk-str">'안녕하세요, ABAP!'</span>.</code></pre></div>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p>Text Symbol은 <strong>따로 활성화</strong>해야 해요. 프로그램만 활성화하고 Text Symbol을 안 하면 실행했을 때 그 자리가 비어서 나와요.</p></div>
-<h2 id="s2-8">2-8. 미니 실습: 자기소개 프로그램</h2>
-<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_02_INTRO</code>를 새로 만들어서 아래 결과가 나오게 해 보세요.</p>
-<ul>
-<li>제목(Title)은 <code>자기소개</code>로 해요.</li>
-<li><code>WRITE</code>는 <strong>체인 문장 한 개</strong>로 써요.</li>
-<li>맨 위에 <code>*</code> 주석으로 "작성자, 작성일"을 남겨요.</li>
-<li>첫 줄의 <code>CODE 2기 자기소개</code>는 Text Symbol <code>001</code>로 출력해요.</li>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li>Text Symbol은 <strong>따로 활성화</strong>해야 해요. 프로그램만 활성화하고 Text Symbol을 활성화하지 않으면 실행했을 때 그 자리가 비어서 나와요.</li>
+<li>Text Symbol과 Title은 로그인한 언어마다 따로 저장돼요. 다른 언어로 로그인하면 비어 보일 수 있으니 늘 같은 언어로 로그인해요(1-3).</li>
 </ul></div>
-
-<figure class="fig" id="fig-2-11"><div class="fig-body"><div class="gui">
-  <div class="gui-bar">자기소개</div>
-  <div class="gui-head">자기소개</div>
+<h2 id="s2-8">2-8. 만든 프로그램 다시 열기 · 고치기 · 복사 · 지우기</h2>
+<p>한번 만든 프로그램은 SAP GUI를 꺼도 시스템에 남아 있어요. 다시 꺼내 고치는 일, 복사하는 일, 잘못 만든 것을 지우는 일은 모두 <strong>SE38 첫 화면</strong>에서 해요.</p>
+<h3>다시 열기</h3>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li><code class="nb">/nSE38</code>로 가서 <strong>Program</strong> 칸에 <code class="nb">YG<mark class="gno">##</mark>*</code>를 입력하고 <kbd>F4</kbd>를 눌러요. <span class="badge">1</span> <code class="nb">*</code>는 "뒤에 무엇이 오든"이라는 뜻이에요. <kbd>F4</kbd>는 SAP 어느 화면에서나 <strong>그 칸에 넣을 수 있는 값의 목록</strong>을 보여 주는 키라서 앞으로도 자주 써요.</li>
+<li><code class="nb">YG<mark class="gno">##</mark></code>로 시작하는 내 프로그램 목록이 나와요. 조건을 묻는 창이 먼저 뜨면 그대로 <kbd>Enter</kbd>를 눌러요. 프로그램이 아직 하나뿐이면 목록 없이 Program 칸에 이름이 바로 채워질 수도 있어요. 그러면 4번으로 가요.</li>
+<li>목록에서 <code class="nb">YG<mark class="gno">##</mark>_101</code>을 더블클릭해요. Program 칸에 이름이 들어가요.</li>
+<li><strong>Change</strong>(고치기)나 <strong>Display</strong>(보기만)를 눌러요. <span class="badge">2</span> 실행만 할 거면 <kbd>F8</kbd>을 눌러도 돼요.</li>
+</ol></div>
+<figure class="fig" id="fig-2-11"><div class="fig-body"><div class="pair stack">
+<div class="gui" style="width:100%;margin:0 auto">
+  <div class="gui-head">ABAP Editor: Initial Screen</div>
+  <div class="gui-apptool"><span class="gui-ico">…</span><span class="gui-ico hl">✕<i>Delete</i></span><span class="gui-ico hl">❐<i>Copy</i></span><span class="gui-ico hl">✎<i>Rename</i></span><span class="badge">3</span><span class="gui-ico">…</span></div>
+  <div class="gui-body">
+    <div class="gui-row"><span class="gui-label" style="width:5rem">Program</span><span class="gui-field">YG<mark class="gno">##</mark>*</span><span class="badge">1</span><span class="gui-hint">여기서 F4</span></div>
+    <div class="gui-btnrow"><span class="gui-btn ghost">Display</span><span class="gui-btn ghost">Change</span><span class="badge">2</span><span class="gui-btn ghost">Create</span></div>
+  </div>
+</div>
+<div class="gui" style="width:100%;margin:0 auto">
+  <div class="gui-bar">F4를 누르면 나오는 내 프로그램 목록 (프로그램이 늘어났을 때)</div>
+  <div class="gui-body">
+    <table class="gui-grid">
+      <tr><th>Program Name</th><th>Short Description</th></tr>
+      <tr class="sel"><td>YG<mark class="gno">##</mark>_101</td><td>[예제] 나의 첫 ABAP 프로그램</td></tr>
+      <tr><td>YG<mark class="gno">##</mark>_102</td><td>[실습] 자기소개</td></tr>
+      <tr><td>YG<mark class="gno">##</mark>_103</td><td>[예제] 변수 선언과 출력</td></tr>
+    </table>
+  </div>
+</div>
+</div></div><figcaption><b>그림 2-11.</b>SE38 첫 화면에서 내 프로그램 찾기, 그리고 Delete · Copy · Rename</figcaption></figure>
+<p>목록에서 이름 옆에 보이는 글자가 내가 넣은 <strong>Title</strong>이에요. 그림에서는 Short Description 칸이에요. 지금은 프로그램이 하나뿐이지만 늘어나면 그림 2-11의 아래쪽처럼 돼요. 2-2에서 Title을 글자 그대로 넣어 둔 덕분에 번호뿐인 이름도 쉽게 고를 수 있어요.</p>
+<p>이름을 외우고 있으면 Program 칸에 바로 적고 <strong>Change</strong>를 눌러도 돼요. <strong>Display</strong>로 열면 글자가 쳐지지 않아요. 고치고 싶으면 <kbd>Ctrl</kbd>+<kbd>F1</kbd>(Display ↔ Change. 그림 2-5 맨 왼쪽의 "표시↔변경" 버튼)을 눌러요.</p>
+<h3>Title 고치기</h3>
+<p>Title을 잘못 넣었다면 프로그램을 <strong>Change</strong>로 연 다음, 편집기 메뉴 <strong>Goto → Attributes</strong>로 Program Attributes 창(그림 2-3)을 다시 열어요. Title을 고치고 <strong>Save</strong>를 누른 뒤 활성화해요. 버전에 따라 Attributes 대신 <strong>Properties</strong>라고 적혀 있기도 해요. 같은 것이에요.</p>
+<h3>복사 · 이름 바꾸기 · 지우기</h3>
+<p>SE38 첫 화면의 Program 칸에 <strong>원래 프로그램의 이름</strong>을 적고, 화면별 도구 모음에서 버튼을 눌러요(그림 2-11의 <span class="badge">3</span>). 실제 화면에서는 글자 없는 아이콘이에요. 마우스를 올리면 이름이 보여요.</p>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>버튼</th>
+<th>하는 일</th>
+<th>누른 뒤</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Copy</strong></td>
+<td>같은 내용의 프로그램을 새 이름으로 하나 더 만들어요</td>
+<td>새 이름 입력 → 같이 복사할 것을 묻는 창에서 <strong>Text elements</strong>에 체크(Text Symbol이 여기에 들어 있어요) → <strong>Local Object</strong></td>
+</tr>
+<tr>
+<td><strong>Rename</strong></td>
+<td>프로그램의 이름을 바꿔요</td>
+<td>새 이름 입력 (저장 위치를 물으면 <strong>Local Object</strong>)</td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td>프로그램을 지워요</td>
+<td>이름을 한 번 더 확인하고 지우기</td>
+</tr>
+</tbody>
+</table></div>
+<div class="box warn short"><div class="box-t">복사하거나 이름을 바꾼 뒤에는</div><ul>
+<li><strong>새 이름</strong>의 프로그램을 <strong>Change</strong>로 열어 <code class="nb">REPORT</code> 줄에 적힌 이름을 봐요. 새 이름으로 바뀌어 있으면 그대로 두고, 옛 이름 그대로면 직접 고쳐요.</li>
+<li>복사한 프로그램은 Title도 원본과 같아요. 위의 방법으로 Title을 고쳐요.</li>
+<li>마지막으로 활성화해요. Text Symbol이 있으면 Text Symbol도 활성화해요(2-7).</li>
+</ul></div>
+<p>이름에 <code class="nb">##</code>를 글자 그대로 넣었거나 번호를 틀리게 넣어 만든 프로그램은 <strong>Rename</strong>으로 바로잡아요. <strong>Delete</strong>로 지우고 다시 만들어도 돼요. 단, <strong>Rename</strong>과 <strong>Delete</strong>는 <strong>내가 만든 프로그램에만</strong> 써요. 열어 봤을 때 내가 쓴 적 없는 코드가 들어 있으면 친구의 프로그램이에요. 그대로 두고 이름의 번호부터 확인해요(0-3). 지운 프로그램은 되살릴 수 없어요.</p>
+<p>그 프로그램을 다른 창에서 <strong>Change</strong>로 열어 두었다면 먼저 닫아요. 열려 있으면 이름을 바꾸거나 지울 수 없어요. 버튼의 위치와 창의 모양은 버전에 따라 조금 달라요. 버튼을 못 찾겠으면 메뉴 <strong>Program</strong> 안에서 같은 이름을 찾아봐요.</p>
+<h2 id="s2-9">2-9. 미니 실습: 자기소개 프로그램</h2>
+<p>이번에는 카드만 보고 처음부터 혼자 만들어 봐요. 순서가 기억나지 않으면 2-2의 "앞으로는 카드만 보고 만들어요"를 다시 봐요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_102</code></dd><dt>Title</dt><dd>[실습] 자기소개</dd><dt>Text Symbol</dt><dd>001 = CODE 2기 자기소개</dd></dl></div>
+<p>이번 카드에는 <strong>Text Symbol</strong> 줄이 하나 더 있어요. <code>001 = CODE 2기 자기소개</code>는 "Text Symbol <code class="nb">001</code>을 만들고, Text 칸에 <code>CODE 2기 자기소개</code>를 넣어요"라는 뜻이에요. 만드는 방법은 2-7과 같아요. 앞으로도 카드에 이런 줄이 있으면 같은 방법으로 만들어요.</p>
+<div class="box try short"><div class="box-t">직접 해 보기</div><p>프로그램 <code class="nb">YG<mark class="gno">##</mark>_102</code>를 새로 만들어서 아래 결과가 나오게 해 보세요.</p>
+<ul>
+<li>이름과 Title은 카드에 적힌 그대로 넣어요.</li>
+<li><code class="nb">WRITE</code>는 <strong>체인 문장 한 개</strong>로 써요.</li>
+<li>맨 위에 <code class="nb">*</code> 주석으로 "작성자, 작성일"을 남겨요.</li>
+<li>첫 줄의 <code>CODE 2기 자기소개</code>는 Text Symbol <code class="nb">001</code>로 출력해요(2-7). Text Symbol도 활성화해야 글자가 나와요.</li>
+<li>이름, 반, 한마디는 내 이야기로 바꿔 써요.</li>
+</ul></div>
+<figure class="fig" id="fig-2-12"><div class="fig-body"><div class="gui">
+  <div class="gui-bar">[실습] 자기소개</div>
+  <div class="gui-head">[실습] 자기소개</div>
   <div class="gui-body list">
-<pre class="gui-list"><span class="list-head">자기소개                                       1</span>
+<pre class="gui-list"><span class="list-head">[실습] 자기소개                                1</span>
 <span class="list-rule"></span>CODE 2기 자기소개
 이름: 홍길동
 반: CODE 2기 부산반
 한마디: ABAP 잘해 보고 싶어요!</pre>
   </div>
-</div></div><figcaption><b>그림 2-11.</b>미니 실습의 예상 결과</figcaption></figure>
-
-<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
-* 작성자: 홍길동
-* 작성일: 2026-11-17
-* 설명  : 체인 문장과 Text Symbol 연습
-*&amp;---------------------------------------------------------------------*
-REPORT yg##_02_intro.
-
-START-OF-SELECTION.
-  WRITE: TEXT-001,                       &quot; Text Symbol 001: CODE 2기 자기소개
-         / &#x27;이름: 홍길동&#x27;,
-         / &#x27;반: CODE 2기 부산반&#x27;,
-         / &#x27;한마디: ABAP 잘해 보고 싶어요!&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+</div></div><figcaption><b>그림 2-12.</b>미니 실습의 예상 결과</figcaption></figure>
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code is-abap"><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
 <span class="tk-cmt">* 작성자: 홍길동</span>
 <span class="tk-cmt">* 작성일: 2026-11-17</span>
 <span class="tk-cmt">* 설명  : 체인 문장과 Text Symbol 연습</span>
 <span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
-<span class="tk-kw">REPORT</span> yg<mark>##</mark>_02_intro.
+<span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_102.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">WRITE</span>: <span class="tk-kw">TEXT</span>-<span class="tk-num">001</span>,                       <span class="tk-cmt">" Text Symbol 001: CODE 2기 자기소개</span>
          / <span class="tk-str">'이름: 홍길동'</span>,
          / <span class="tk-str">'반: CODE 2기 부산반'</span>,
-         / <span class="tk-str">'한마디: ABAP 잘해 보고 싶어요!'</span>.</code></pre></div></details>
-
+         / <span class="tk-str">'한마디: ABAP 잘해 보고 싶어요!'</span>.</code></pre></div>
+<p>첫 줄이 비어서 나오면 Text Symbol <code class="nb">001</code>을 만들고 <strong>활성화</strong>했는지 확인해요(2-7). 첫 줄이 중간에 끊기고 끝에 <code class="nb">&gt;</code>가 보이면 글자 칸이 모자란 거예요. Text Symbols 화면에서 <code class="nb">001</code> 줄의 <strong>mLen</strong>을 <code class="nb">30</code>으로 늘리고 다시 활성화해요.</p></details>
 <div class="box quiz"><div class="box-t">확인 문제</div><ol>
 <li>코드를 고치고 저장만 했어요. 다른 친구가 내 프로그램을 실행하면 고친 내용이 보일까요?</li>
 <li>아래 코드에서 틀린 곳 두 군데를 찾아보세요.
-   <div class="code"><button type="button" class="copy" data-code="START-OF-SELECTION.
-  WRITE &#x27;Hello&#x27;
-  WRITE / &#x27;ABAP&quot;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">START-OF-SELECTION</span>.
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">WRITE</span> <span class="tk-str">'Hello'</span>
   <span class="tk-kw">WRITE</span> / <span class="tk-str">'ABAP".</span></code></pre></div></li>
-<li><code>*</code>로 시작하는 주석과 <code>"</code>로 시작하는 주석은 어떻게 다를까요?</li>
+<li><code class="nb">*</code>로 시작하는 주석과 <code class="nb">"</code>로 시작하는 주석은 어떻게 다를까요?</li>
 <li>아래 세 줄을 체인 문장 하나로 바꿔 보세요.
-   <div class="code"><button type="button" class="copy" data-code="WRITE &#x27;A&#x27;.
-WRITE / &#x27;B&#x27;.
-WRITE / &#x27;C&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">WRITE</span> <span class="tk-str">'A'</span>.
+   <div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">WRITE</span> <span class="tk-str">'A'</span>.
 <span class="tk-kw">WRITE</span> / <span class="tk-str">'B'</span>.
 <span class="tk-kw">WRITE</span> / <span class="tk-str">'C'</span>.</code></pre></div></li>
+<li>새로 만들기 카드에는 Type과 저장 위치가 적혀 있지 않아요. 무엇으로 하면 될까요?</li>
+<li>지난주에 만든 프로그램의 이름이 기억나지 않아요. SE38에서 어떻게 찾을까요?</li>
 </ol></div>
-
-<details class="answer solo"><summary>정답 보기</summary><ol>
-<li><strong>안 보여요.</strong> 저장만 한 것은 Inactive(초안)라서, 다른 사람은 활성화된 옛 버전을 실행해요. <kbd>Ctrl</kbd>+<kbd>F3</kbd>로 활성화해야 해요.</li>
-<li>① <code>WRITE 'Hello'</code> 끝에 <strong>마침표가 없어요.</strong> ② <code>'ABAP"</code>는 작은따옴표로 열고 큰따옴표로 닫아서 <strong>따옴표 짝이 안 맞아요.</strong> 게다가 <code>"</code>부터는 주석이 되어 버려요. <code>'ABAP'</code>으로 고쳐요.</li>
-<li><code>*</code>는 줄 <strong>맨 첫 칸</strong>에 써서 그 줄 전체를 주석으로 만들고, <code>"</code>는 줄 <strong>어디서든</strong> 쓸 수 있고 그 자리부터 줄 끝까지 주석이에요.</li>
-<li><div class="code"><button type="button" class="copy" data-code="WRITE: &#x27;A&#x27;,
-       / &#x27;B&#x27;,
-       / &#x27;C&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">WRITE</span>: <span class="tk-str">'A'</span>,
+<details class="answer"><summary>정답 보기</summary><ol>
+<li><strong>안 보여요.</strong> 저장만 한 것은 Inactive(초안)라서, 다른 사람은 활성화된 옛 버전을 실행해요. <kbd>Ctrl</kbd>+<kbd>F3</kbd>으로 활성화해야 해요.</li>
+<li>① <code>WRITE 'Hello'</code> 끝에 <strong>마침표가 없어요.</strong> ② <code class="nb">'ABAP"</code>는 작은따옴표로 열고 큰따옴표로 닫아서 <strong>따옴표 짝이 안 맞아요.</strong> 작은따옴표로 열었으면 작은따옴표로 닫아야 해요. <code class="nb">'ABAP'</code>으로 고쳐요.</li>
+<li><code class="nb">*</code>는 줄 <strong>맨 첫 칸</strong>에 써서 그 줄 전체를 주석으로 만들고, <code class="nb">"</code>는 줄 <strong>어디서든</strong> 쓸 수 있고 그 자리부터 줄 끝까지 주석이에요.</li>
+<li><div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">WRITE</span>: <span class="tk-str">'A'</span>,
        / <span class="tk-str">'B'</span>,
        / <span class="tk-str">'C'</span>.</code></pre></div></li>
+<li>Type은 <strong>Executable program</strong>, 저장 위치는 <strong>Local Object</strong>예요. 늘 같아서 카드에 적지 않아요.</li>
+<li>SE38 첫 화면의 Program 칸에 <code class="nb">YG<mark class="gno">##</mark>*</code>를 넣고 <kbd>F4</kbd>를 눌러요. 내 프로그램 목록에 <strong>Title</strong>이 같이 나오니 Title을 보고 골라요.</li>
 </ol></details>
-
 <div class="box summary"><div class="box-t">정리</div><ul>
-<li>프로그램은 <strong>SE38 → 속성 → Local Object → 코드 → 저장 → 검사 → 활성화 → 실행</strong> 순서로 만들어요.</li>
+<li>프로그램은 <strong>SE38 → 이름 → Create → Title · Type → Save → Local Object → 코드 → 저장 → 검사 → 활성화 → 실행</strong> 순서로 만들어요.</li>
+<li>앞으로는 <strong>새로 만들기 카드</strong>만 보고 같은 순서로 만들어요. Title은 카드의 글자 그대로 넣고, Text Symbol 줄이 있으면 2-7처럼 만들어요.</li>
 <li>저장은 초안(Inactive), 활성화는 정식 버전(Active)이에요. 고친 뒤엔 꼭 활성화해요.</li>
-<li>ABAP 문장은 마침표로 끝나고, 대소문자를 가리지 않고, 주석은 <code>*</code>와 <code>"</code>로 달아요.</li>
-<li>같은 키워드가 반복되면 <code>:</code>와 <code>,</code>로 묶는 체인 문장을 써요.</li>
-<li>출력할 글자는 Text Symbol(<code>TEXT-001</code>)로 빼 두는 습관을 들여요. Text Symbol도 따로 활성화해요.</li>
+<li>ABAP 문장은 마침표로 끝나고, 대소문자를 가리지 않고, 주석은 <code class="nb">*</code>와 <code class="nb">"</code>로 달아요.</li>
+<li>같은 키워드가 반복되면 <code class="nb">:</code>과 <code class="nb">,</code>로 묶는 체인 문장을 써요.</li>
+<li>출력할 글자는 Text Symbol(<code class="nb">TEXT-001</code>)로 빼 두는 습관을 들여요. Text Symbol도 따로 활성화해요.</li>
+<li>만든 프로그램은 SE38에서 <code class="nb">YG<mark class="gno">##</mark>*</code>와 <kbd>F4</kbd>로 찾아요. 복사는 Copy, 이름 바꾸기는 Rename, 지우기는 Delete예요.</li>
 </ul></div>
-
-<div class="box next"><div class="box-t">다음 장 예고</div><p>지금은 정해진 글자만 출력했어요. 3장에서는 <strong>변수</strong>를 만들어 숫자를 계산하고, 문자열을 이어 붙이고, 오늘 날짜를 출력해 볼 거예요.</p></div>
-</section>
+<div class="box next short"><div class="box-t">다음 장 예고</div><p>지금은 정해진 글자만 출력했어요. 3장에서는 <strong>변수</strong>를 만들어 숫자를 계산하고, 문자열을 이어 붙이고, 오늘 날짜를 출력해 볼 거예요.</p></div></section>

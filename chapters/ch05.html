@@ -1,28 +1,29 @@
-<section class="chapter" id="ch05"><div class="ch-eyebrow">5장</div><h1 class="ch-title">Selection Screen으로 입력 받기</h1>
-<div class="box goal"><div class="box-t">이번 장 목표</div><ul>
-<li><code>PARAMETERS</code>로 입력 칸을 만들고, 입력한 값을 프로그램에서 쓸 수 있어요.</li>
-<li>필수 입력(<code>OBLIGATORY</code>), 기본값(<code>DEFAULT</code>), 체크박스, 라디오 버튼을 만들 수 있어요.</li>
+<section class="chapter" id="ch05"><div class="ch-eyebrow">5장</div><h1 class="ch-title">Selection Screen으로 입력받기</h1><div class="box goal short"><div class="box-t">이번 장 목표</div><ul>
+<li><code class="nb">PARAMETERS</code>로 입력 칸을 만들고, 입력한 값을 프로그램에서 쓸 수 있어요.</li>
+<li>필수 입력(<code class="nb">OBLIGATORY</code>), 기본값(<code class="nb">DEFAULT</code>), 체크박스, 라디오 버튼을 만들 수 있어요.</li>
 <li>입력 칸의 이름표를 <strong>Selection Text</strong>로 붙일 수 있어요.</li>
-<li>프로그램이 실행되는 <strong>이벤트 순서</strong>를 알고, 2장에서 미뤄 둔 <code>START-OF-SELECTION</code>의 정체를 이해해요.</li>
+<li>프로그램이 실행되는 <strong>이벤트 순서</strong>를 알고, 2장에서 미뤄 둔 <code class="nb">START-OF-SELECTION</code>의 정체를 이해해요.</li>
 <li>잘못된 값은 <code>AT SELECTION-SCREEN</code>에서 오류 메시지로 막을 수 있어요.</li>
+<li>메시지를 <strong>Message Class</strong>에 모아 두고 번호로 꺼내 쓸 수 있어요.</li>
 </ul></div>
 <h2 id="s5-1">5-1. 입력 칸 만들기: PARAMETERS</h2>
-<p>4장까지는 점수나 단 같은 값을 코드 안에 직접 적었어요. 그러면 값을 바꿀 때마다 코드를 고쳐야 하죠. <code>PARAMETERS</code>를 쓰면 프로그램을 실행할 때 <strong>사용자가 값을 입력하는 화면</strong>이 먼저 나와요. 이 화면을 <strong>Selection Screen</strong>이라고 해요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_05_hello.
+<p>4장까지는 점수나 단 같은 값을 코드 안에 직접 적었어요. 그러면 값을 바꿀 때마다 코드를 고쳐야 하죠. <code class="nb">PARAMETERS</code>를 쓰면 프로그램을 실행할 때 <strong>사용자가 값을 입력하는 화면</strong>이 먼저 나와요. 이 화면을 <strong>Selection Screen</strong>이라고 해요. 아래 카드대로 새 프로그램을 만들어서(2-2) 코드를 넣고 실행해 보세요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_118</code></dd><dt>Title</dt><dd>[예제] 이름 입력받아 인사하기</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_118.
 
 PARAMETERS pa_name TYPE c LENGTH 10.
 
 START-OF-SELECTION.
-  WRITE: / pa_name, &#x27;님, 반가워요!&#x27;.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_05_hello.
+  WRITE: / pa_name, &#x27;님, 반가워요!&#x27;." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_118.
 
 <span class="tk-kw">PARAMETERS</span> pa_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>.
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">WRITE</span>: / pa_name, <span class="tk-str">'님, 반가워요!'</span>.</code></pre></div>
 <figure class="fig" id="fig-5-1"><div class="fig-body"><div class="gui">
-  <div class="gui-bar">입력 연습</div>
+  <div class="gui-bar">[예제] 이름 입력받아 인사하기</div>
   <div class="gui-tool"><span class="gui-ico">✓</span><span class="gui-cmd"></span><span class="gui-sep"></span><span class="gui-ico">◀<i>Back F3</i></span></div>
-  <div class="gui-head">입력 연습</div>
+  <div class="gui-head">[예제] 이름 입력받아 인사하기</div>
   <div class="gui-apptool"><span class="gui-ico hl">⊕<i>Execute F8</i></span><span class="badge">2</span></div>
   <div class="gui-body">
     <div class="gui-row"><span class="gui-label">PA_NAME</span><span class="gui-field">홍길동</span><span class="badge">1</span></div>
@@ -30,19 +31,26 @@ START-OF-SELECTION.
 </div></div><figcaption><b>그림 5-1.</b>F8을 누르면 먼저 나오는 Selection Screen</figcaption></figure>
 <ol>
 <li>입력 칸 <span class="badge">1</span>에 이름을 넣고,</li>
-<li><strong>Execute</strong> 버튼 <span class="badge">2</span>(또는 <kbd>F8</kbd>)을 누르면 <code>START-OF-SELECTION</code> 아래 코드가 실행돼요.</li>
+<li><strong>Execute</strong> 버튼 <span class="badge">2</span>(또는 <kbd>F8</kbd>)을 누르면 <code class="nb">START-OF-SELECTION</code> 아래 코드가 실행돼요.</li>
 </ol>
-<p><code>PARAMETERS 이름 TYPE 타입.</code>은 <code>DATA</code>와 모양이 거의 같아요. 실제로 <code>pa_name</code>은 변수처럼 쓸 수 있어요. 다른 점은 <strong>화면에 입력 칸이 생긴다</strong>는 것뿐이에요.</p>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><p><code>PARAMETERS</code> 이름은 <strong>8글자까지만</strong> 돼요. <code>pa_number</code>(9글자)처럼 길게 지으면 문법 오류가 나요. 그래서 <code>pa_num</code>, <code>pa_dan</code>처럼 짧게 지어요.</p></div>
+<p><kbd>F8</kbd>을 두 번 누르는 셈이에요. 코드 화면에서 한 번 누르면 Selection Screen이 나오고, 여기서 한 번 더 눌러야 결과가 나와요. Selection Screen에서 <kbd>Enter</kbd>만 누르면 결과 화면으로 넘어가지 않아요(이유는 5-4에서 알려 줄게요).</p>
+<p>결과 화면에는 이렇게 나와요.</p>
+<div class="code"><pre><code class="lang-text">홍길동     님, 반가워요!</code></pre></div>
+<ul>
+<li>이름과 <code class="nb">님</code> 사이가 벌어진 것은 <code class="nb">pa_name</code>이 10칸짜리라서예요. 남는 칸이 공백으로 같이 출력돼요(공백 칸 수는 조금 달라도 괜찮아요).</li>
+<li>영문으로 <code class="nb">kim</code>을 넣으면 <code class="nb">KIM</code>으로 바뀌어 나와요. 고장이 아니에요. 이유와 막는 방법은 5-3에서 알려 줄게요.</li>
+<li>결과 화면에서 <kbd>F3</kbd>(Back)을 누르면 Selection Screen으로 돌아와요. 넣었던 값이 그대로 남아 있어서 값만 바꿔 다시 실행하기 좋아요. 한 번 더 <kbd>F3</kbd>을 누르면 코드 화면이에요.</li>
+</ul>
+<p><code>PARAMETERS 이름 TYPE 타입.</code>은 <code class="nb">DATA</code>와 모양이 거의 같아요. 실제로 <code class="nb">pa_name</code>은 변수처럼 쓸 수 있어요. 가장 큰 차이는 <strong>화면에 입력 칸이 생긴다</strong>는 거예요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><p><code class="nb">PARAMETERS</code> 이름은 <strong>8글자까지만</strong> 돼요. <code class="nb">pa_number</code>(9글자)처럼 길게 지으면 문법 오류가 나요. 그래서 <code class="nb">pa_num</code>, <code class="nb">pa_dan</code>처럼 짧게 지어요.</p></div>
 <h2 id="s5-2">5-2. 이름표 붙이기: Selection Text</h2>
-<p>그림 5-1에서 입력 칸 옆에 <code>PA_NAME</code>이라는 이름이 그대로 보였죠? 사용자에게는 <code>이름</code>처럼 보여 주는 게 좋아요. 이 이름표를 <strong>Selection Text</strong>라고 해요.</p>
-<div class="box try"><div class="box-t">직접 해 보기</div><ol>
-<li>ABAP Editor 메뉴에서 <strong>Goto → Text Elements</strong>로 들어가요(2장에서 Text Symbol을 만든 곳이에요).</li>
-<li><strong>Selection Texts</strong> 탭을 눌러요. <code>PA_NAME</code>이 목록에 이미 있을 거예요.</li>
-<li><strong>Text</strong> 칸에 <code>이름</code>을 입력해요.</li>
-<li><strong>저장하고 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>)</strong>한 뒤 다시 실행해 보세요.</li>
+<p>그림 5-1에서 입력 칸 옆에 <code class="nb">PA_NAME</code>이라는 이름이 그대로 보였죠? 사용자에게는 <code class="nb">이름</code>처럼 보여 주는 게 좋아요. 이 이름표를 <strong>Selection Text</strong>라고 해요.</p>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li><code class="nb">YG<mark class="gno">##</mark>_118</code>을 저장하고 활성화한 다음, ABAP Editor 메뉴에서 <strong>Goto → Text Elements</strong>로 들어가요(2-7에서 Text Symbol을 만든 곳이에요). 버전에 따라 하위 메뉴가 보이면 <strong>Selection Texts</strong>를 골라요.</li>
+<li><strong>Selection Texts</strong> 탭을 눌러요. <code class="nb">PA_NAME</code>이 목록에 이미 있을 거예요.</li>
+<li><strong>Text</strong> 칸에 <code class="nb">이름</code>을 입력해요.</li>
+<li><strong>저장하고 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>)</strong>한 뒤 <kbd>F3</kbd>으로 돌아와 다시 실행해 보세요. 입력 칸 옆이 <code class="nb">이름</code>으로 바뀌어요.</li>
 </ol></div>
-
 <figure class="fig" id="fig-5-2"><div class="fig-body"><div class="gui">
   <div class="gui-head">ABAP Text Elements: Change Selection Texts Language Korean</div>
   <div class="gui-tabs"><span>Text Symbols</span><span class="on">Selection Texts</span><span>List Headings</span></div>
@@ -53,10 +61,15 @@ START-OF-SELECTION.
     </table>
   </div>
 </div></div><figcaption><b>그림 5-2.</b>Selection Texts 탭</figcaption></figure>
-
-<div class="box note"><div class="box-t">Text Symbol과 Selection Text</div><p>둘 다 <strong>Text Elements</strong> 화면에 있어서 헷갈리기 쉬워요. <strong>Text Symbol</strong>은 <code>TEXT-001</code>처럼 코드에서 꺼내 쓰는 글자, <strong>Selection Text</strong>는 입력 칸 옆에 붙는 이름표예요. 둘 다 따로 활성화해야 해요.</p></div>
+<p>앞으로 이름표가 필요한 프로그램에서는 <strong>Name</strong>과 <strong>Text</strong>에 넣을 글자를 표나 카드로 알려 줄게요. 그대로 넣어야 화면이 교재의 그림과 같아져요. 그림 5-2의 <strong>Dictionary Ref.</strong> 칸은 지금은 건드리지 않아요. 9장에서 써요.</p>
+<div class="box note short"><div class="box-t">Text Symbol과 Selection Text</div><p>둘 다 <strong>Text Elements</strong> 화면에 있어서 헷갈리기 쉬워요. <strong>Text Symbol</strong>은 <code class="nb">TEXT-001</code>처럼 코드에서 꺼내 쓰는 글자, <strong>Selection Text</strong>는 입력 칸 옆에 붙는 이름표예요.</p>
+<ul>
+<li>둘은 Text Elements 화면에서 <strong>한 번에</strong> 활성화돼요. 코드를 활성화하는 것과는 별개라서, 이 화면에서도 꼭 활성화해요.</li>
+<li>둘 다 <strong>로그인한 언어마다 따로</strong> 저장돼요. 그래서 늘 같은 언어로 로그인해요(1-3).</li>
+</ul></div>
 <h2 id="s5-3">5-3. 입력 칸 꾸미기</h2>
-<div class="table-wrap"><table>
+<p><code class="nb">PARAMETERS</code> 뒤에 몇 마디를 덧붙이면 입력 칸의 성격이 바뀌어요.</p>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>쓰는 법</th>
@@ -66,7 +79,7 @@ START-OF-SELECTION.
 </thead>
 <tbody>
 <tr>
-<td><code>OBLIGATORY</code></td>
+<td><code class="nb">OBLIGATORY</code></td>
 <td>필수 입력. 비워 두면 실행이 안 돼요</td>
 <td><code>PARAMETERS pa_num TYPE i OBLIGATORY.</code></td>
 </tr>
@@ -76,8 +89,13 @@ START-OF-SELECTION.
 <td><code>PARAMETERS pa_dan TYPE i DEFAULT 2.</code></td>
 </tr>
 <tr>
+<td><code>LOWER CASE</code></td>
+<td>영문 소문자를 넣은 그대로 받아요</td>
+<td><code>PARAMETERS pa_name TYPE c LENGTH 10 LOWER CASE.</code></td>
+</tr>
+<tr>
 <td><code>AS CHECKBOX</code></td>
-<td>체크박스. 체크하면 <code>'X'</code>, 아니면 공백</td>
+<td>체크박스. 체크하면 <code class="nb">'X'</code>, 아니면 빈칸</td>
 <td><code>PARAMETERS pa_vip AS CHECKBOX.</code></td>
 </tr>
 <tr>
@@ -87,17 +105,78 @@ START-OF-SELECTION.
 </tr>
 </tbody>
 </table></div>
-<div class="code"><button type="button" class="copy" data-code="PARAMETERS: pa_num  TYPE i OBLIGATORY,               &quot; 필수 입력
+<p>5-1에서 <code class="nb">kim</code>을 넣었더니 <code class="nb">KIM</code>이 됐죠. SAP는 글자 입력 칸의 영문을 <strong>대문자로 바꿔서</strong> 받아요. 넣은 그대로 받고 싶을 때 <code>LOWER CASE</code>를 붙여요. <code class="nb">YG<mark class="gno">##</mark>_118</code>의 <code class="nb">pa_name</code> 줄을 위 표의 예처럼 고쳐 보세요. <code>LOWER CASE</code>는 마침표 <strong>앞</strong>에 덧붙여요. 활성화한 다음 <code class="nb">kim</code>을 넣어 실행하면 이번에는 <code class="nb">kim</code> 그대로 나와요. 한글은 대문자와 소문자가 없어서 어느 쪽이든 그대로예요.</p>
+<h3>한 프로그램에 모아 보기</h3>
+<p>나머지 네 가지는 새 프로그램 하나에 모아 볼게요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_119</code></dd><dt>Title</dt><dd>[예제] 입력 칸 꾸미기</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_119.
+
+PARAMETERS: pa_num  TYPE i OBLIGATORY,               &quot; 필수 입력
             pa_dan  TYPE i DEFAULT 2,                &quot; 기본값 2
             pa_vip  AS CHECKBOX,                     &quot; 체크박스
             pa_kor  RADIOBUTTON GROUP lang DEFAULT &#x27;X&#x27;,
-            pa_eng  RADIOBUTTON GROUP lang.">복사</button><pre><code class="lang-abap"><span class="tk-kw">PARAMETERS</span>: pa_num  <span class="tk-kw">TYPE</span> i <span class="tk-kw">OBLIGATORY</span>,               <span class="tk-cmt">" 필수 입력</span>
+            pa_eng  RADIOBUTTON GROUP lang.
+
+START-OF-SELECTION.
+  IF pa_vip = &#x27;X&#x27;.
+    WRITE / &#x27;VIP 회원이에요&#x27;.
+  ENDIF.
+
+  IF pa_kor = &#x27;X&#x27;.
+    WRITE / &#x27;안녕하세요&#x27;.
+  ELSE.
+    WRITE / &#x27;Hello&#x27;.
+  ENDIF." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_119.
+
+<span class="tk-kw">PARAMETERS</span>: pa_num  <span class="tk-kw">TYPE</span> i <span class="tk-kw">OBLIGATORY</span>,               <span class="tk-cmt">" 필수 입력</span>
             pa_dan  <span class="tk-kw">TYPE</span> i <span class="tk-kw">DEFAULT</span> <span class="tk-num">2</span>,                <span class="tk-cmt">" 기본값 2</span>
             pa_vip  <span class="tk-kw">AS</span> <span class="tk-kw">CHECKBOX</span>,                     <span class="tk-cmt">" 체크박스</span>
             pa_kor  <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> lang <span class="tk-kw">DEFAULT</span> <span class="tk-str">'X'</span>,
-            pa_eng  <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> lang.</code></pre></div>
+            pa_eng  <span class="tk-kw">RADIOBUTTON</span> <span class="tk-kw">GROUP</span> lang.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">IF</span> pa_vip = <span class="tk-str">'X'</span>.
+    <span class="tk-kw">WRITE</span> / <span class="tk-str">'VIP 회원이에요'</span>.
+  <span class="tk-kw">ENDIF</span>.
+
+  <span class="tk-kw">IF</span> pa_kor = <span class="tk-str">'X'</span>.
+    <span class="tk-kw">WRITE</span> / <span class="tk-str">'안녕하세요'</span>.
+  <span class="tk-kw">ELSE</span>.
+    <span class="tk-kw">WRITE</span> / <span class="tk-str">'Hello'</span>.
+  <span class="tk-kw">ENDIF</span>.</code></pre></div>
+<p>코드를 활성화한 다음, 5-2에서 한 것처럼 Selection Text를 아래 표대로 넣고 활성화해요.</p>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>Name</th>
+<th>Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="nb">PA_NUM</code></td>
+<td>숫자</td>
+</tr>
+<tr>
+<td><code class="nb">PA_DAN</code></td>
+<td>단</td>
+</tr>
+<tr>
+<td><code class="nb">PA_VIP</code></td>
+<td>VIP 회원</td>
+</tr>
+<tr>
+<td><code class="nb">PA_KOR</code></td>
+<td>한국어</td>
+</tr>
+<tr>
+<td><code class="nb">PA_ENG</code></td>
+<td>영어</td>
+</tr>
+</tbody>
+</table></div>
 <figure class="fig" id="fig-5-3"><div class="fig-body"><div class="gui">
-  <div class="gui-head">입력 칸 꾸미기</div>
+  <div class="gui-head">[예제] 입력 칸 꾸미기</div>
   <div class="gui-apptool"><span class="gui-ico">⊕<i>Execute F8</i></span></div>
   <div class="gui-body">
     <div class="gui-row"><span class="gui-label">숫자</span><span class="gui-field s req">✓</span><span class="gui-hint">← 필수 칸 표시</span></div>
@@ -106,28 +185,28 @@ START-OF-SELECTION.
     <div class="gui-radio on">한국어</div>
     <div class="gui-radio">영어</div>
   </div>
-</div></div><figcaption><b>그림 5-3.</b>위 코드로 만든 Selection Screen (Selection Text를 붙인 모습)</figcaption></figure>
-<p>체크박스와 라디오 버튼은 값이 <code>'X'</code>인지로 확인해요.</p>
-<div class="code"><button type="button" class="copy" data-code="IF pa_vip = &#x27;X&#x27;.
-  WRITE / &#x27;VIP 회원이에요&#x27;.
-ENDIF.
-
-IF pa_kor = &#x27;X&#x27;.
-  WRITE / &#x27;안녕하세요&#x27;.
-ELSE.
-  WRITE / &#x27;Hello&#x27;.
-ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span> pa_vip = <span class="tk-str">'X'</span>.
-  <span class="tk-kw">WRITE</span> / <span class="tk-str">'VIP 회원이에요'</span>.
-<span class="tk-kw">ENDIF</span>.
-
-<span class="tk-kw">IF</span> pa_kor = <span class="tk-str">'X'</span>.
-  <span class="tk-kw">WRITE</span> / <span class="tk-str">'안녕하세요'</span>.
-<span class="tk-kw">ELSE</span>.
-  <span class="tk-kw">WRITE</span> / <span class="tk-str">'Hello'</span>.
-<span class="tk-kw">ENDIF</span>.</code></pre></div>
+</div></div><figcaption><b>그림 5-3.</b>YG<mark class="gno">##</mark>_119의 Selection Screen (Selection Text를 붙인 모습)</figcaption></figure>
+<p><code class="nb">숫자</code>에 <code class="nb">7</code>을 넣고, <strong>VIP 회원</strong>에 체크하고, <strong>영어</strong>를 고른 뒤 <kbd>F8</kbd>을 누르면 이렇게 나와요.</p>
+<div class="code"><pre><code class="lang-text">VIP 회원이에요
+Hello</code></pre></div>
+<p><code class="nb">숫자</code>와 <code class="nb">단</code>은 화면 모양을 보려고 만든 칸이라 결과에는 쓰지 않았어요.</p>
+<h3>체크했는지 확인하기</h3>
+<p>체크박스와 라디오 버튼은 값이 <code class="nb">'X'</code>인지를 보고 확인해요. 체크했거나 골랐으면 <code class="nb">'X'</code>, 아니면 빈칸이에요. 4-4에서 본 "예는 <code class="nb">'X'</code>, 아니요는 빈칸" 습관 그대로예요.</p>
+<p><code class="nb">'X'</code> 대신 <code class="nb">abap_true</code>라고 쓴 코드도 자주 만나요. <strong><code class="nb">abap_true</code>는 <code class="nb">'X'</code>, <code class="nb">abap_false</code>는 빈칸과 같은 값</strong>이에요. SAP가 미리 만들어 둔 이름이라 선언하지 않고 바로 쓸 수 있어요. <code>IF pa_vip = abap_true.</code>라고 써도 똑같이 동작해요. 이 교재도 11장부터는 이 모양을 써요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li>라디오 버튼의 <strong>그룹 이름은 4글자까지</strong>예요. <code>GROUP lang</code>은 되지만 <code>GROUP color</code>는 문법 오류예요.</li>
+<li>한 그룹에는 라디오 버튼이 <strong>두 개 이상</strong> 있어야 해요. <code>DEFAULT 'X'</code>를 아무 데도 안 쓰면 첫 번째 버튼이 골라져 있어요.</li>
+<li>숫자 칸(<code>TYPE i</code>)은 값이 <code class="nb">0</code>이면 화면에 빈칸으로 보여요. 그래서 필수 칸에 <code class="nb">0</code>을 넣으면 SAP가 "비어 있어요"라고 막을 수 있어요.</li>
+</ul></div>
+<div class="box note short"><div class="box-t">입력값을 저장해 두기: Variant</div><p>값을 바꿔 가며 여러 번 테스트하다 보면 매번 다시 입력하기가 번거로워요. Selection Screen에서 값을 채운 다음 <strong>저장</strong> 버튼(<kbd>Ctrl</kbd>+<kbd>S</kbd>)을 누르면, 지금 넣은 값들을 <strong>Variant</strong>라는 묶음으로 저장할 수 있어요.</p>
+<ol>
+<li>Variant 이름(예: <code class="nb">VIP_EN</code>)과 설명을 넣고 저장해요.</li>
+<li>다음에 실행할 때 <strong>Get Variant</strong> 버튼을 눌러 그 이름을 고르면, 저장해 둔 값이 한 번에 채워져요.</li>
+</ol>
+<p>버튼 모양과 화면은 버전에 따라 조금 달라요.</p></div>
 <h2 id="s5-4">5-4. 프로그램이 실행되는 순서: 이벤트</h2>
-<p>2장에서 <code>START-OF-SELECTION</code>을 "실행 시작 표시"라고만 했었죠. 이제 정체를 밝힐 때가 됐어요.</p>
-<p>실행형 프로그램(Executable program)은 위에서 아래로 그냥 흘러가는 게 아니라, SAP가 정해 둔 <strong>순서(이벤트)</strong>에 맞춰 코드 덩어리를 불러요. 각 덩어리 앞에 붙는 이름표가 <strong>이벤트 키워드</strong>예요.</p>
+<p>2장에서 <code class="nb">START-OF-SELECTION</code>을 "시작 표시"라고만 했었죠. 이제 정체를 밝힐 때가 됐어요.</p>
+<p>실행형 프로그램(Executable program)은 위에서 아래로 그냥 흘러가는 게 아니라, SAP가 정해 둔 <strong>순서(이벤트)</strong>에 맞춰 코드 덩어리를 불러요. 각 덩어리 맨 앞에 적는 낱말이 <strong>이벤트 키워드</strong>예요.</p>
 <figure class="fig" id="fig-5-4"><div class="fig-body"><div class="evflow">
   <div class="ev"><b>INITIALIZATION</b><small>화면이 뜨기 <u>전</u><br>기본값 계산</small></div>
   <div class="ev-arrow">→</div>
@@ -139,7 +218,7 @@ ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span
   <div class="ev-arrow">→</div>
   <div class="ev"><b>결과 화면</b><small>WRITE 결과가<br>보여요</small></div>
 </div></div><figcaption><b>그림 5-4.</b>실행형 프로그램의 이벤트 순서</figcaption></figure>
-<div class="table-wrap"><table>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>이벤트</th>
@@ -149,9 +228,9 @@ ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span
 </thead>
 <tbody>
 <tr>
-<td><code>INITIALIZATION</code></td>
+<td><code class="nb">INITIALIZATION</code></td>
 <td>Selection Screen이 <strong>뜨기 직전</strong>에 한 번</td>
-<td>오늘 날짜 같은 계산된 기본값 넣기</td>
+<td>"오늘부터 7일 뒤"처럼 계산이 필요한 기본값 넣기</td>
 </tr>
 <tr>
 <td><code>AT SELECTION-SCREEN</code></td>
@@ -159,31 +238,45 @@ ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">IF</span
 <td>입력값이 올바른지 검사하기</td>
 </tr>
 <tr>
-<td><code>START-OF-SELECTION</code></td>
-<td>검사를 통과한 뒤</td>
+<td><code class="nb">START-OF-SELECTION</code></td>
+<td><kbd>F8</kbd>을 눌렀고 검사를 통과한 뒤</td>
 <td>프로그램의 본 작업</td>
 </tr>
 </tbody>
 </table></div>
-<div class="box note"><div class="box-t">그럼 START-OF-SELECTION은 꼭 써야 해요?</div><p>이벤트 키워드 없이 쓴 코드는 SAP가 알아서 <code>START-OF-SELECTION</code>에 넣어 줘요. 그래서 2장 프로그램은 빼도 돌아가요. 하지만 <code>INITIALIZATION</code> 같은 다른 이벤트를 쓰기 시작하면, 다음 이벤트 키워드가 나올 때까지는 전부 앞 이벤트의 코드가 돼요. <strong>본 작업이 어디서 시작하는지 분명하게</strong> 하려고 항상 <code>START-OF-SELECTION</code>을 써요.</p></div>
+<p><kbd>Enter</kbd>를 누르면 검사만 하고 Selection Screen에 그대로 머물러요. 본 작업으로 넘어가는 것은 <kbd>F8</kbd>(Execute)뿐이에요.</p>
+<div class="box note short"><div class="box-t">그럼 START-OF-SELECTION은 꼭 써야 해요?</div><p>이벤트 키워드 없이 쓴 코드는 SAP가 알아서 <code class="nb">START-OF-SELECTION</code>에 넣어 줘요. 그래서 2장 프로그램은 빼도 돌아가요. 하지만 <code class="nb">INITIALIZATION</code> 같은 다른 이벤트를 쓰기 시작하면, 다음 이벤트 키워드가 나올 때까지는 전부 앞 이벤트의 코드가 돼요. <strong>본 작업이 어디서 시작하는지 분명하게</strong> 하려고 항상 <code class="nb">START-OF-SELECTION</code>을 써요.</p></div>
 <h3>INITIALIZATION으로 기본값 넣기</h3>
-<p><code>DEFAULT</code>에는 고정된 값만 쓸 수 있어요. "오늘부터 7일 뒤"처럼 <strong>계산이 필요한 기본값</strong>은 <code>INITIALIZATION</code>에서 넣어요.</p>
-<div class="code"><button type="button" class="copy" data-code="PARAMETERS pa_date TYPE d.
+<p><code class="nb">DEFAULT</code> 뒤에는 <strong>값 하나</strong>만 쓸 수 있어요. <code>DEFAULT 2</code> 같은 숫자나 글자, <code>DEFAULT sy-datum</code>(오늘 날짜)처럼 이미 있는 변수는 돼요. 하지만 <code>DEFAULT sy-datum + 7</code> 같은 <strong>계산식</strong>은 문법 오류예요. "오늘부터 7일 뒤"처럼 <strong>계산이 필요한 기본값</strong>은 <code class="nb">INITIALIZATION</code>에서 넣어요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_120</code></dd><dt>Title</dt><dd>[예제] INITIALIZATION으로 기본값 넣기</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_120.
+
+PARAMETERS pa_date TYPE sy-datum.
 
 INITIALIZATION.
   pa_date = sy-datum + 7.      &quot; 화면이 뜨기 전에 기본값 넣기
 
 START-OF-SELECTION.
-  WRITE: / &#x27;선택한 날짜:&#x27;, pa_date.">복사</button><pre><code class="lang-abap"><span class="tk-kw">PARAMETERS</span> pa_date <span class="tk-kw">TYPE</span> d.
+  WRITE: / &#x27;선택한 날짜:&#x27;, pa_date." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_120.
+
+<span class="tk-kw">PARAMETERS</span> pa_date <span class="tk-kw">TYPE</span> sy-datum.
 
 <span class="tk-kw">INITIALIZATION</span>.
   pa_date = sy-datum + <span class="tk-num">7</span>.      <span class="tk-cmt">" 화면이 뜨기 전에 기본값 넣기</span>
 
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">WRITE</span>: / <span class="tk-str">'선택한 날짜:'</span>, pa_date.</code></pre></div>
+<p>실행하면 입력 칸에 오늘부터 7일 뒤 날짜가 미리 들어 있어요. 오늘이 2026년 11월 17일이라면 <code class="nb">2026.11.24</code>예요. 그대로 <kbd>F8</kbd>을 누르면 이렇게 나와요.</p>
+<div class="code"><pre><code class="lang-text">선택한 날짜: 2026.11.24</code></pre></div>
+<ul>
+<li>날짜 입력 칸은 3-7에서 배운 대로 <code>TYPE sy-datum</code>으로 만들어요. 그래야 결과 화면에서도 <code class="nb">2026.11.24</code>처럼 점이 찍혀 나와요.</li>
+<li>날짜 칸에서 <kbd>F4</kbd>를 누르면 달력에서 날짜를 고를 수 있어요.</li>
+<li>이름표를 붙이지 않아서 입력 칸 옆에는 <code class="nb">PA_DATE</code>가 보여요. 연습 삼아 Selection Text에 <code class="nb">날짜</code>를 넣어 봐도 좋아요.</li>
+</ul>
 <h2 id="s5-5">5-5. 잘못된 값 막기: AT SELECTION-SCREEN과 MESSAGE</h2>
-<p>구구단 프로그램에 <code>15</code>단이나 <code>-3</code>단을 넣으면 곤란하겠죠. <code>AT SELECTION-SCREEN</code>에서 입력값을 검사하고, 틀렸으면 <code>MESSAGE</code>로 알려 줘요.</p>
-<div class="code"><button type="button" class="copy" data-code="REPORT yg##_05_gugu.
+<p>구구단 프로그램에 <code class="nb">15</code>단이나 <code class="nb">-3</code>단을 넣으면 곤란하겠죠. <code>AT SELECTION-SCREEN</code>에서 입력값을 검사하고, 틀렸으면 <code class="nb">MESSAGE</code>로 알려 줘요. 숫자 칸에 글자를 넣는 것 같은 실수는 Type이 알아서 막아 주니, 우리는 "2단부터 9단까지" 같은 <strong>내 프로그램만의 규칙</strong>만 검사하면 돼요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_121</code></dd><dt>Title</dt><dd>[예제] 입력한 단의 구구단</dd></dl></div>
+<div class="code has-copy long is-abap"><button type="button" class="copy" data-code="REPORT yg##_121.
 
 PARAMETERS pa_dan TYPE i OBLIGATORY DEFAULT 2.
 
@@ -197,8 +290,8 @@ AT SELECTION-SCREEN.
 START-OF-SELECTION.
   DO 9 TIMES.
     gv_result = pa_dan * sy-index.
-    WRITE: /(2) pa_dan, &#x27;x&#x27;, (1) sy-index, &#x27;=&#x27;, (2) gv_result.
-  ENDDO.">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark>##</mark>_05_gugu.
+    WRITE: /(1) pa_dan, &#x27;x&#x27;, (1) sy-index, &#x27;=&#x27;, (2) gv_result.
+  ENDDO." title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_121.
 
 <span class="tk-kw">PARAMETERS</span> pa_dan <span class="tk-kw">TYPE</span> i <span class="tk-kw">OBLIGATORY</span> <span class="tk-kw">DEFAULT</span> <span class="tk-num">2</span>.
 
@@ -212,19 +305,56 @@ START-OF-SELECTION.
 <span class="tk-kw">START-OF-SELECTION</span>.
   <span class="tk-kw">DO</span> <span class="tk-num">9</span> <span class="tk-kw">TIMES</span>.
     gv_result = pa_dan * sy-index.
-    <span class="tk-kw">WRITE</span>: /(<span class="tk-num">2</span>) pa_dan, <span class="tk-str">'x'</span>, (<span class="tk-num">1</span>) sy-index, <span class="tk-str">'='</span>, (<span class="tk-num">2</span>) gv_result.
+    <span class="tk-kw">WRITE</span>: /(<span class="tk-num">1</span>) pa_dan, <span class="tk-str">'x'</span>, (<span class="tk-num">1</span>) sy-index, <span class="tk-str">'='</span>, (<span class="tk-num">2</span>) gv_result.
   <span class="tk-kw">ENDDO</span>.</code></pre></div>
+<div class="box try"><div class="box-t">직접 해 보기</div><ol>
+<li>위 카드대로 프로그램을 만들고, 코드를 넣어 저장하고 활성화해요.</li>
+<li><strong>Goto → Text Elements</strong>로 들어가서 아래 표의 두 가지를 넣어요. Text Symbol의 <strong>Sym</strong> 칸에는 <code class="nb">001</code> 같은 숫자뿐 아니라 <code class="nb">E01</code>처럼 글자를 섞은 세 글자도 쓸 수 있어요. 오류 문장은 <code class="nb">E</code>로 시작하게 지어 두면 찾기 쉬워요. 코드에서는 <code class="nb">TEXT-e01</code>로 꺼내요.</li>
+<li>그 화면에서 <strong>저장하고 활성화(<kbd>Ctrl</kbd>+<kbd>F3</kbd>)</strong>해요.</li>
+<li><kbd>F3</kbd>으로 코드 화면에 돌아와 실행해요. <code class="nb">15</code>를 넣고 <kbd>F8</kbd>을 눌러 보세요. 그다음 <code class="nb">7</code>로 고쳐서 다시 눌러 보세요.</li>
+</ol>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>탭</th>
+<th>이름</th>
+<th>Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Text Symbols</td>
+<td><code class="nb">E01</code></td>
+<td>2단부터 9단까지만 입력할 수 있어요</td>
+</tr>
+<tr>
+<td>Selection Texts</td>
+<td><code class="nb">PA_DAN</code></td>
+<td>단</td>
+</tr>
+</tbody>
+</table></div></div>
 <figure class="fig" id="fig-5-5"><div class="fig-body"><div class="gui">
-  <div class="gui-head">구구단</div>
+  <div class="gui-head">[예제] 입력한 단의 구구단</div>
   <div class="gui-apptool"><span class="gui-ico">⊕<i>Execute F8</i></span></div>
   <div class="gui-body">
     <div class="gui-row"><span class="gui-label">단</span><span class="gui-field s">15</span><span class="gui-hint">← 다시 입력할 수 있게 화면에 남아요</span></div>
   </div>
-  <div class="gui-status err"><span>⛔ 2단부터 9단까지만 입력할 수 있어요</span></div>
+  <div class="gui-status err"><span>✖ 2단부터 9단까지만 입력할 수 있어요</span></div>
 </div></div><figcaption><b>그림 5-5.</b>15를 넣고 F8을 눌렀을 때</figcaption></figure>
-<p><code>AT SELECTION-SCREEN</code>에서 <code>TYPE 'E'</code> 메시지를 보내면 <strong>프로그램이 다음 단계로 넘어가지 않고</strong> Selection Screen에 그대로 머물러요. 사용자는 값을 고쳐서 다시 <kbd>F8</kbd>을 누르면 돼요. 오류 문장은 2장에서 배운 대로 Text Symbol(<code>TEXT-e01</code>)로 빼 두었어요.</p>
+<p><code>AT SELECTION-SCREEN</code>에서 <code>TYPE 'E'</code> 메시지를 보내면 <strong>프로그램이 다음 단계로 넘어가지 않고</strong> Selection Screen에 그대로 머물러요. 사용자는 값을 고쳐서 다시 <kbd>F8</kbd>을 누르면 돼요. 오류 문장은 2-7에서 배운 대로 Text Symbol(<code class="nb">TEXT-e01</code>)로 빼 두었어요.</p>
+<p><code class="nb">7</code>로 고쳐서 실행하면 검사를 통과하고 7단이 나와요. <code class="nb">WRITE</code> 줄은 4-9의 구구단과 같은 모양이에요.</p>
+<div class="code"><pre><code class="lang-text">7 x 1 = 7
+7 x 2 = 14
+…
+7 x 9 = 63</code></pre></div>
 <h3>MESSAGE의 종류</h3>
-<div class="table-wrap"><table>
+<p><code class="nb">MESSAGE</code> 문장의 기본 모양은 <code>MESSAGE 글자 TYPE '종류'.</code>예요.</p>
+<ul>
+<li><strong>글자</strong> 자리에는 Text Symbol 대신 <code>MESSAGE '2단부터 9단까지만 입력할 수 있어요' TYPE 'E'.</code>처럼 따옴표 글자를 바로 써도 돼요. 똑같이 동작해요. 뒤 장의 짧은 예제에서는 이 모양도 자주 만나요.</li>
+<li><strong>종류</strong> 자리에는 아래 여섯 가지 가운데 하나를 써요.</li>
+</ul>
+<div class="table-wrap"><table class="short">
 <thead>
 <tr>
 <th>TYPE</th>
@@ -235,62 +365,189 @@ START-OF-SELECTION.
 </thead>
 <tbody>
 <tr>
-<td><code>'S'</code></td>
+<td><code class="nb">'S'</code></td>
 <td>Success</td>
 <td>상태 표시줄에 초록색</td>
 <td>계속 진행</td>
 </tr>
 <tr>
-<td><code>'I'</code></td>
+<td><code class="nb">'I'</code></td>
 <td>Information</td>
 <td>팝업 창</td>
 <td>확인을 누르면 계속</td>
 </tr>
 <tr>
-<td><code>'W'</code></td>
+<td><code class="nb">'W'</code></td>
 <td>Warning</td>
 <td>상태 표시줄에 노란색</td>
 <td>Selection Screen에서는 <kbd>Enter</kbd>로 넘어갈 수 있어요</td>
 </tr>
 <tr>
-<td><code>'E'</code></td>
+<td><code class="nb">'E'</code></td>
 <td>Error</td>
 <td>상태 표시줄에 빨간색</td>
 <td>Selection Screen에서는 화면에 머물러요</td>
 </tr>
+<tr>
+<td><code class="nb">'A'</code></td>
+<td>Abort</td>
+<td>팝업 창</td>
+<td>프로그램을 끝내요 (읽기용)</td>
+</tr>
+<tr>
+<td><code class="nb">'X'</code></td>
+<td>Exit</td>
+<td>덤프 화면</td>
+<td>일부러 덤프(6-8)를 내요 (읽기용)</td>
+</tr>
 </tbody>
 </table></div>
-<div class="box warn"><div class="box-t">자주 하는 실수</div><ul>
-<li>검사 코드를 <code>START-OF-SELECTION</code>에 넣으면, 이미 입력 화면을 떠난 뒤라 <code>TYPE 'E'</code>를 써도 사용자가 고쳐서 다시 실행하기 불편해요. <strong>입력값 검사는 <code>AT SELECTION-SCREEN</code></strong>에 두는 습관을 들여요.</li>
+<p><code class="nb">'A'</code>와 <code class="nb">'X'</code>는 직접 쓸 일이 거의 없어요. 회사 코드에서 만났을 때 뜻만 알면 돼요.</p>
+<div class="box warn short"><div class="box-t">자주 하는 실수</div><ul>
+<li>검사 코드를 <code class="nb">START-OF-SELECTION</code>에 넣고 <code>TYPE 'E'</code>를 쓰면, 이미 입력 화면을 떠난 뒤라 <strong>프로그램이 그 자리에서 끝나 버려요.</strong> 값을 고치려면 처음부터 다시 실행해야 해요. <strong>입력값 검사는 <code>AT SELECTION-SCREEN</code></strong>에 두는 습관을 들여요.</li>
+<li><kbd>F8</kbd>을 눌렀는데 다음으로 넘어가지 않고 메시지 글자가 비어 보이면(빨간 표시만 나오거나 아무 글자도 안 보이면) Text Symbol을 안 만들었거나 활성화하지 않은 거예요.</li>
 <li>오류 메시지를 하나로 뭉뚱그리지 말고, 상황마다 나눠 주면 사용자가 무엇을 고쳐야 할지 바로 알아요. 예를 들어 "2보다 작아요"와 "9보다 커요"를 따로 보여 줄 수 있어요.</li>
 </ul></div>
+<h3>실행을 시작한 뒤에 멈춰야 할 때</h3>
+<p>입력값은 맞는데 본 작업을 하다가 멈춰야 할 때가 있어요. 예를 들어 9장에서 배울 데이터 조회에서, 조건에 맞는 것이 한 건도 없을 때예요. 이미 <code class="nb">START-OF-SELECTION</code>에 들어온 뒤라서, 위에서 본 것처럼 <code>TYPE 'E'</code>를 쓰면 프로그램이 끝나 버려요.</p>
+<p>이럴 때는 아래처럼 <code>MESSAGE … TYPE 'S' DISPLAY LIKE 'E'.</code>와 <code class="nb">RETURN.</code> 두 줄을 짝으로 써요. 모양만 보여 주는 조각이라 지금 따라 치지는 않아요(<code class="nb">gv_count</code>는 예로 든 변수예요).</p>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">IF</span> gv_count = <span class="tk-num">0</span>.                   <span class="tk-cmt">" 예: 찾은 데이터가 0건일 때</span>
+    <span class="tk-kw">MESSAGE</span> <span class="tk-str">'조건에 맞는 데이터가 없어요'</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+    <span class="tk-kw">RETURN</span>.                          <span class="tk-cmt">" 본 작업을 여기서 끝내요</span>
+  <span class="tk-kw">ENDIF</span>.</code></pre></div>
+<ul>
+<li><code>TYPE 'S' DISPLAY LIKE 'E'</code>는 <strong>동작은 Success, 모양만 Error</strong>인 메시지예요. 빨간색으로 보이지만 프로그램은 끝나지 않아요.</li>
+<li><code class="nb">RETURN.</code>은 지금 하던 처리 덩어리를 그 자리에서 끝내요(4-8). 여기서는 <code class="nb">START-OF-SELECTION</code> 아래에 남은 코드를 모두 건너뛰어요.</li>
+<li>출력한 것이 없으니 Selection Screen으로 돌아와요. 넣었던 값이 그대로 남아 있고, 메시지는 그 화면의 상태 표시줄에 보여요. 사용자는 값을 고쳐서 다시 실행하면 돼요.</li>
+</ul>
+<p>회사 코드에서도 흔히 보는 오래된 모양이에요. 6-8에서 처음 직접 써 보고, 9장부터는 "조건에 맞는 데이터가 없어요" 같은 안내에 계속 쓰니 짝으로 기억해 두세요.</p>
+<h2 id="s5-6">5-6. 메시지를 한곳에 모으기: Message Class</h2>
+<p>5-5에서는 오류 문장을 Text Symbol <code class="nb">E01</code>에 넣었어요. 그런데 Text Symbol은 <strong>그 프로그램 안에서만</strong> 쓸 수 있어요. 다른 프로그램에서 같은 문장이 필요하면 또 만들어야 해요. 그래서 회사 프로그램은 메시지를 <strong>Message Class</strong>라는 공용 보관함에 <strong>번호</strong>를 붙여 모아 두고, 여러 프로그램이 같이 꺼내 써요. 메시지를 관리하는 T-code <code class="nb">SE91</code>에서 내 Message Class를 하나 만들어 볼게요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Message Class</b><span class="make-tc">SE91</span></div><dl><dt>Message Class</dt><dd><code class="nb">YMC_G<mark class="gno">##</mark></code></dd><dt>Short Description</dt><dd>G<mark class="gno">##</mark> 연습용 메시지</dd></dl></div>
+<div class="box try short"><div class="box-t">직접 해 보기</div><ol>
+<li>명령 필드에 <code class="nb">/nSE91</code>을 넣고 <kbd>Enter</kbd>를 눌러요.</li>
+<li><strong>Message class</strong> 칸에 <code class="nb">YMC_G<mark class="gno">##</mark></code>를 넣고 <strong>Create</strong>를 눌러요.</li>
+<li><strong>Short text</strong> 칸에 카드의 Short Description 값 <code>G<mark class="gno">##</mark> 연습용 메시지</code>를 넣고 저장(<kbd>Ctrl</kbd>+<kbd>S</kbd>)해요. 늘 하던 대로 <strong>Local Object</strong>를 골라요.</li>
+<li><strong>Messages</strong> 탭을 눌러요. <code class="nb">001</code> 줄에 <code>이름을 입력해 주세요</code>, <code class="nb">002</code> 줄에 <code>&amp;1님, 반가워요!</code>를 넣고 다시 저장해요.</li>
+</ol>
+<p>Message Class는 활성화가 따로 없어요. 저장하면 바로 쓸 수 있어요. 메시지도 Text Symbol처럼 로그인한 언어마다 따로 저장되니 늘 같은 언어로 로그인해요(5-2). 화면 모양과 순서는 버전에 따라 조금 달라요.</p></div>
+<figure class="fig" id="fig-5-6"><div class="fig-body"><div class="gui">
+  <div class="gui-head">Message Maintenance: Change Messages</div>
+  <div class="gui-body">
+    <div class="gui-row"><span class="gui-label">Message class</span><span class="gui-field">YMC_G<mark class="gno">##</mark></span></div>
+  </div>
+  <div class="gui-tabs"><span>Attributes</span><span class="on">Messages</span></div>
+  <div class="gui-body">
+    <table class="gui-grid">
+      <tr><th>Message</th><th>Message short text</th></tr>
+      <tr><td>000</td><td></td></tr>
+      <tr class="sel"><td>001</td><td>이름을 입력해 주세요</td></tr>
+      <tr class="sel"><td>002</td><td>&amp;1님, 반가워요!</td></tr>
+      <tr><td>003</td><td></td></tr>
+    </table>
+  </div>
+</div></div><figcaption><b>그림 5-6.</b>SE91의 Messages 탭 (화면 모양은 버전에 따라 조금 달라요)</figcaption></figure>
+<p><code class="nb">&amp;1</code>은 <strong>나중에 값이 들어올 빈자리</strong>예요. 메시지를 띄울 때 프로그램이 넘겨준 값이 이 자리에 들어가요. 이제 이 메시지를 쓰는 프로그램을 만들어요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_122</code></dd><dt>Title</dt><dd>[예제] Message Class로 입력 검사</dd></dl></div>
+<div class="code has-copy is-abap"><button type="button" class="copy" data-code="REPORT yg##_122 MESSAGE-ID ymc_g##.   &quot; 이 프로그램이 쓸 Message Class
 
-<div class="box modern"><div class="box-t">이렇게도 써요</div><p><code>START-OF-SELECTION</code> 안에서 꼭 멈춰야 할 때는, 빨간색처럼 보이는 Success 메시지를 띄우고 <code>RETURN</code>으로 그 블록을 끝내는 방법을 많이 써요.</p>
-<div class="code"><button type="button" class="copy" data-code="START-OF-SELECTION.
-  IF gv_total = 0.
-    MESSAGE TEXT-e02 TYPE &#x27;S&#x27; DISPLAY LIKE &#x27;E&#x27;.
-    RETURN.
-  ENDIF.">복사</button><pre><code class="lang-abap"><span class="tk-kw">START-OF-SELECTION</span>.
-  <span class="tk-kw">IF</span> gv_total = <span class="tk-num">0</span>.
-    <span class="tk-kw">MESSAGE</span> <span class="tk-kw">TEXT</span>-<span class="tk-num">e02</span> <span class="tk-kw">TYPE</span> <span class="tk-str">'S'</span> <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
-    <span class="tk-kw">RETURN</span>.
-  <span class="tk-kw">ENDIF</span>.</code></pre></div></div>
-<h2 id="s5-6">5-6. 미니 실습: 도서 대여 기간 계산</h2>
-<div class="box try"><div class="box-t">직접 해 보기</div><p>프로그램 <code>YG<mark>##</mark>_05_RENT</code>를 만들어 보세요.</p>
+PARAMETERS pa_name TYPE c LENGTH 10.
+
+AT SELECTION-SCREEN.
+  IF pa_name IS INITIAL.
+    MESSAGE e001.                     &quot; 001: 이름을 입력해 주세요
+  ENDIF.
+
+START-OF-SELECTION.
+  MESSAGE s002 WITH pa_name.          &quot; 002: &amp;1님, 반가워요!" title="코드를 복사해요">복사</button><pre><code class="lang-abap"><span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_122 MESSAGE-ID ymc_g<mark class="gno">##</mark>.   <span class="tk-cmt">" 이 프로그램이 쓸 Message Class</span>
+
+<span class="tk-kw">PARAMETERS</span> pa_name <span class="tk-kw">TYPE</span> c <span class="tk-kw">LENGTH</span> <span class="tk-num">10</span>.
+
+<span class="tk-kw">AT</span> <span class="tk-kw">SELECTION-SCREEN</span>.
+  <span class="tk-kw">IF</span> pa_name <span class="tk-kw">IS</span> <span class="tk-kw">INITIAL</span>.
+    <span class="tk-kw">MESSAGE</span> e001.                     <span class="tk-cmt">" 001: 이름을 입력해 주세요</span>
+  <span class="tk-kw">ENDIF</span>.
+
+<span class="tk-kw">START-OF-SELECTION</span>.
+  <span class="tk-kw">MESSAGE</span> s002 <span class="tk-kw">WITH</span> pa_name.          <span class="tk-cmt">" 002: &amp;1님, 반가워요!</span></code></pre></div>
+<ul>
+<li>이번에는 SAP가 넣어 준 <code class="nb">REPORT</code> 줄도 고쳐요. 마침표 앞에 <code>MESSAGE-ID ymc_g<mark class="gno">##</mark></code>를 덧붙여요. "이 프로그램은 <code class="nb">YMC_G<mark class="gno">##</mark></code>의 메시지를 써요"라는 뜻이에요. 빼먹으면 <code>MESSAGE e001.</code> 줄에서 문법 오류가 나요.</li>
+<li><code>MESSAGE e001.</code>의 <code class="nb">e</code>는 5-5에서 배운 종류(Error), <code class="nb">001</code>은 메시지 번호예요. 종류 글자를 번호 앞에 붙여 써요. <code class="nb">s002</code>는 002번을 Success로 띄워요.</li>
+<li><code>WITH pa_name</code>은 메시지의 <code class="nb">&amp;1</code> 자리에 <code class="nb">pa_name</code>의 값을 넣어요. 빈자리는 <code class="nb">&amp;1</code>부터 <code class="nb">&amp;4</code>까지 네 개를 쓸 수 있어요.</li>
+<li>빈칸을 막는 것은 <code class="nb">OBLIGATORY</code>로도 돼요. 여기서는 내가 만든 메시지를 띄워 보려고 직접 검사했어요.</li>
+</ul>
+<p>이름을 비우고 <kbd>F8</kbd>을 누르면 상태 표시줄에 빨간색으로 <code>이름을 입력해 주세요</code>가 나와요. <code class="nb">홍길동</code>을 넣고 누르면 <code>홍길동님, 반가워요!</code>가 초록색으로 나와요. <code class="nb">WRITE</code>로 출력한 것이 없어서 결과 화면은 뜨지 않고 Selection Screen에 그대로 있어요. <code class="nb">s002</code>를 <code class="nb">i002</code>로 바꾸면 같은 문장이 팝업 창으로 나와요.</p>
+<p>이름표를 붙이지 않아서 입력 칸 옆에는 <code class="nb">PA_NAME</code>이 보여요. 문장 대신 <code class="nb">E:YMC_G<mark class="gno">##</mark>:001</code> 같은 글자가 나오면 SE91의 Messages 탭에서 그 번호에 글자를 넣고 저장했는지 봐요.</p>
+<h3>회사 코드에서 만나는 모양</h3>
+<div class="code is-abap"><pre><code class="lang-abap"><span class="tk-cmt">" ① Message Class 이름을 괄호 안에 적은 꼴</span>
+<span class="tk-kw">MESSAGE</span> s001(ymc_g<mark class="gno">##</mark>) <span class="tk-kw">DISPLAY</span> <span class="tk-kw">LIKE</span> <span class="tk-str">'E'</span>.
+
+<span class="tk-cmt">" ② 다른 코드가 남긴 메시지를 그대로 다시 띄우는 꼴</span>
+<span class="tk-kw">MESSAGE</span> ID sy-msgid <span class="tk-kw">TYPE</span> sy-msgty NUMBER sy-msgno
+        <span class="tk-kw">WITH</span> sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.</code></pre></div>
+<ul>
+<li>①처럼 괄호 안에 Message Class를 적으면 <code class="nb">REPORT</code> 줄에 <code class="nb">MESSAGE-ID</code>가 없어도 돼요. 회사 코드의 <code>MESSAGE e001(zsd) WITH …</code>가 이 꼴이에요. 뒤에는 5-5의 <code>DISPLAY LIKE 'E'</code>도 붙일 수 있어요.</li>
+<li>②는 <strong>남이 남긴 메시지를 그대로 다시 띄우는 줄</strong>이에요. 10장에서 배울 Function Module 같은 다른 코드는 메시지를 직접 띄우지 않고 시스템 필드에 적어만 둘 때가 있어요. <code class="nb">sy-msgid</code>는 Message Class, <code class="nb">sy-msgty</code>는 종류, <code class="nb">sy-msgno</code>는 번호, <code class="nb">sy-msgv1</code>~<code class="nb">sy-msgv4</code>는 <code class="nb">&amp;1</code>~<code class="nb">&amp;4</code>에 들어갈 값이에요. 지금은 한 덩어리로 알아보기만 하면 돼요. 10-3에서 다시 만나요.</li>
+<li>코드에서 <code class="nb">e001</code> 같은 메시지 번호를 더블클릭하면 SE91의 그 메시지로 바로 가요. 문장을 확인하거나 고칠 때 편해요.</li>
+</ul>
+<p>이 교재의 짧은 예제는 5-5처럼 글자를 따옴표 안에 그대로 쓰거나 Text Symbol을 써요. 회사 프로그램은 Message Class를 써요. 세 가지 모두 읽을 줄 알면 돼요.</p>
+<h2 id="s5-7">5-7. 미니 실습: 도서 대여 기간 계산</h2>
+<p>이 장에서 배운 입력 칸, 기본값, 입력 검사를 한 프로그램에 모아 볼게요.</p>
+<div class="make"><div class="make-t"><span class="make-k">새로 만들기</span><b>Program</b><span class="make-tc">SE38</span></div><dl><dt>Program</dt><dd><code class="nb">YG<mark class="gno">##</mark>_123</code></dd><dt>Title</dt><dd>[실습] 도서 대여 기간 계산</dd></dl></div>
+<div class="box try"><div class="box-t">직접 해 보기</div><p>위 카드대로 프로그램을 만들고, 아래 순서로 코드를 써 보세요.</p>
 <ol>
-<li>입력 칸 세 개를 만들어요.
-   - <code>pa_date</code> 대여일(<code>TYPE d</code>) : <code>INITIALIZATION</code>에서 <strong>오늘 날짜</strong>를 기본값으로 넣어요.
-   - <code>pa_days</code> 대여 일수(<code>TYPE i</code>) : <strong>필수 입력</strong>이에요.
-   - <code>pa_vip</code> VIP 회원(체크박스)</li>
-<li>Selection Text로 <code>대여일</code>, <code>대여 일수</code>, <code>VIP 회원</code> 이름표를 붙여요.</li>
-<li><code>AT SELECTION-SCREEN</code>에서 대여 일수가 1보다 작으면 <code>TEXT-e01</code>, 14보다 크면 <code>TEXT-e02</code> 오류를 보여 줘요.</li>
-<li>반납일 = 대여일 + 대여 일수. <strong>VIP면 7일 더</strong> 빌릴 수 있어요.</li>
-<li>대여일, 대여 일수, 반납일을 출력해요.</li>
-</ol></div>
-
-<figure class="fig" id="fig-5-6"><div class="fig-body"><div class="pair">
+<li>입력 칸 세 개를 만들어요.<ul>
+<li><code class="nb">pa_date</code> 대여일(<code>TYPE sy-datum</code>): 기본값은 <strong>오늘 날짜</strong>예요. <code>DEFAULT sy-datum</code>으로도 되지만, 이번에는 연습 삼아 <code class="nb">INITIALIZATION</code>에서 넣어 봐요.</li>
+<li><code class="nb">pa_days</code> 대여 일수(<code>TYPE i</code>): <strong>필수 입력</strong>이에요.</li>
+<li><code class="nb">pa_vip</code> VIP 회원(체크박스)</li>
+</ul>
+</li>
+<li>여기까지 쓴 코드를 저장하고 활성화해요. 그다음 Selection Text와 Text Symbol을 아래 표대로 넣고, 그 화면에서도 활성화해요(5-2).</li>
+<li><code>AT SELECTION-SCREEN</code>에서 대여 일수가 1보다 작으면 <code class="nb">TEXT-e01</code>, 14보다 크면 <code class="nb">TEXT-e02</code> 오류를 보여 줘요.</li>
+<li>반납일 = 대여일 + 대여 일수. <strong>VIP면 7일 더</strong> 빌릴 수 있어요. 반납일을 담을 변수도 <code>TYPE sy-datum</code>으로 만들어요. <code>TYPE d</code>로 만들면 화면에 점 없이 나와요(3-7).</li>
+<li>대여일, 대여 일수, 반납일을 출력해요. VIP 회원이면 반납일 앞에 <code>VIP 회원이라 7일 더 빌릴 수 있어요</code>도 한 줄 출력해요(그림 5-7).</li>
+<li>대여 일수에 <code class="nb">20</code>과 <code class="nb">-1</code>을 차례로 넣어서 두 오류 메시지가 나오는지 확인해요. <code class="nb">-1</code>은 넣고 나면 <code class="nb">1-</code>처럼 부호가 뒤에 보일 수 있어요. <code class="nb">0</code>은 SAP가 빈칸으로 봐서, 내가 만든 메시지 대신 필수 칸을 채우라는 메시지가 먼저 나올 수 있어요.</li>
+</ol>
+<div class="table-wrap"><table class="short">
+<thead>
+<tr>
+<th>탭</th>
+<th>이름</th>
+<th>Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selection Texts</td>
+<td><code class="nb">PA_DATE</code></td>
+<td>대여일</td>
+</tr>
+<tr>
+<td>Selection Texts</td>
+<td><code class="nb">PA_DAYS</code></td>
+<td>대여 일수</td>
+</tr>
+<tr>
+<td>Selection Texts</td>
+<td><code class="nb">PA_VIP</code></td>
+<td>VIP 회원</td>
+</tr>
+<tr>
+<td>Text Symbols</td>
+<td><code class="nb">E01</code></td>
+<td>대여 일수는 1일 이상이어야 해요</td>
+</tr>
+<tr>
+<td>Text Symbols</td>
+<td><code class="nb">E02</code></td>
+<td>대여 일수는 최대 14일이에요</td>
+</tr>
+</tbody>
+</table></div></div>
+<figure class="fig" id="fig-5-7"><div class="fig-body"><div class="pair">
 <div class="gui">
-  <div class="gui-head">도서 대여</div>
+  <div class="gui-head">[실습] 도서 대여 기간 계산</div>
   <div class="gui-apptool"><span class="gui-ico">⊕<i>Execute F8</i></span></div>
   <div class="gui-body">
     <div class="gui-row"><span class="gui-label">대여일</span><span class="gui-field s">2026.11.17</span></div>
@@ -299,65 +556,28 @@ START-OF-SELECTION.
   </div>
 </div>
 <div class="gui">
-  <div class="gui-head">도서 대여</div>
+  <div class="gui-head">[실습] 도서 대여 기간 계산</div>
   <div class="gui-body list">
-<pre class="gui-list">대여일:    2026.11.17
+<pre class="gui-list">대여일: 2026.11.17
 대여 일수:         10
 VIP 회원이라 7일 더 빌릴 수 있어요
-반납일:    2026.12.04</pre>
+반납일: 2026.12.04</pre>
   </div>
 </div>
-</div></div><figcaption><b>그림 5-6.</b>미니 실습: 입력 화면과 결과 (VIP 체크, 10일)</figcaption></figure>
-
-<details class="answer solo"><summary>예시 답안 보기</summary><div class="code"><button type="button" class="copy" data-code="*&amp;---------------------------------------------------------------------*
-* 설명: PARAMETERS, INITIALIZATION, AT SELECTION-SCREEN 연습
-* Text Symbol  E01: 대여 일수는 1일 이상이어야 해요
-*              E02: 대여 일수는 최대 14일이에요
-* Selection Text PA_DATE 대여일 / PA_DAYS 대여 일수 / PA_VIP VIP 회원
-*&amp;---------------------------------------------------------------------*
-REPORT yg##_05_rent.
-
-PARAMETERS: pa_date TYPE d,
-            pa_days TYPE i OBLIGATORY,
-            pa_vip  AS CHECKBOX.
-
-DATA gv_return TYPE d.
-
-INITIALIZATION.
-  pa_date = sy-datum.                  &quot; 기본값: 오늘
-
-AT SELECTION-SCREEN.
-  &quot; 대여 일수 검사 (상황별로 메시지를 나눠요)
-  IF pa_days &lt; 1.
-    MESSAGE TEXT-e01 TYPE &#x27;E&#x27;.
-  ELSEIF pa_days &gt; 14.
-    MESSAGE TEXT-e02 TYPE &#x27;E&#x27;.
-  ENDIF.
-
-START-OF-SELECTION.
-  gv_return = pa_date + pa_days.
-
-  WRITE: / &#x27;대여일:&#x27;,    pa_date,
-         / &#x27;대여 일수:&#x27;, pa_days.
-
-  IF pa_vip = &#x27;X&#x27;.
-    gv_return = gv_return + 7.         &quot; VIP는 7일 더
-    WRITE / &#x27;VIP 회원이라 7일 더 빌릴 수 있어요&#x27;.
-  ENDIF.
-
-  WRITE: / &#x27;반납일:&#x27;, gv_return.">복사</button><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
+</div></div><figcaption><b>그림 5-7.</b>미니 실습: 입력 화면과 결과 (VIP 체크, 10일. 숫자 앞 공백 칸 수는 조금 달라도 괜찮아요)</figcaption></figure>
+<details class="answer solo"><summary>예시 답안 보기</summary><div class="code long is-abap"><pre><code class="lang-abap"><span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
 <span class="tk-cmt">* 설명: PARAMETERS, INITIALIZATION, AT SELECTION-SCREEN 연습</span>
 <span class="tk-cmt">* Text Symbol  E01: 대여 일수는 1일 이상이어야 해요</span>
 <span class="tk-cmt">*              E02: 대여 일수는 최대 14일이에요</span>
 <span class="tk-cmt">* Selection Text PA_DATE 대여일 / PA_DAYS 대여 일수 / PA_VIP VIP 회원</span>
 <span class="tk-cmt">*&amp;---------------------------------------------------------------------*</span>
-<span class="tk-kw">REPORT</span> yg<mark>##</mark>_05_rent.
+<span class="tk-kw">REPORT</span> yg<mark class="gno">##</mark>_123.
 
-<span class="tk-kw">PARAMETERS</span>: pa_date <span class="tk-kw">TYPE</span> d,
+<span class="tk-kw">PARAMETERS</span>: pa_date <span class="tk-kw">TYPE</span> sy-datum,
             pa_days <span class="tk-kw">TYPE</span> i <span class="tk-kw">OBLIGATORY</span>,
             pa_vip  <span class="tk-kw">AS</span> <span class="tk-kw">CHECKBOX</span>.
 
-<span class="tk-kw">DATA</span> gv_return <span class="tk-kw">TYPE</span> d.
+<span class="tk-kw">DATA</span> gv_return <span class="tk-kw">TYPE</span> sy-datum.          <span class="tk-cmt">" TYPE d로 만들면 점 없이 나와요 (3-7)</span>
 
 <span class="tk-kw">INITIALIZATION</span>.
   pa_date = sy-datum.                  <span class="tk-cmt">" 기본값: 오늘</span>
@@ -382,31 +602,33 @@ START-OF-SELECTION.
   <span class="tk-kw">ENDIF</span>.
 
   <span class="tk-kw">WRITE</span>: / <span class="tk-str">'반납일:'</span>, gv_return.</code></pre></div></details>
-
 <div class="box quiz"><div class="box-t">확인 문제</div><ol>
 <li><code>PARAMETERS pa_student TYPE c LENGTH 10.</code>은 왜 오류가 날까요?</li>
-<li>입력 칸 옆에 <code>PA_DAYS</code>가 그대로 보여요. 무엇을 하면 <code>대여 일수</code>로 바꿀 수 있을까요?</li>
+<li>입력 칸 옆에 <code class="nb">PA_DAYS</code>가 그대로 보여요. 무엇을 하면 <code>대여 일수</code>로 바꿀 수 있을까요?</li>
 <li>아래 네 가지를 실행되는 순서대로 놓아 보세요.
-   <code>START-OF-SELECTION</code>, Selection Screen 표시, <code>INITIALIZATION</code>, <code>AT SELECTION-SCREEN</code></li>
+   <code class="nb">START-OF-SELECTION</code>, Selection Screen 표시, <code class="nb">INITIALIZATION</code>, <code>AT SELECTION-SCREEN</code></li>
 <li>입력값이 틀렸을 때 사용자가 바로 고칠 수 있게 하려면, 검사 코드를 어느 이벤트에 두고 어떤 TYPE의 메시지를 써야 할까요?</li>
-<li>체크박스 <code>pa_vip</code>가 체크되었는지 어떻게 확인할까요?</li>
+<li>체크박스 <code class="nb">pa_vip</code>가 체크되었는지 어떻게 확인할까요?</li>
+<li><code class="nb">START-OF-SELECTION</code> 안에서 "데이터가 없어요"라고 알리고 멈추려고 해요. <code>TYPE 'E'</code> 메시지 대신 어떤 두 줄을 쓸까요?</li>
+<li>회사 코드에서 <code>MESSAGE e002(zlib) WITH gv_name.</code>을 만났어요. <code class="nb">e</code>, <code class="nb">002</code>, <code class="nb">zlib</code>, <code>WITH gv_name</code>은 각각 무슨 뜻일까요?</li>
 </ol></div>
-
-<details class="answer solo"><summary>정답 보기</summary><ol>
-<li><code>PARAMETERS</code> 이름은 <strong>8글자까지</strong>인데 <code>pa_student</code>는 10글자예요. <code>pa_stud</code>처럼 줄여요.</li>
-<li><strong>Goto → Text Elements → Selection Texts</strong>에서 <code>PA_DAYS</code>의 Text에 <code>대여 일수</code>를 넣고 <strong>활성화</strong>해요.</li>
-<li><code>INITIALIZATION</code> → Selection Screen 표시 → <code>AT SELECTION-SCREEN</code> → <code>START-OF-SELECTION</code></li>
+<details class="answer"><summary>정답 보기</summary><ol>
+<li><code class="nb">PARAMETERS</code> 이름은 <strong>8글자까지</strong>인데 <code class="nb">pa_student</code>는 10글자예요. <code class="nb">pa_stud</code>처럼 줄여요.</li>
+<li><strong>Goto → Text Elements → Selection Texts</strong>에서 <code class="nb">PA_DAYS</code>의 Text에 <code>대여 일수</code>를 넣고 <strong>활성화</strong>해요.</li>
+<li><code class="nb">INITIALIZATION</code> → Selection Screen 표시 → <code>AT SELECTION-SCREEN</code> → <code class="nb">START-OF-SELECTION</code></li>
 <li><strong><code>AT SELECTION-SCREEN</code></strong>에서 <strong><code>TYPE 'E'</code></strong> 메시지를 써요. 그러면 화면에 머물러서 바로 고칠 수 있어요.</li>
-<li><code>IF pa_vip = 'X'.</code>로 확인해요. 체크하지 않으면 공백이에요.</li>
+<li><code>IF pa_vip = 'X'.</code>로 확인해요. <code>IF pa_vip = abap_true.</code>라고 써도 같아요. 체크하지 않으면 빈칸이에요.</li>
+<li><code>MESSAGE … TYPE 'S' DISPLAY LIKE 'E'.</code> 다음 줄에 <code class="nb">RETURN.</code>을 써요. 프로그램이 끝나지 않고 Selection Screen으로 돌아와서 값을 고칠 수 있어요.</li>
+<li><code class="nb">e</code>는 종류(Error), <code class="nb">002</code>는 메시지 번호, <code class="nb">zlib</code>은 그 메시지가 들어 있는 Message Class 이름이에요. <code>WITH gv_name</code>은 메시지 글자의 <code class="nb">&amp;1</code> 자리에 <code class="nb">gv_name</code>의 값을 넣으라는 뜻이에요.</li>
 </ol></details>
-
 <div class="box summary"><div class="box-t">정리</div><ul>
-<li><code>PARAMETERS</code>는 입력 칸이 생기는 변수예요. 이름은 8글자까지예요.</li>
-<li><code>OBLIGATORY</code>는 필수, <code>DEFAULT</code>는 기본값, <code>AS CHECKBOX</code>와 <code>RADIOBUTTON GROUP</code>은 체크박스와 라디오 버튼이에요.</li>
+<li><code class="nb">PARAMETERS</code>는 입력 칸이 생기는 변수예요. 이름은 8글자까지예요.</li>
+<li><code class="nb">OBLIGATORY</code>는 필수, <code class="nb">DEFAULT</code>는 기본값, <code>LOWER CASE</code>는 소문자 그대로 받기, <code>AS CHECKBOX</code>와 <code>RADIOBUTTON GROUP</code>은 체크박스와 라디오 버튼이에요.</li>
+<li>체크했는지는 <code class="nb">'X'</code>로 확인해요. <code class="nb">abap_true</code>는 <code class="nb">'X'</code>, <code class="nb">abap_false</code>는 빈칸과 같은 값이에요.</li>
 <li>입력 칸 이름표는 <strong>Selection Text</strong>로 붙이고, 꼭 활성화해요.</li>
-<li>이벤트 순서: <code>INITIALIZATION</code> → Selection Screen → <code>AT SELECTION-SCREEN</code> → <code>START-OF-SELECTION</code>.</li>
-<li>입력값 검사는 <code>AT SELECTION-SCREEN</code>에서 <code>MESSAGE … TYPE 'E'</code>로 해요. 메시지 문장은 Text Symbol로 빼 둬요.</li>
+<li>이벤트 순서: <code class="nb">INITIALIZATION</code> → Selection Screen → <code>AT SELECTION-SCREEN</code> → <code class="nb">START-OF-SELECTION</code>.</li>
+<li>입력값 검사는 <code>AT SELECTION-SCREEN</code>에서 <code>MESSAGE … TYPE 'E'</code>로 해요. 메시지 글자는 따옴표 안에 바로 쓰거나 Text Symbol로 빼 둬요.</li>
+<li>본 작업을 시작한 뒤에 멈출 때는 <code>MESSAGE … TYPE 'S' DISPLAY LIKE 'E'.</code> 다음에 <code class="nb">RETURN.</code>을 써요.</li>
+<li>회사 프로그램은 메시지를 <strong>Message Class</strong>에 번호로 모아 두고 <code>MESSAGE e001(클래스) WITH 값.</code>처럼 꺼내 써요.</li>
 </ul></div>
-
-<div class="box next"><div class="box-t">다음 장 예고</div><p>프로그램이 길어지면 "왜 결과가 이렇게 나오지?" 싶은 순간이 꼭 와요. 6장에서는 프로그램을 <strong>한 줄씩 멈춰 가며</strong> 변수 값을 들여다보는 <strong>디버거</strong>를 배워요.</p></div>
-</section>
+<div class="box next short"><div class="box-t">다음 장 예고</div><p>프로그램이 길어지면 "왜 결과가 이렇게 나오지?" 싶은 순간이 꼭 와요. 6장에서는 프로그램을 <strong>한 줄씩 멈춰 가며</strong> 변수 값을 들여다보는 <strong>디버거</strong>를 배워요.</p></div></section>
