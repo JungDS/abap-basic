@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>ABAP TYPE 한눈에 이해하기 | 변수의 모양</title>
+  <style>
+    :root{--ink:#182a3f;--muted:#5c6f82;--line:#dce5ed;--paper:#ffffff;--bg:#f5f8fc;--blue:#306dcc;--bluewash:#eaf3ff;--green:#21805f;--greenwash:#e8f7f0;--violet:#7850bb;--violetwash:#f2edfc;--shadow:0 15px 45px rgba(29,56,87,.08)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.58;font-size:15px;word-break:keep-all}
+    button,a{font:inherit}
+    button{cursor:pointer}
+    a{color:var(--blue);text-underline-offset:3px}
+    .wrap{max-width:1110px;padding:0 28px;margin:0 auto}
+    .topbar{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center}
+    .topbar .wrap{display:flex;justify-content:space-between;align-items:center;width:100%}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:15px;letter-spacing:-.035em}
+    .brandmark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#163b75;color:#fff;font-size:13px;letter-spacing:.01em}
+    .top-actions{display:flex;gap:8px;align-items:center}
+    .chip{background:#f3f6fa;color:#52677b;padding:6px 10px;border-radius:100px;font-size:12px;font-weight:700}
+    .print{background:#fff;border:1px solid #cbd8e4;border-radius:9px;color:#38506a;padding:8px 14px;font-size:13px;font-weight:700}
+    .print:hover{background:#edf4fc}
+    .hero{padding:56px 0 23px}
+    .eyebrow{font-size:12px;font-weight:900;letter-spacing:.13em;color:#3c6fba;text-transform:uppercase}
+    h1{font-size:clamp(30px,4.8vw,48px);letter-spacing:-.065em;line-height:1.23;margin:10px 0 12px}
+    .subtitle{color:var(--muted);font-size:16px;margin:0}
+    .intro-strong{color:#1e5eae;font-weight:800}
+    .overview{margin:20px 0 18px;padding:28px 25px 24px;background:var(--paper);border:1px solid #e2e9f0;border-radius:22px;box-shadow:var(--shadow)}
+    .section-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 20px}
+    .section-top h2{font-size:20px;letter-spacing:-.045em;margin:0}
+    .section-top .hint{font-size:12px;color:#7790a5}
+    .flow-head{display:flex;align-items:center;gap:12px;margin:0 0 19px}
+    .code-bubble{border:1px solid #cbdcf0;background:#f3f8fe;color:#1b5ea8;border-radius:10px;padding:7px 13px;font:800 14px/1.4 "Cascadia Code",Consolas,monospace;letter-spacing:.02em}
+    .flow-head .connector{height:1px;min-width:15px;flex:1;background:linear-gradient(90deg,#9bbbe3,#e4e8f0)}
+    .flow-head .prompt{font-weight:750;font-size:14px;color:#465b71}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+    .type-card{display:flex;flex-direction:column;background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:19px 17px 17px;transition:transform .2s,border-color .2s;min-width:0}
+    .type-card:hover{transform:translateY(-3px)}
+    .type-card.one{border-color:#bad7fb;background:linear-gradient(180deg,#f7fbff 0%,white 50%)}
+    .type-card.two{border-color:#b7e1d0;background:linear-gradient(180deg,#f5fcf8 0%,white 50%)}
+    .type-card.three{border-color:#d4c6f3;background:linear-gradient(180deg,#faf7ff 0%,white 50%)}
+    .tag{font-size:11px;font-weight:850;letter-spacing:.065em;display:inline-flex;align-items:center;gap:6px}
+    .tag:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .one .tag{color:var(--blue)} .two .tag{color:var(--green)} .three .tag{color:var(--violet)}
+    .type-card h3{font-size:22px;letter-spacing:-.05em;margin:6px 0 3px;line-height:1.3}
+    .type-card p{margin:0;color:#5b7185;font-size:12px;min-height:38px}
+    .type-names{display:block;margin:8px 0 14px;color:#466079;font:600 11px/1.7 "Cascadia Code",Consolas,monospace;min-height:34px}
+    .picture{height:148px;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;border:1px dashed #d7e2ec;background:#fafcfe;padding:13px}
+    .one .picture{background:#f2f8ff;border-color:#c7defb}.two .picture{background:#f2fbf6;border-color:#bfe5d2}.three .picture{background:#f7f3fd;border-color:#d9cbef}
+    .micro-label{font-size:10px;font-weight:700;color:#7690a8;letter-spacing:.06em}
+    .single{width:83%;height:48px;border:2px solid #679fe5;border-radius:8px;background:#dcecff;display:flex;align-items:center;justify-content:center;color:#235d9b;font:750 14px/1 Consolas,monospace;box-shadow:0 3px 0 #c3d9f6}
+    .struct{width:91%;border:2px solid #7dc5a4;border-radius:8px;overflow:hidden;display:grid;grid-template-columns:43% 57%;font-size:11px;background:#fff}
+    .struct span{padding:6px 8px;border-bottom:1px solid #c3e5d4;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .struct span:nth-last-child(-n+2){border-bottom:0}.struct span:nth-child(odd){font:700 10px/1.7 Consolas,monospace;background:#d9f3e6;color:#246f50}.struct span:nth-child(even){color:#315847}
+    .tiny-table{border:2px solid #b39adf;border-radius:8px;overflow:hidden;width:100%;text-align:center;background:white;font:650 10px/1.3 Consolas,monospace}
+    .tiny-row{display:grid;grid-template-columns:1fr 2fr 1.2fr}
+    .tiny-row span{padding:7px 3px;border-right:1px solid #e6dcf5;border-bottom:1px solid #e6dcf5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .tiny-row span:last-child{border-right:0}.tiny-row:last-child span{border-bottom:0}.tiny-head{background:#e9dffc;color:#663fa2}
+    .result{font-size:13px;font-weight:800;margin-top:13px;display:flex;align-items:center;justify-content:space-between}
+    .result a{font-size:11px;font-weight:750;text-decoration:none;color:inherit;border-bottom:1px dotted currentColor}
+    .one .result{color:var(--blue)} .two .result{color:var(--green)} .three .result{color:var(--violet)}
+    .takeaway{margin:16px 0 0;display:flex;align-items:center;gap:10px;padding:14px 17px;background:#f4f7fb;border-radius:11px;color:#42576b;font-size:13px}
+    .takeaway strong{color:#213e63}
+    .takeaway .light{color:#73899d}
+    .section-label{margin:39px 0 16px;display:flex;gap:12px;align-items:baseline}
+    .section-label h2{margin:0;font-size:24px;letter-spacing:-.05em}
+    .section-label span{font-size:12px;color:#7a8c9e}
+    .detail{background:white;border:1px solid #e0e7ee;border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 4px 20px rgba(36,65,96,.035)}
+    .detail-header{padding:20px 24px 14px;display:flex;gap:14px;align-items:flex-start}
+    .num{display:grid;place-items:center;border-radius:10px;width:34px;height:34px;flex:0 0 auto;background:#eaf2ff;color:#336ebd;font:800 14px Consolas,monospace}
+    .detail-header h3{font-size:19px;margin:0 0 3px;letter-spacing:-.045em}
+    .detail-header p{margin:0;font-size:13px;color:var(--muted)}
+    .body{padding:0 24px 21px}
+    .data-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+    .data-table th{color:#587188;background:#f2f6fa;text-align:left;font-size:12px;padding:10px 12px;border-top:1px solid #e6edf3;border-bottom:1px solid #e6edf3}
+    .data-table td{padding:8px 12px;border-bottom:1px solid #e9eef3;vertical-align:middle}
+    .data-table tbody tr:last-child td{border-bottom:0}
+    .data-table code{color:#2365ad;font-weight:800;font-size:12px}
+    .muted{color:#6d8295}
+    .code{border:1px solid #253b54;border-radius:11px;background:#18283c;color:#e7f0ff;padding:15px 17px;overflow:auto;margin:13px 0 0;white-space:pre;font:13px/1.75 "Cascadia Code",Consolas,monospace;tab-size:2}
+    .code .kw{color:#94c8ff}.code .ref{color:#ffe2a1}.code .comment{color:#94aabf}
+    .callout{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:#f3f7fb;border-radius:10px;margin-top:13px;font-size:12px;color:#50677d}
+    .callout .bulb{color:#3274c7;font-size:16px;line-height:1.1}
+    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .mini{border:1px solid #e1e9f0;border-radius:12px;padding:16px;min-width:0}
+    .mini h4{margin:0;font-size:15px;letter-spacing:-.035em}
+    .mini p{font-size:12px;color:#667d90;margin:5px 0 0}
+    .mini code{color:#2169ae;font-size:12px;font-weight:750}
+    .mini .code{font-size:12px;margin:11px 0 0;padding:11px 12px;line-height:1.75}
+    .fine{font-size:12px;color:#72869a;margin-top:11px}
+    .key-intro{font-size:14px;color:#566c80;margin:0 0 17px}
+    .key-compare{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}
+    .key-card{min-width:0;border:1px solid #dce5ed;border-radius:13px;padding:17px;background:#fff}
+    .key-card h4{margin:0 0 5px;font-size:16px;letter-spacing:-.035em}
+    .key-card p{font-size:12px;color:#61768a;margin:0 0 12px;min-height:62px}
+    .key-card .micro-title{display:block;font-size:10px;font-weight:800;color:#627990;letter-spacing:.02em;margin-bottom:8px}
+    .key-card.recommend{border-color:#88bea9;background:linear-gradient(180deg,#f7fcf9,#fff 60%)}
+    .fields{display:flex;gap:4px;flex-wrap:wrap;align-content:flex-start;min-height:62px}
+    .fields span{font:700 10px/1.3 Consolas,monospace;border:1px solid #dbe4ed;border-radius:6px;background:#f3f6f9;color:#617487;padding:6px 7px}
+    .fields .active{background:#def1e9;border-color:#73b599;color:#216f51}
+    .key-legend{font-size:11px;color:#697c8d;margin:6px 0 0}
+    .key-legend::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:#a2d7be;margin-right:5px}
+    .key-card .code{font-size:11px;line-height:1.7;margin-top:12px;padding:10px 11px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .key-result{border-top:1px dashed #dce7ee;margin-top:12px;padding-top:10px;color:#385269;font-size:12px}
+    .key-result strong{color:#18704d}
+    .key-explain{border:1px solid #dce6ee;background:#f7f9fc;border-radius:13px;padding:17px 19px;margin-top:14px}
+    .key-explain h4{margin:0 0 9px;font-size:15px}
+    .key-explain p{margin:0;font-size:13px;color:#536c80}
+    .key-explain p+p{margin-top:8px}
+    .scenario-table{width:100%;border-collapse:collapse;margin-top:13px;font-size:12px}
+    .scenario-table td,.scenario-table th{padding:10px 12px;border-bottom:1px solid #e4ebf2;text-align:left;vertical-align:top}
+    .scenario-table th{font-size:11px;background:#edf3f8;color:#4e6a83}
+    .scenario-table tr:last-child td{border-bottom:0}
+    .scenario-table code{font:750 11px Consolas,monospace;color:#2269a8}
+    .recommended-example{margin-top:16px;border:1px solid #bfdfcf;background:#f7fcf9;border-radius:12px;padding:17px}
+    .recommended-example h4{margin:0 0 6px;font-size:15px}
+    .recommended-example p{margin:0;color:#557363;font-size:12px}
+    .recommended-example .code{margin-top:12px}
+    .key-question{margin:26px 0 0;background:#17395e;border-radius:15px;color:#fff;padding:20px 24px;display:flex;align-items:center;gap:28px;justify-content:space-between}
+    .key-question h3{margin:0 0 3px;font-size:18px;letter-spacing:-.03em}.key-question p{margin:0;color:#bed3e9;font-size:12px}
+    .key-items{display:flex;gap:8px;flex-wrap:wrap;justify-content:end}
+    .key-items span{border:1px solid #57728e;border-radius:100px;padding:7px 10px;font-weight:700;font-size:12px;white-space:nowrap}
+    .key-items strong{color:#b5d9ff}
+    footer{padding:24px 0 35px;color:#8293a5;font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    footer a{color:#627c95}
+    .term{display:inline;border:0;padding:0 2px;background:transparent;color:inherit;border-bottom:1px dotted #6a9fcd;font-weight:inherit;vertical-align:baseline}
+    .term:hover{color:#156abc;border-bottom-style:solid}
+    .term:focus-visible{outline:2px solid #2867b3;border-radius:2px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(16,30,48,.55);z-index:99;display:none;align-items:center;justify-content:center;padding:22px}
+    .modal-backdrop.open{display:flex}
+    .modal{position:relative;width:min(100%,510px);border-radius:18px;background:#fff;box-shadow:0 26px 90px rgba(0,0,0,.25);padding:30px}
+    .modal .small{font-size:11px;font-weight:850;color:#3770b8;letter-spacing:.1em}
+    .modal h2{font-size:23px;letter-spacing:-.04em;margin:7px 0 10px}.modal p{margin:0;color:#53687c;font-size:14px;line-height:1.8}
+    .close{position:absolute;top:14px;right:14px;border:none;background:#f2f5f8;border-radius:9px;width:31px;height:31px;color:#53687b;font-size:20px;line-height:1}
+    @media(max-width:740px){.wrap{padding:0 16px}.hero{padding-top:35px}.overview{padding:21px 15px}.cards{grid-template-columns:1fr}.type-card{padding:18px}.type-card p,.type-names{min-height:0}.picture{height:130px}.flow-head{gap:8px}.flow-head .prompt{font-size:12px}.section-top .hint{display:none}.mini-grid{grid-template-columns:1fr}.section-label{flex-direction:column;gap:2px;align-items:flex-start}.detail-header{padding:17px 16px 12px}.body{padding:0 16px 17px}.data-table th,.data-table td{padding:8px 6px;font-size:11px}.data-table code{font-size:11px}.key-compare{grid-template-columns:1fr}.key-card p{min-height:0}.fields{min-height:0}.key-explain{padding:13px}.scenario-table td,.scenario-table th{padding:9px 7px;font-size:11px}.key-question{flex-direction:column;align-items:start;gap:14px}.key-items{justify-content:start}.topbar{height:62px}.chip{display:none}}
+    @page{size:A4;margin:12mm}
+    @media print{
+      :root{--bg:#fff}
+      html,body{background:#fff !important;font-size:11px;line-height:1.4;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .topbar,.no-print{display:none!important}
+      .wrap{max-width:100%;padding:0}
+      .hero{padding:0 0 12px}
+      h1{font-size:29px;margin:5px 0}.subtitle{font-size:11px}.eyebrow{font-size:9px}
+      .overview{margin:10px 0 13px;padding:15px;border-radius:13px;box-shadow:none}
+      .section-top{margin-bottom:10px}.section-top h2{font-size:16px}
+      .cards{gap:9px}.type-card{padding:12px 10px;border-radius:10px}.type-card h3{font-size:17px}.type-card p{font-size:10px;min-height:28px}.type-names{font-size:9px;min-height:25px;margin:5px 0 9px}.picture{height:100px;padding:8px}.result{margin-top:8px;font-size:11px}.takeaway{padding:9px;margin-top:9px;font-size:10px}.micro-label{font-size:8px}
+      .section-label{margin:15px 0 8px}.section-label h2{font-size:17px}
+      .detail{break-inside:avoid;margin-bottom:10px;border-radius:12px}.detail-header{padding:12px 14px 9px}.detail-header h3{font-size:14px}.detail-header p{font-size:10px}.num{width:25px;height:25px;font-size:11px}.body{padding:0 14px 13px}
+      .data-table th,.data-table td{font-size:10px;padding:4px 7px}.data-table code{font-size:10px}
+      .mini{padding:11px}.mini h4{font-size:12px}.mini p,.mini code{font-size:10px}.mini .code{font-size:9px;padding:8px;margin:7px 0 0}
+      .code{font-size:10px;padding:9px;margin-top:8px;border-radius:7px}.callout{padding:8px;font-size:10px;margin-top:8px}.fine{font-size:9px;margin-top:8px}
+      .key-compare{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.key-card{padding:10px;border-radius:9px;break-inside:avoid}.key-card h4{font-size:12px}.key-card p{font-size:9px;min-height:42px;margin-bottom:8px}.key-card .code{font-size:8px;padding:7px}.key-card .micro-title{font-size:8px}.fields{min-height:46px;gap:3px}.fields span{font-size:7px;padding:4px}.key-result,.key-legend{font-size:9px}.key-intro{font-size:10px}.key-explain{padding:10px;margin-top:8px;break-inside:avoid}.key-explain p{font-size:9px}.key-explain h4{font-size:11px}.scenario-table td,.scenario-table th{padding:5px;font-size:9px}.scenario-table code{font-size:8px}.recommended-example{padding:11px;break-inside:avoid}.recommended-example h4{font-size:11px}.recommended-example p{font-size:9px}
+      .key-question{padding:12px 15px;margin-top:12px;break-inside:avoid}.key-question h3{font-size:14px}.key-items span{font-size:9px;padding:5px 8px}
+      footer{font-size:9px;padding:9px 0}
+      .modal-backdrop{display:none!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand"><span class="brandmark">AB</span> ABAP · 처음 배우는 데이터 선언</div>
+      <div class="top-actions"><span class="chip">01 / TYPE 이해하기</span><button class="print" type="button" onclick="window.print()">⎙ PDF로 인쇄</button></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">ABAP BASICS / DATA OBJECT</div>
+      <h1><code style="font-family:Consolas,monospace;color:#1e64b0">TYPE</code> 뒤에 무엇을 적으면<br>어떤 변수가 만들어질까요?</h1>
+      <p class="subtitle"><strong class="intro-strong">TYPE 뒤에 지정하는 데이터 타입</strong>에 따라, 변수는 <b>한 개의 필드</b>, <b>여러 필드를 묶은 구조</b>, <b>여러 행을 담는 내부 테이블</b>이 됩니다.</p>
+    </section>
+
+    <section class="overview" aria-labelledby="overview-title">
+      <div class="section-top"><h2 id="overview-title">01 · 한눈에 보는 TYPE의 결과</h2><span class="hint">각 그림의 형태에 주목해 보세요.</span></div>
+      <div class="flow-head"><span class="code-bubble">DATA 변수명 TYPE _____.</span><span class="connector" aria-hidden="true"></span><span class="prompt">TYPE 뒤의 종류에 따라 결과가 달라집니다.</span></div>
+      <div class="cards">
+        <article class="type-card one">
+          <span class="tag">ELEMENTARY</span><h3>한 개의 필드</h3>
+          <p>값을 하나의 필드로 다루는 <button class="term" data-term="elementary">기본형 변수</button></p>
+          <span class="type-names">STRING · C · N · I · F · P · D · T<br>데이터 엘리먼트</span>
+          <div class="picture" aria-label="한 개의 값이 들어 있는 필드 그림"><div class="micro-label">LV_NAME</div><div class="single">'KOREA'</div></div>
+          <div class="result"><span>결과 → 필드 1개</span><a href="#simple">자세히 보기 ↓</a></div>
+        </article>
+        <article class="type-card two">
+          <span class="tag">STRUCTURE</span><h3>구조 변수</h3>
+          <p>여러 개의 필드가 묶인 <button class="term" data-term="structure">스트럭처</button></p>
+          <span class="type-names">스트럭처 타입<br>투명 테이블(Transparent Table)</span>
+          <div class="picture" aria-label="필드 CARRID CARRNAME CURRCODE가 있는 구조 그림">
+            <div class="micro-label">LS_CARRIER</div>
+            <div class="struct"><span>CARRID</span><span>'AA'</span><span>CARRNAME</span><span>'American Airlines'</span><span>CURRCODE</span><span>'USD'</span></div>
+          </div>
+          <div class="result"><span>결과 → 필드 여러 개</span><a href="#structure">자세히 보기 ↓</a></div>
+        </article>
+        <article class="type-card three">
+          <span class="tag">INTERNAL TABLE</span><h3>인터널 테이블</h3>
+          <p>같은 행 타입을 여러 개 담는 <button class="term" data-term="internal">인터널 테이블</button></p>
+          <span class="type-names">테이블 타입<br>(Table Type)</span>
+          <div class="picture" aria-label="항공사 정보가 세 행 담긴 인터널 테이블 그림">
+            <div class="micro-label">LT_CARRIERS</div>
+            <div class="tiny-table"><div class="tiny-row tiny-head"><span>CARRID</span><span>CARRNAME</span><span>CURRCODE</span></div><div class="tiny-row"><span>AA</span><span>American Airlines</span><span>USD</span></div><div class="tiny-row"><span>LH</span><span>Lufthansa</span><span>EUR</span></div><div class="tiny-row"><span>UA</span><span>United Airlines</span><span>USD</span></div></div>
+          </div>
+          <div class="result"><span>결과 → 행 여러 개</span><a href="#tabletype">자세히 보기 ↓</a></div>
+        </article>
+      </div>
+      <div class="takeaway"><strong>기억할 점</strong><span>“한 칸”은 <b>한 글자</b>가 아니라 <b>하나의 필드</b>라는 뜻입니다. <span class="light">예: STRING은 긴 문자열도 저장할 수 있습니다.</span></span></div>
+    </section>
+
+    <div class="section-label"><h2>02 · 종류별로 살펴보기</h2><span>선언 예제를 함께 확인해 보세요.</span></div>
+
+    <section id="simple" class="detail" aria-labelledby="simple-title">
+      <div class="detail-header"><span class="num">01</span><div><h3 id="simple-title">기본 데이터 타입 → 한 개의 필드</h3><p>미리 정의된 ABAP 데이터 타입을 TYPE 뒤에 지정합니다.</p></div></div>
+      <div class="body">
+        <table class="data-table">
+          <colgroup><col style="width:24%"><col style="width:24%"><col></colgroup>
+          <thead><tr><th>TYPE 뒤의 타입</th><th>분류</th><th>어떤 값을 담을까?</th></tr></thead>
+          <tbody>
+            <tr><td><code>STRING</code></td><td>문자열</td><td>길이가 변하는 문자 데이터 <span class="muted">예: 'Hello ABAP'</span></td></tr>
+            <tr><td><code>C</code></td><td>문자</td><td>고정 길이의 문자 필드 <span class="muted">예: 'SEOUL'</span></td></tr>
+            <tr><td><code>N</code></td><td>숫자 텍스트</td><td>숫자 모양의 문자 필드 <span class="muted">예: '00012'</span></td></tr>
+            <tr><td><code>I</code></td><td>정수</td><td>소수점 없는 정수 <span class="muted">예: 120</span></td></tr>
+            <tr><td><code>F</code></td><td>부동소수점</td><td>실수 계산용 근삿값</td></tr>
+            <tr><td><code>P</code></td><td>고정 소수점</td><td>자릿수를 지정하는 Packed Number <span class="muted">예: 1250.50</span></td></tr>
+            <tr><td><code>D</code></td><td>날짜</td><td>YYYYMMDD 형태 <span class="muted">예: '20261119'</span></td></tr>
+            <tr><td><code>T</code></td><td>시간</td><td>HHMMSS 형태 <span class="muted">예: '183000'</span></td></tr>
+          </tbody>
+        </table>
+        <pre class="code"><span class="kw">DATA</span> lv_title  <span class="kw">TYPE</span> <span class="ref">string</span>.
+<span class="kw">DATA</span> lv_code   <span class="kw">TYPE</span> <span class="ref">c LENGTH 5</span>.
+<span class="kw">DATA</span> lv_number <span class="kw">TYPE</span> <span class="ref">n LENGTH 5</span>.
+<span class="kw">DATA</span> lv_amount <span class="kw">TYPE</span> <span class="ref">p LENGTH 8 DECIMALS 2</span>.</pre>
+        <div class="callout"><span class="bulb">ⓘ</span><div><b>C와 N에 LENGTH를 생략하면 기본 길이는 1입니다.</b> P에 LENGTH와 DECIMALS를 생략하면 기본 길이 8바이트, 소수 자릿수 0입니다. STRING은 가변 길이이며, 모두 <b>한 개의 필드</b>입니다.</div></div>
+      </div>
+    </section>
+
+    <section class="detail" aria-labelledby="dataelem-title">
+      <div class="detail-header"><span class="num">02</span><div><h3 id="dataelem-title"><button class="term" data-term="dataelement">데이터 엘리먼트</button> → 한 개의 필드</h3><p>ABAP Dictionary의 데이터 엘리먼트를 변수의 타입으로 사용합니다.</p></div></div>
+      <div class="body">
+        <pre class="code"><span class="kw">DATA</span> lv_carrid <span class="kw">TYPE</span> <span class="ref">s_carr_id</span>.   <span class="comment">" 항공사 ID용 데이터 엘리먼트</span></pre>
+        <div class="callout"><span class="bulb">ⓘ</span><div>데이터 엘리먼트가 지정한 타입·길이 등 속성을 사용하여 변수를 선언합니다. 일반적으로 <b>단일 필드</b>가 만들어집니다. <button class="term" data-term="reference">참조 타입</button>을 정의한 데이터 엘리먼트라면 참조 변수입니다.</div></div>
+      </div>
+    </section>
+
+    <section id="structure" class="detail" aria-labelledby="structure-title">
+      <div class="detail-header"><span class="num">03</span><div><h3 id="structure-title">스트럭처 타입 / 투명 테이블 → 구조 변수</h3><p>구조를 설명하는 타입을 지정하면, 그 안의 필드들이 하나의 변수에 묶입니다.</p></div></div>
+      <div class="body">
+        <div class="mini-grid">
+          <div class="mini"><h4>스트럭처 타입</h4><p>Dictionary에서 정의한 스트럭처를 사용합니다.</p><pre class="code"><span class="kw">DATA</span> ls_item <span class="kw">TYPE</span> <span class="ref">zstr_item</span>.</pre><p><span class="muted">※ ZSTR_ITEM은 사용자가 정의하는 예시 이름입니다.</span></p></div>
+          <div class="mini"><h4><button class="term" data-term="transparent">투명 테이블</button></h4><p>테이블의 행 구조를 변수 타입으로 사용합니다.</p><pre class="code"><span class="kw">DATA</span> ls_carrier <span class="kw">TYPE</span> <span class="ref">scarr</span>.</pre><p>결과: SCARR의 필드로 구성된 <b>구조 변수 1개</b></p></div>
+        </div>
+        <div class="callout"><span class="bulb">ⓘ</span><div><b>TYPE scarr</b>는 데이터베이스의 모든 행을 가져오는 구문이 아닙니다. SCARR의 <b>행 구조와 같은 타입의 변수</b>를 선언할 뿐입니다.</div></div>
+      </div>
+    </section>
+
+    <section id="tabletype" class="detail" aria-labelledby="table-title">
+      <div class="detail-header"><span class="num">04</span><div><h3 id="table-title"><button class="term" data-term="tabletype">테이블 타입</button> → 인터널 테이블 변수</h3><p>테이블 타입을 지정하면 같은 형태의 행을 0개 이상 담을 수 있습니다.</p></div></div>
+      <div class="body">
+        <pre class="code"><span class="kw">TYPES</span> ty_carriers <span class="kw">TYPE STANDARD TABLE OF</span> <span class="ref">scarr</span> <span class="kw">WITH EMPTY KEY</span>.
+<span class="kw">DATA</span>  lt_carriers <span class="kw">TYPE</span> <span class="ref">ty_carriers</span>.</pre>
+        <div class="callout"><span class="bulb">ⓘ</span><div><b>ty_carriers</b>는 프로그램 안에서 정의한 <b>테이블 타입</b>입니다. 같은 방식으로 Dictionary에서 미리 만든 테이블 타입도 <b>TYPE 뒤에</b> 지정할 수 있습니다. 여기서는 목록을 저장하는 용도로 <button class="term" data-term="emptykey">WITH EMPTY KEY</button>를 사용했습니다. <a href="#keys">키 선택 기준</a>에서 다른 선언도 비교할 수 있습니다.</div></div>
+        <p class="fine">그림은 행 타입이 구조인 인터널 테이블의 예입니다. 인터널 테이블은 단일 필드를 행 타입으로 사용할 수도 있습니다. 다음의 <a href="#keys">EMPTY KEY / DEFAULT KEY / 명시적 KEY 비교</a>에서 어떤 필드를 키로 선택할지 확인해 보세요.</p>
+      </div>
+    </section>
+
+    <div class="section-label" id="keys"><h2>03 · 인터널 테이블의 키 이해하기</h2><span>EMPTY KEY · DEFAULT KEY · 직접 지정하는 KEY</span></div>
+    <section class="detail" aria-labelledby="keys-title">
+      <div class="detail-header"><span class="num">05</span><div><h3 id="keys-title">키 필드는 어떤 기준으로 결정할까요?</h3><p>키는 인터널 테이블의 행을 비교하거나 찾을 때 사용하는 필드의 조합입니다.</p></div></div>
+      <div class="body">
+        <p class="key-intro">아래 세 선언은 모두 <b>SCARR 한 행을 행 타입</b>으로 사용합니다. 하지만 <button class="term" data-term="primarykey">기본 테이블 키</button>를 정의하는 방식이 다릅니다. <b>연두색 필드</b>가 키에 포함됩니다.</p>
+        <div class="key-compare">
+          <article class="key-card">
+            <h4><button class="term" data-term="emptykey">① EMPTY KEY</button></h4>
+            <p>키 필드를 <b>0개</b>로 선언합니다. 단순한 행 목록을 추가하고 순회할 때 적합합니다.</p>
+            <span class="micro-title">키에 포함된 필드: 없음</span>
+            <div class="fields" aria-label="모든 필드가 키에 포함되지 않음"><span>MANDT</span><span>CARRID</span><span>CARRNAME</span><span>CURRCODE</span><span>URL</span></div>
+            <div class="key-legend">초록색 표시 없음</div>
+            <pre class="code"><span class="kw">TYPES</span> ty_empty <span class="kw">TYPE STANDARD TABLE OF</span> <span class="ref">scarr</span>
+  <span class="kw">WITH EMPTY KEY</span>.</pre>
+            <div class="key-result">목록 저장 중심 / <b>키 필드 없음</b></div>
+          </article>
+          <article class="key-card">
+            <h4><button class="term" data-term="defaultkey">② DEFAULT KEY</button></h4>
+            <p>행 타입에서 <b>문자형·바이트형 필드</b>를 자동으로 기본 키에 넣습니다. DB의 기본 키와는 다릅니다.</p>
+            <span class="micro-title">이 인터널 테이블의 DEFAULT KEY: 5개 필드</span>
+            <div class="fields" aria-label="SCARR의 5개 필드 모두 키에 포함"><span class="active">MANDT</span><span class="active">CARRID</span><span class="active">CARRNAME</span><span class="active">CURRCODE</span><span class="active">URL</span></div>
+            <div class="key-legend">문자형이므로 모두 키에 포함</div>
+            <pre class="code"><span class="kw">TYPES</span> ty_default <span class="kw">TYPE STANDARD TABLE OF</span> <span class="ref">scarr</span>
+  <span class="kw">WITH DEFAULT KEY</span>.</pre>
+            <div class="key-result">필드가 자동으로 선정됨 / <b>의도와 다를 수 있음</b></div>
+          </article>
+          <article class="key-card recommend">
+            <h4>③ 명시적 KEY <span style="font-size:11px;color:#1e855f">추천 예시</span></h4>
+            <p>조회·비교에 사용하는 필드만 <b>직접 지정</b>합니다. 항공사별 행을 구분하려면 <b>CARRID</b>가 적합합니다.</p>
+            <span class="micro-title">키에 포함된 필드: CARRID</span>
+            <div class="fields" aria-label="CARRID 필드만 키에 포함"><span>MANDT</span><span class="active">CARRID</span><span>CARRNAME</span><span>CURRCODE</span><span>URL</span></div>
+            <div class="key-legend">항공사 코드만 키로 지정</div>
+            <pre class="code"><span class="kw">TYPES</span> ty_by_id <span class="kw">TYPE STANDARD TABLE OF</span> <span class="ref">scarr</span>
+  <span class="kw">WITH NON-UNIQUE KEY</span> carrid.</pre>
+            <div class="key-result"><strong>CARRID를 기준으로 사용</strong> / 중복은 허용</div>
+          </article>
+        </div>
+        <div class="key-explain">
+          <h4>왜 CARRID가 좋은 키 후보일까요?</h4>
+          <p><b>CARRID</b>는 항공사를 식별하는 코드입니다. 반면 <b>CARRNAME</b>은 표시용 이름이고 <b>CURRCODE</b>는 여러 항공사가 공유할 수 있는 통화 코드입니다. 따라서 항공사를 식별하려는 목적에는 CARRID가 더 적합합니다.</p>
+          <p><b>주의:</b> SCARR의 <button class="term" data-term="dbkey">데이터베이스 기본 키</button>는 <code>MANDT + CARRID</code>입니다. 일반적인 단일 클라이언트 처리에서는 CARRID만 키로 쓰는 예제를 만들 수 있지만, 여러 클라이언트의 데이터를 한 테이블에 섞어 관리한다면 MANDT도 키에 포함해야 합니다.</p>
+        </div>
+        <table class="scenario-table" aria-label="인터널 테이블 키 선택 가이드">
+          <thead><tr><th style="width:34%">사용 목적</th><th>선언 방식</th><th>이유</th></tr></thead>
+          <tbody>
+            <tr><td>단순 목록 저장·순서대로 처리</td><td><code>STANDARD ... WITH EMPTY KEY</code></td><td>키 비교가 필요 없는 목록임을 명시</td></tr>
+            <tr><td>기존 코드의 기본 키 동작 유지</td><td><code>STANDARD ... WITH DEFAULT KEY</code></td><td>자동 선정된 문자형·바이트형 키를 사용. 새 코드에서는 의도를 먼저 검토</td></tr>
+            <tr><td>CARRID 기준으로 행을 비교</td><td><code>STANDARD ... WITH NON-UNIQUE KEY carrid</code></td><td>필요한 필드만 명시. <b>중복 허용</b></td></tr>
+            <tr><td>CARRID별 유일한 행을 빠르게 조회</td><td><code>SORTED ... WITH UNIQUE KEY carrid</code></td><td>유일성 보장 및 정렬 키 기반 조회에 적합</td></tr>
+          </tbody>
+        </table>
+        <div class="recommended-example">
+          <h4>항공사 코드로 한 행을 찾는다면? <button class="term" data-term="sortedtable">SORTED TABLE</button>도 알아두세요.</h4>
+          <p>항공사별 한 행만 저장하고 CARRID로 반복 조회할 때는, 키를 명확하게 지정한 정렬 테이블을 사용할 수 있습니다.</p>
+          <pre class="code"><span class="kw">TYPES</span> ty_carriers_by_id <span class="kw">TYPE SORTED TABLE OF</span> <span class="ref">scarr</span>
+  <span class="kw">WITH UNIQUE KEY</span> carrid.
+
+<span class="kw">DATA</span> lt_carriers_by_id <span class="kw">TYPE</span> ty_carriers_by_id.
+
+<span class="comment">" 항공사 코드를 기준으로 행 조회</span>
+<span class="kw">READ TABLE</span> lt_carriers_by_id <span class="kw">WITH TABLE KEY</span> carrid = <span class="ref">'LH'</span>
+  <span class="kw">INTO DATA</span>(ls_carrier).</pre>
+        </div>
+        <div class="callout"><span class="bulb">ⓘ</span><div><b>혼동하지 마세요.</b> <code>STANDARD TABLE</code>의 키를 직접 지정해도 중복이 자동으로 금지되거나 검색이 자동으로 빨라지는 것은 아닙니다. 유일성 보장 여부와 조회 특성은 <b>테이블 종류(STANDARD / SORTED / HASHED)</b>도 함께 결정합니다. 또한 <code>WITH DEFAULT KEY</code>의 DEFAULT는 <b>데이터베이스 기본 키</b>를 가져온다는 뜻이 아닙니다.</div></div>
+      </div>
+    </section>
+
+    <section class="key-question" aria-label="핵심 정리"><div><h3>결국, TYPE을 보면 변수의 모양이 보입니다.</h3><p>코드를 읽을 때 먼저 TYPE 뒤에 무엇이 오는지 확인해 보세요.</p></div><div class="key-items"><span>기본형 / 데이터 엘리먼트 <strong>→ 필드</strong></span><span>스트럭처 / DB 테이블 <strong>→ 구조</strong></span><span>테이블 타입 <strong>→ 내부 테이블</strong></span></div></section>
+
+    <footer><div>ABAP 학습 자료 · 배포자 정훈영</div><div>참고: <a target="_blank" rel="noopener noreferrer" href="https://help.sap.com/docs/abap-cloud/abap-keyword/data-type-abap-type">SAP Keyword Documentation</a> · <a target="_blank" rel="noopener noreferrer" href="https://help.sap.com/docs/abap-cloud/abap-keywords-standard-abap/ddic-data-elements">DDIC Data Elements</a> · <a target="_blank" rel="noopener noreferrer" href="https://help.sap.com/docs/abap-cloud/abap-keywords/types-key">Internal Table Keys</a> · <a target="_blank" rel="noopener noreferrer" href="https://help.sap.com/docs/abap-cloud/abap-keyword/standard-key">Standard Key</a></div></footer>
+  </main>
+
+  <div id="dialog" class="modal-backdrop" role="presentation" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-body">
+      <button id="closeDialog" class="close" type="button" aria-label="설명 닫기">×</button>
+      <div class="small">TERM NOTE · 용어 설명</div><h2 id="dialog-title"></h2><p id="dialog-body"></p>
+    </div>
+  </div>
+  <script>
+  (() => {
+    'use strict';
+    const notes = {
+      elementary: ['기본형(기본 데이터 타입)', '문자, 숫자, 날짜, 시간처럼 하나의 값으로 취급하는 데이터를 담는 타입입니다. 화면의 큰 사각형 하나는 실제 저장 길이를 의미하지 않고, 단일 필드라는 형태를 나타냅니다.'],
+      structure: ['스트럭처(Structure)', '여러 컴포넌트(필드)를 하나로 묶은 구조 타입입니다. 예를 들어 항공사 코드 CARRID, 항공사 이름 CARRNAME, 통화 CURRCODE를 하나의 LS_CARRIER 변수로 관리할 수 있습니다.'],
+      internal: ['인터널 테이블(Internal Table)', 'ABAP 프로그램 내부에서 여러 행을 저장하고 처리하는 데이터 객체입니다. 행 타입은 구조일 수도 있고 단일 필드일 수도 있습니다. 데이터베이스 테이블 그 자체와는 다릅니다.'],
+      dataelement: ['데이터 엘리먼트(Data Element)', 'ABAP Dictionary에서 정의하는 타입 객체입니다. 기본 타입과 길이 등 기술적 속성뿐 아니라 필드 레이블과 같은 의미 정보를 가질 수 있습니다. 일반적인 데이터 엘리먼트는 기본형 필드를 정의하며, 참조 타입인 경우도 있습니다.'],
+      reference: ['참조 타입(Reference Type)', '일반적인 문자나 숫자 값을 직접 담는 대신 객체 또는 데이터 객체를 참조하는 변수의 타입입니다. 기본형 데이터 엘리먼트와 구별되는 예외를 이해하기 위한 보충 개념입니다.'],
+      transparent: ['투명 테이블(Transparent Table)', 'ABAP Dictionary에 정의하는 데이터베이스 테이블입니다. ABAP에서 DATA ls_carrier TYPE scarr.처럼 테이블 이름을 타입으로 사용하면, DB의 전체 데이터가 아니라 해당 테이블의 한 행과 같은 필드 구조를 가진 변수만 생성됩니다.'],
+      tabletype: ['테이블 타입(Table Type)', '인터널 테이블을 만들기 위한 타입 정의입니다. 어떤 행을 저장하는지(행 타입), 어떤 종류의 테이블인지(표준·정렬·해시)와 키는 무엇인지 등을 정할 수 있습니다.'],
+      emptykey: ['WITH EMPTY KEY', '인터널 테이블의 기본 키를 명시적으로 비워 둡니다. 키 필드가 0개라는 뜻이지, 행 자체가 비거나 데이터를 저장할 수 없다는 뜻은 아닙니다. STANDARD TABLE에서 사용할 수 있습니다. 단순 목록 처리에 적합합니다.'],
+      defaultkey: ['WITH DEFAULT KEY', '행 타입에서 문자형 또는 바이트형인 컴포넌트들을 자동으로 기본 테이블 키로 구성합니다. SCARR 예제에서는 MANDT, CARRID, CARRNAME, CURRCODE, URL이 포함됩니다. 데이터베이스의 기본 키를 가져오는 기능은 아니며, STANDARD TABLE에서는 중복 행을 금지하지 않습니다.'],
+      primarykey: ['기본 테이블 키(Primary Table Key)', '인터널 테이블의 주된 키 필드 조합입니다. STANDARD TABLE은 빈 기본 키도 가능하며, NON-UNIQUE 기본 키를 사용합니다. SORTED TABLE 및 HASHED TABLE은 키를 명시적으로 설계하여 조회 및 중복 조건을 결정합니다.'],
+      dbkey: ['데이터베이스 기본 키(Database Primary Key)', '데이터베이스 테이블에서 레코드의 유일성을 식별하는 필드들의 조합입니다. 예를 들어 SCARR의 키는 MANDT와 CARRID입니다. 인터널 테이블의 DEFAULT KEY는 이 키를 자동으로 복사하지 않습니다.'],
+      sortedtable: ['SORTED TABLE', '내부 테이블의 행을 기본 키 기준으로 정렬하여 관리하는 테이블 종류입니다. WITH UNIQUE KEY를 사용하면 같은 키 값의 중복 행이 허용되지 않습니다. 키를 이용한 조회에 효율적일 수 있습니다.']
+    };
+    const overlay = document.getElementById('dialog');
+    const close = document.getElementById('closeDialog');
+    let lastActive = null;
+    function hide(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(lastActive) lastActive.focus();}
+    document.querySelectorAll('[data-term]').forEach(btn => btn.addEventListener('click', () => {
+      const item = notes[btn.dataset.term]; if(!item) return;
+      lastActive = btn;
+      document.getElementById('dialog-title').textContent = item[0];
+      document.getElementById('dialog-body').textContent = item[1];
+      overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');close.focus();
+    }));
+    close.addEventListener('click',hide);
+    overlay.addEventListener('click',e=>{if(e.target===overlay)hide();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))hide();});
+  })();
+  </script>
+</body>
+</html>
