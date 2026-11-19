@@ -310,7 +310,7 @@
           <thead><tr><th style="width:34%">사용 목적</th><th>선언 방식</th><th>이유</th></tr></thead>
           <tbody>
             <tr><td>단순 목록 저장·순서대로 처리</td><td><code>STANDARD ... WITH EMPTY KEY</code></td><td>키 비교가 필요 없는 목록임을 명시</td></tr>
-            <tr><td>기존 코드의 기본 키 동작 유지</td><td><code>STANDARD ... WITH DEFAULT KEY</code></td><td>자동 선정된 문자형·바이트형 키를 사용. 새 코드에서는 의도를 먼저 검토</td></tr>
+            <tr><td>기존 코드의 기본 키 동작 유지</td><td><code>STANDARD ... WITH DEFAULT KEY</code></td><td>자동 선정된 문자형·바이트형 키를 사용. 선언 의도를 먼저 검토</td></tr>
             <tr><td>CARRID 기준으로 행을 비교</td><td><code>STANDARD ... WITH NON-UNIQUE KEY carrid</code></td><td>필요한 필드만 명시. <b>중복 허용</b></td></tr>
             <tr><td>CARRID별 유일한 행을 빠르게 조회</td><td><code>SORTED ... WITH UNIQUE KEY carrid</code></td><td>유일성 보장 및 정렬 키 기반 조회에 적합</td></tr>
           </tbody>
@@ -322,10 +322,11 @@
   <span class="kw">WITH UNIQUE KEY</span> carrid.
 
 <span class="kw">DATA</span> lt_carriers_by_id <span class="kw">TYPE</span> ty_carriers_by_id.
+<span class="kw">DATA</span> ls_carrier        <span class="kw">TYPE</span> <span class="ref">scarr</span>.
 
 <span class="comment">" 항공사 코드를 기준으로 행 조회</span>
 <span class="kw">READ TABLE</span> lt_carriers_by_id <span class="kw">WITH TABLE KEY</span> carrid = <span class="ref">'LH'</span>
-  <span class="kw">INTO DATA</span>(ls_carrier).</pre>
+  <span class="kw">INTO</span> ls_carrier.</pre>
         </div>
         <div class="callout"><span class="bulb">ⓘ</span><div><b>혼동하지 마세요.</b> <code>STANDARD TABLE</code>의 키를 직접 지정해도 중복이 자동으로 금지되거나 검색이 자동으로 빨라지는 것은 아닙니다. 유일성 보장 여부와 조회 특성은 <b>테이블 종류(STANDARD / SORTED / HASHED)</b>도 함께 결정합니다. 또한 <code>WITH DEFAULT KEY</code>의 DEFAULT는 <b>데이터베이스 기본 키</b>를 가져온다는 뜻이 아닙니다.</div></div>
       </div>
